@@ -449,9 +449,9 @@ Globally useful org commands such as ~org-store-link~ are made available in
 the leader key bindings under the "a" prefix.
 
 #+begin_src emacs-lisp :noweb-ref "leader-org" :tangle no
-'("a a" org-agenda)
-'("a c" org-capture)
-'("a l" org-store-link)
+'("a a" . org-agenda)
+'("a c" . org-capture)
+'("a l" . org-store-link)
 #+end_src
  
 ** Markdown
