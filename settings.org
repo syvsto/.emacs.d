@@ -608,19 +608,11 @@ working with Rust and Emacs.
       (use-package rustic
 	:commands (rustic-mode)
 	:custom
-	(rustic-lsp-server 'rust-analyzer)
-	:config
-	<<leader-rust>>)
+	(rustic-lsp-server 'rust-analyzer))
 #+end_src
 
 Rustic supports a popup for controlling various compilation, testing
-etc. commands. Bind this to a leader binding.
-
-#+begin_src emacs-lisp :noweb-ref "leader-rust" :tangle no
-  (meow-leader-define-mode-key
-   'rustic-mode
-   '("n" . rustic-popup))
-#+end_src
+etc. commands. By default it is bound to ~<C-c C-p>~.
 
 * Version control
 
@@ -637,6 +629,7 @@ package which has a nice minimal skin.
 
 #+BEGIN_SRC emacs-lisp
   (use-package git-gutter-fringe+
+    :delight
     :hook (prog-mode . git-gutter+-mode)
     :init
     (require 'git-gutter-fringe+)
@@ -650,6 +643,7 @@ use. ~git-timemachine~ provides an easy-to-use alternative.
 
 #+BEGIN_SRC emacs-lisp
   (use-package git-timemachine
+    :delight
     :commands (git-timemachine)
     :bind ("C-x M-g" . git-timemachine))
 #+END_SRC
