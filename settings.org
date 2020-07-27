@@ -210,6 +210,21 @@ with ~counsel-rg~.
 '("f f" . counsel-rg)
 #+end_src
 
+** Anzu
+
+Though not really part of the ~ivy~ universe, I rely on search and
+replace a lot. The ~anzu~ package provides a nicer interface to the
+built-in search and replace, and by rebinding the built-in commands,
+anzu gets nicely integrated into ~meow~ as well.
+
+#+begin_src emacs-lisp
+  (use-package anzu
+    :init
+    (global-anzu-mode +1)
+    (global-set-key [remap query-replace] 'anzu-query-replace)
+    (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp))
+#+end_src
+
 * Looks and layout
 
 ** Theme and fonts  
