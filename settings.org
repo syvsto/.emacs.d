@@ -529,6 +529,7 @@ the sideline display, as it is too noisy.
     :hook (lsp-mode . lsp-ui-mode)
     :custom
     (lsp-ui-sideline-enable nil)
+    (lsp-ui-doc-enable nil)
     :config
     <<lsp-ui-peek-binds>>)
 #+end_src
@@ -545,10 +546,10 @@ peek mode.
 workspace.
 
 #+begin_src emacs-lisp
-  (use-package lsp-ivy
-    :commands lsp-ivy-workspace-symbol
-    :config
-    (define-key lsp-mode-map [remap lsp-ui-peek-find-workspace-symbol] #'lsp-ivy-workspace-symbol))
+    (use-package lsp-ivy
+      :bind (:map lsp-ui-mode-map
+		  ("C-c l g s" . lsp-ivy-workspace-symbol))
+      :commands lsp-ivy-workspace-symbol)
 #+end_src
 
 ** Debugging
@@ -613,6 +614,8 @@ working with Rust and Emacs.
 #+begin_src emacs-lisp
       (use-package rustic
 	:commands (rustic-mode)
+	:custom
+	(rustic-lsp-server 'rust-analyzer)
 	:config
 	<<leader-rust>>)
 #+end_src
@@ -621,9 +624,9 @@ Rustic supports a popup for controlling various compilation, testing
 etc. commands. Bind this to a leader binding.
 
 #+begin_src emacs-lisp :noweb-ref "leader-rust" :tangle no
-  (meow-leader-define-key
+  (meow-leader-define-mode-key
    'rustic-mode
-   '("c" . rustic-popup))
+   '("n" . rustic-popup))
 #+end_src
 
 * Version control
