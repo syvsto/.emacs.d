@@ -457,38 +457,30 @@ documentation for packages at work.
 
 ** Autocompletion
 
-Company mode is what I'm used to. Enable ~capf~ completion, since that's
-what ~lsp-mode~ uses.
+Since ~lsp-mode~ has started using ~capf~ as the completion backend, I can
+use the ~complete-symbol~ with Ivy to fuzzy find completion matches.
+This is nice, since for me completion is mainly useful while exploring
+new libraries and codebases, and can be distracting otherwise. Using
+~ivy~ and ~complete-symbol~ makes completion something that doesn't
+distract when it doesn't have to, and makes it possible to explore
+symbols using the ~ivy~ fuzzy search when completion is needed.
+
+Completion can be called using the default binding ~<C-M-i>~.
+
+** Snippets
+
+Yasnippet is used for snippet support.
 
 #+begin_src emacs-lisp
-  (use-package company
-    :delight
-    :hook (prog-mode . company-mode)
-    :config
-    (add-to-list 'company-backends 'company-capf))
+  (use-package yasnippet
+    :init
+    (yas-global-mode))
 #+end_src
 
-~company-box~ adds some nice icons to company-mode. 
+A bunch of default snippets are found in an external package.
 
 #+begin_src emacs-lisp
-  (use-package company-box
-    :delight
-    :hook (company-mode . company-box-mode))
-#+end_src
-
-The default colors for company popups are a bit jarring, so use
-something else.
-
-#+begin_src emacs-lisp
-  (require 'color)
-
-  (let ((bg (face-attribute 'default :background)))
-    (custom-set-faces
-     `(company-tooltip ((t (:inherit default :background ,(color-lighten-name bg 2)))))
-     `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
-     `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
-     `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
-     `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
+  (use-package yasnippet-snippets)
 #+end_src
 
 ** Errors
@@ -512,11 +504,12 @@ family, which just keeps getting better and better.
 It is available under the ~<C-c l>~ prefix.
 
 #+begin_src emacs-lisp
-  (use-package lsp-mode
-    :hook ((lsp-mode . lsp-enable-which-key-integration))
-    :defer nil
-    :custom
-    (lsp-keymap-prefix "C-c l"))
+    (use-package lsp-mode
+      :hook ((lsp-mode . lsp-enable-which-key-integration))
+      :defer nil
+      :custom
+      (lsp-keymap-prefix "C-c l")
+      (lsp-prefer-capf t))
 #+end_src
 
 ~lsp-ui~ provides some nice additional features such as a peek mode for
