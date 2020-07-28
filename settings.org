@@ -327,16 +327,12 @@ it is raised to 80.
     (olivetti-body-width 80))
 #+END_SRC
 
-** Delimiter highlighting
+Emacs is commonly used maximized. Default to maximizing Emacs on
+startup.
 
-When working with code, identifying the current nesting based on
-parenthesis color is useful. The ~rainbow-delimiters~ package colors
-different nestings by different parenthesis colors.
-
-#+BEGIN_SRC emacs-lisp
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
-#+END_SRC
+#+begin_src emacs-lisp
+  (add-to-list 'default-frame-alist '(fullscreen . maximized))
+#+end_src
 
 * Windows, projects, and buffers
   
