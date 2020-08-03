@@ -367,6 +367,18 @@ are very useful!
     :bind ("M-o" . ace-window))
 #+END_SRC
 
+Emacs has a tendency to go a bit crazy and creating windows all over the
+place. [[https://github.com/nex3/perspective-el][The perspective.el readme]] suggests the following settings to have Emacs
+reuse more of the existing windows.
+
+#+begin_src emacs-lisp
+(setq display-buffer-alist
+      '((".*" (display-buffer-reuse-window display-buffer-same-window))))
+
+(setq display-buffer-reuse-frames t)         ; reuse windows in other frames
+(setq even-window-sizes nil)                 ; display-buffer: avoid resizing
+#+end_src
+
 ** Perspectives
 
 =perspective.el= is very useful for keeping different projects and window layouts
