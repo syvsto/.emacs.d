@@ -118,6 +118,14 @@ the information is available elsewhere.
   (toggle-scroll-bar -1)
 #+END_SRC
 
+Emacs should use UTF-8 encoding by default, as has become common.
+#+begin_src emacs-lisp
+  (prefer-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-language-environment 'utf-8)
+  (set-selection-coding-system 'utf-8)
+#+end_src
+
 Finally, get rid of the default splash screen and jump straight to a scratch
 buffer.
 
