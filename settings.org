@@ -450,6 +450,8 @@ leader key bindings under the "a" prefix.
   '("a l" . org-store-link)
 #+end_src
 
+* The agenda
+
 The org files needed for my agenda is available in my Dropbox folder.
 
 #+begin_src emacs-lisp
@@ -509,6 +511,12 @@ scheduled for today.
   (setq org-agenda-start-with-log-mode t)
 #+end_src
 
+There are some unnecessary horizontal lines in the agenda that take up space and
+clutter the view. Remove them.
+#+begin_src emacs-lisp
+  (setq org-agenda-block-separator nil)
+#+end_src
+
 Make the agenda real easy to get to, to reduce overhead when working with task
 management. This binds a shortcut to my agenda view to ~<F1>~.
 
@@ -519,6 +527,24 @@ management. This binds a shortcut to my agenda view to ~<F1>~.
     (org-agenda nil " "))
 
   (bind-key "<f1>" 'my/org-agenda)
+#+end_src
+
+
+*** Refiling
+
+Org mode is better if you can move stuff around easily. This is called refiling.
+#+begin_src emacs-lisp
+  (setq org-refile-use-outline-path 'file
+	org-outline-path-complete-in-steps nil)
+#+end_src
+
+I need some targets to refile to.
+
+#+begin_src emacs-lisp
+  (setq org-refile-targets '(("next.org" :level . 0)
+			     ("someday.org" :level . 0)
+			     ("calendar.org" :level . 0)
+			      ("projects.org" :maxlevel . 1)))
 #+end_src
  
 ** Markdown
