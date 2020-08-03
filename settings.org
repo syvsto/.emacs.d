@@ -764,6 +764,21 @@ and Emacs.
 Rustic supports a popup for controlling various compilation, testing
 etc. commands. By default it is bound to ~<C-c C-p>~.
 
+*** Haskell
+
+Haskell does not yet have great LSP support in Emacs, though it is in the works in the
+form of =haskell-language-server=. Instead, the emacs =haskell-mode= contains a lot
+of useful features for working with Haskell.
+
+#+begin_src emacs-lisp
+  (use-package haskell-mode
+    :bind (:map haskell-mode-map
+		("<f8>" . haskell-navigate-imports)
+		("M-." . haskell-mode-jump-to-def-or-tag))
+    :hook ((haskell-mode . haskell-auto-insert-module-template)
+	   (haskell-mode . interactive-haskell-mode)))
+#+end_src
+
 * Version control
 
 Magit is the best git client ever.
