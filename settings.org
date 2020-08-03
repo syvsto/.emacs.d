@@ -454,6 +454,8 @@ The org files needed for my agenda is available in my Dropbox folder.
 
 #+begin_src emacs-lisp
   (setq my/org-agenda-dir "~/Dropbox/orgfiles/")
+  (setq org-directory my/org-agenda-dir
+	org-agenda-files (list my/org-agenda-dir))
 #+end_src
 
 Org capture requires capture templates to be the most useful.
