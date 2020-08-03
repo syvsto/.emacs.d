@@ -641,7 +641,7 @@ It is available under the ~<C-c l>~ prefix.
     :hook ((lsp-mode . lsp-enable-which-key-integration))
     :defer nil
     :custom
-    (lsp-keymap-prefix "C-c l")
+    (lsp-keymap-prefix "<f6>")
     (lsp-prefer-capf t))
 #+end_src
 
