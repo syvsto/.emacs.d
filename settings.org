@@ -783,8 +783,27 @@ of useful features for working with Haskell.
     :bind (:map haskell-mode-map
 		("<f8>" . haskell-navigate-imports)
 		("M-." . haskell-mode-jump-to-def-or-tag))
-    :hook ((haskell-mode . haskell-auto-insert-module-template)
-	   (haskell-mode . interactive-haskell-mode)))
+    :hook ((haskell-mode . haskell-auto-insert-module-template)))
+#+end_src
+
+The interactive haskell mode of =haskell-mode= struggles with finding projects on
+windows. Instead, use =dante=.
+
+#+begin_src emacs-lisp
+  (use-package dante
+    :after haskell-mode
+    :commands 'dante-mode
+    :hook ((haskell-mode . flycheck-mode)
+	   (haskell-mode . dante-mode))
+    :config
+    (setq flycheck-hlintrc ".hlint.yaml")
+    (flycheck-add-next-checker 'haskell-dante '(info . haskell-hlint)))
+#+end_src
+
+=Attrap= adds various code actions to =dante= (on windows you need to set the beta
+option for UTF-8 in Region settings for it to work).
+#+begin_src emacs-lisp
+  (use-package attrap)
 #+end_src
 
 * Version control
