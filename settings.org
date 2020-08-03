@@ -385,12 +385,19 @@ reuse more of the existing windows.
 separate.
 
 #+begin_src emacs-lisp
-  (use-package perspective
-    :bind (("C-x b" . persp-switch-to-buffer*)
-	   ("C-x k" . persp-kill-buffer*))
-    :hook (kill-emacs . persp-save-state)
-    :config
-    (persp-mode))
+    (use-package perspective
+      :bind (("C-x b" . persp-switch-to-buffer*)
+	     ("C-x k" . persp-kill-buffer*))
+      :hook ((kill-emacs . persp-state-save)
+	     (after-init . my/load-persps))
+      :commands (persp-state-load)
+      :config
+      (setq persp-state-default-file (concat user-emacs-directory "persp-state"))
+      (persp-mode))
+
+  (defun my/load-persps ()
+    "Load default perspective"
+    (persp-state-load (concat user-emacs-directory "persp-state")))
 #+end_src
 
 * Navigation
@@ -474,6 +481,9 @@ The org files needed for my agenda is available in my Dropbox folder.
 
 #+begin_src emacs-lisp
   (setq my/org-agenda-dir "~/Dropbox/orgfiles/")
+#+end_src
+
+#+begin_src emacs-lisp :noweb-ref "org-dirs" :tangle no
   (setq org-directory my/org-agenda-dir
 	org-agenda-files (list my/org-agenda-dir))
 #+end_src
@@ -490,36 +500,37 @@ Org agenda is nice for seeing an overview of the state of various org files at
 once. Set it up so it shows my todos from various files.
 
 #+begin_src emacs-lisp
-  (setq my/org-agenda-todo-view
-	`(" " "Agenda"
-	  ((agenda ""
-		   ((org-agenda-span 'day)
-		    (org-deadline-warning-days 365)))
-	   (todo "TODO"
-		 ((org-agenda-overriding-header "Inbox")
-		  (org-agenda-files '(,(concat my/org-agenda-dir "inbox.org")))))
-	   (todo "TODO"
-		 ((org-agenda-overriding-header "Eposter")
-		  (org-agenda-files '(,(concat my/org-agenda-dir "emails.org")))))
-	   (todo "NEXT"
-		 ((org-agenda-overriding-header "In Progress")
-		  (org-agenda-files '(,(concat my/org-agenda-dir "someday.org")
-				      ,(concat my/org-agenda-dir "projects.org")
-				      ,(concat my/org-agenda-dir "next.org")))
-		  ))
-	   (todo "TODO"
-		 ((org-agenda-overriding-header "Prosjekter")
-		  (org-agenda-files '(,(concat my/org-agenda-dir "projects.org")))
-		  ))
-	   (todo "TODO"
-		 ((org-agenda-overriding-header "Enkeltoppgaver")
-		  (org-agenda-files '(,(concat my/org-agenda-dir "next.org")))
-		  (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
-	   nil)))
+    (setq my/org-agenda-todo-view
+	  `(" " "Agenda"
+	    ((agenda ""
+		     ((org-agenda-span 'day)
+		      (org-deadline-warning-days 365)))
+	     (todo "TODO"
+		   ((org-agenda-overriding-header "Inbox")
+		    (org-agenda-files '(,(concat my/org-agenda-dir "inbox.org")))))
+	     (todo "TODO"
+		   ((org-agenda-overriding-header "Eposter")
+		    (org-agenda-files '(,(concat my/org-agenda-dir "emails.org")))))
+	     (todo "NEXT"
+		   ((org-agenda-overriding-header "In Progress")
+		    (org-agenda-files '(,(concat my/org-agenda-dir "someday.org")
+					,(concat my/org-agenda-dir "projects.org")
+					,(concat my/org-agenda-dir "next.org")))
+		    ))
+	     (todo "TODO"
+		   ((org-agenda-overriding-header "Prosjekter")
+		    (org-agenda-files '(,(concat my/org-agenda-dir "projects.org")))
+		    ))
+	     (todo "TODO"
+		   ((org-agenda-overriding-header "Enkeltoppgaver")
+		    (org-agenda-files '(,(concat my/org-agenda-dir "next.org")))
+		    (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
+	     nil)))
 
-  (use-package org
-    :config
-    (setq org-agenda-custom-commands (list my/org-agenda-todo-view)))
+    (use-package org
+      :config
+      (setq org-agenda-custom-commands (list my/org-agenda-todo-view))
+      <<org-dirs>>)
 #+end_src
 
 Show todo items in agenda that have been set to done in this session, or are
