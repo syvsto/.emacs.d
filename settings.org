@@ -637,7 +637,8 @@ a DAP adapter installed.
 The ~dap-mode~ binding setup is used for modes that support debugging.
 
 #+begin_src emacs-lisp :noweb-ref "dap-bindings" :tangle no
-  ("C-c C-d" . dap-debug)
+  ("M-<f5>" . dap-debug)
+  ("<f5>" . dap-hydra/body)
 #+end_src
 
 ** Structured editing
@@ -659,7 +660,6 @@ display pairs, and integrates with ~meow~.
 ** Languages
 
 *** JavaScript
-
 
 In Emacs 27, there is a new built-in JavaScript mode which is much better than
 earlier modes, and supports JSX syntax well.
