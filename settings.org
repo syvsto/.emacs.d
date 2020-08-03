@@ -85,7 +85,8 @@ On MacOS, you often don't get the correct $PATH when using GUI Emacs. The
 
 #+begin_src emacs-lisp
   (use-package exec-path-from-shell
-    :config
+    :commands (exec-path-from-shell-initialize)
+    :init
     (when (memq window-system '(mac ns x))
       (exec-path-from-shell-initialize)))
 #+end_src
@@ -211,6 +212,7 @@ into ~meow~ as well.
 
 #+begin_src emacs-lisp
   (use-package anzu
+    :delight
     :init
     (global-anzu-mode +1)
     (global-set-key [remap query-replace] 'anzu-query-replace)
@@ -278,17 +280,6 @@ Integration with Dired, which displays file types as an icon.
 #+BEGIN_SRC emacs-lisp
   (use-package all-the-icons-dired
     :hook (dired-mode . all-the-icons-dired-mode))
-#+END_SRC
-
-Integration with Ivy, for showing buffer lists with filetype icons.  Also
-integrates ~ivy-rich~, which provides additional information in ~ivy-list-buffers~.
-
-#+BEGIN_SRC emacs-lisp :noweb-ref "ivy-rich" :tangle no
-  (use-package ivy-rich)
-  (use-package all-the-icons-ivy-rich
-    :init
-    (all-the-icons-ivy-rich-mode 1)
-    (ivy-rich-mode 1))
 #+END_SRC
 
 IBuffer can also display file types of buffers using all-the-icons.
@@ -375,6 +366,20 @@ are very useful!
   (use-package ace-window
     :bind ("M-o" . ace-window))
 #+END_SRC
+
+** Perspectives
+
+=perspective.el= is very useful for keeping different projects and window layouts
+separate.
+
+#+begin_src emacs-lisp
+  (use-package perspective
+    :bind (("C-x b" . persp-switch-to-buffer*)
+	   ("C-x k" . persp-kill-buffer*))
+    :hook (kill-emacs . persp-save-state)
+    :config
+    (persp-mode))
+#+end_src
 
 * Navigation
 
@@ -696,12 +701,30 @@ earlier modes, and supports JSX syntax well.
     :straight nil
     :hook ((js-mode . lsp-mode)
 	   (js-mode . dap-auto-configure-mode)
+	   (js-mode . (lambda () (setq tab-width 2)))
 	   (js-jsx-mode . lsp-mode)
 	   (js-jsx-mode . dap-auto-configure-mode))
     :bind ((:map js-mode-map
 		 <<dap-bindings>>)
 	   (:map js-jsx-mode-map
-		 <<dap-bindings>>)))
+		 <<dap-bindings>>))
+    )
+#+end_src
+
+I often use =prettier= as my formatter. The =prettier.el= package is good for
+handling autoformat on save etc. ~global-prettier-mode~ enables Prettier for
+javascript, typescript etc.
+
+#+begin_src emacs-lisp
+  (use-package prettier-js
+    :hook ((js-mode scss-mode css-mode json-mode) . prettier-js-mode))
+#+end_src
+
+*** JSON
+
+JSON-mode includes some niceties for working with JSON, including a formatter in ~json-format~.
+#+begin_src emacs-lisp
+(use-package json-mode)
 #+end_src
 
 *** Rust
@@ -752,13 +775,4 @@ alternative.
     :delight
     :commands (git-timemachine)
     :bind ("C-x M-g" . git-timemachine))
-#+END_SRC
-
-* Supporting code
-
-Ivy-rich must be enabled after other ivy integrations, so enabling it is
-deferred to the end of initialization.
-
-#+BEGIN_SRC emacs-lisp
-  <<ivy-rich>>
 #+END_SRC
