@@ -78,6 +78,17 @@ alleviate some of the pain points of the language.
   (use-package dash)
 #+END_SRC
 
+** Environment variables
+
+On MacOS, you often don't get the correct $PATH when using GUI Emacs. The
+~exec-path-from-shell~ package fixes this.
+
+#+begin_src emacs-lisp
+    (when (memq window-system '(mac ns x))
+      (use-package exec-path-from-shell
+	:config (exec-path-from-shell-initialize)))
+#+end_src
+
 ** Important initial settings
    
 Some settings *must* be changed to make Emacs usable. Importantly, it should not
