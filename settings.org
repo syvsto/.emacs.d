@@ -350,12 +350,9 @@ Windows by default, so MSYS2 or Cygwin must be installed.
 
 ** Buffer management
 IBuffer is a built-in replacement for list-buffers which is much nicer and with
-a lot of additional functionality. Together with ~ivy-rich~, this provides a
-good-enough buffer management experience.
-
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-x C-b") 'ibuffer)
-#+END_SRC
+a lot of additional functionality. It can be used in conjunction with the
+=perspective.el= wrapper ~persp-ibuffer~ to show only buffers in the current
+perspective. It is bound in the [[*Perspectives][perspective section]] of this document.
 
 ** Windows
    
@@ -387,7 +384,8 @@ separate.
 #+begin_src emacs-lisp
     (use-package perspective
       :bind (("C-x b" . persp-switch-to-buffer*)
-	     ("C-x k" . persp-kill-buffer*))
+	     ("C-x k" . persp-kill-buffer*)
+	     ("C-x C-b" . persp-ibuffer
       :hook ((kill-emacs . persp-state-save)
 	     (after-init . my/load-persps))
       :commands (persp-state-load)
@@ -395,10 +393,10 @@ separate.
       (setq persp-state-default-file (concat user-emacs-directory "persp-state"))
       (persp-mode))
 
-  (defun my/load-persps ()
-    "Load default perspective"
-    (persp-state-load (concat user-emacs-directory "persp-state")))
-#+end_src
+    (defun my/load-persps ()
+      "Load default perspective"
+      (persp-state-load (concat user-emacs-directory "persp-state")))
+    #+end_src
 
 * Navigation
 
