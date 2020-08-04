@@ -413,8 +413,7 @@ separate.
 	     (after-init . my/load-persps))
       :commands (persp-state-load)
       :config
-      (setq persp-state-default-file (concat user-emacs-directory "persp-state"))
-      (persp-mode))
+      (setq persp-state-default-file (concat user-emacs-directory "persp-state")))
 
     (defun my/load-persps ()
       "Load default perspective"
