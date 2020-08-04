@@ -135,6 +135,21 @@ buffer.
   (setq initial-scratch-message ";; INITIALIZED...")
 #+end_src
 
+** Mac specifics 
+
+On Mac, I like keeping the right alt modifier as-is, to be able to input special
+characters with ease.
+
+#+begin_src emacs-lisp
+  (setq ns-right-alternate-modifier nil)
+#+end_src
+
+A small aesthetic change is keeping the title bar and theme in the same color.
+
+#+begin_src emacs-lisp
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+#+end_src
+
 * Key binding setup
 
 ~meow~ is used for modal editing. The package uses some ideas from the /kakoune/
