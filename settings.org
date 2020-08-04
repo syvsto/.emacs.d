@@ -408,7 +408,7 @@ separate.
     (use-package perspective
       :bind (("C-x b" . persp-switch-to-buffer*)
 	     ("C-x k" . persp-kill-buffer*)
-	     ("C-x C-b" . persp-ibuffer
+	     ("C-x C-b" . persp-ibuffer))
       :hook ((kill-emacs . persp-state-save)
 	     (after-init . my/load-persps))
       :commands (persp-state-load)
