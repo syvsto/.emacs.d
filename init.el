@@ -11,7 +11,7 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(straight-use-package 'org-plus-contrib)
+(straight-use-package 'org)
 
 (require 'org)
 (org-babel-load-file

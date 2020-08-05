@@ -168,8 +168,6 @@ packages, though it can integrate with yasnippet, company, smartparens, etc.
     :config
     (meow-global-mode 1)
     (meow-leader-define-key
-     <<leader-ivy>>
-     <<leader-avy>>
      <<leader-org>>
      )
     :custom
@@ -183,55 +181,50 @@ The leader key bindings are structured around two principles:
 - Common navigation commands should have one-key bindings
 - Other bindings should default to using mnemonics
 
-* Ivy, Swiper, and Counsel
+** Selectrum and presicent
 
-The suite of packages called Ivy, Swiper, and Counsel are used as the general
-completion framework for Emacs. They provide a lot of interesting functionality
-and integration, while feeling light-weight.
-
-All packages are installed when installing ~ivy~. Where appropriate, built-in
-functions are replaced by their ~counsel~ variant.
+=Selectrum= and the =prescient= selection styles are used for candidate selection,
+as they are lightweight and makes it easy to select commonly used candidates.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package counsel
-    :delight
-    :init
-    (counsel-mode 1))
-
-  (use-package ivy
-    :delight
-    :init
-    (ivy-mode 1)
-    :custom
-    (ivy-use-virtual-buffers t)
-    (enable-recursive-minibuffers t)
-    :bind
-    (("C-x C-f" . counsel-find-file)
-     (:map minibuffer-local-map
-	   ("C-r" . counsel-minibuffer-history))))
+  (use-package selectrum
+    :config
+    (selectrum-mode +1))
 #+END_SRC
 
-Swiper provides an alternative to the built-in ~isearch~ for in-buffer
-searching. It is bound in the leader key map of ~meow~.
+Prescient makes candidate sorting more intelligent, and persists between
+sessions.
+#+begin_src emacs-lisp
+  (use-package prescient)
+  (use-package selectrum-prescient
+    :config
+    (selectrum-prescient-mode +1)
+    (prescient-persist-mode +1))
+#+end_src
+
+** Ctrlf
+
+CtrlF is similar to the built-in ISearch, but is more robust.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package swiper)
+  (use-package ctrlf
+    :config
+    (ctrlf-mode +1))
 #+END_SRC
 
 When searching across buffers, I like ~ripgrep~, which can be invoked
-with ~counsel-rg~.
+with the =rg.el= package.
 
-#+begin_src emacs-lisp :noweb-ref "leader-ivy" :tangle no
-  '("s" . swiper)
-  '("f f" . counsel-rg)
+#+begin_src emacs-lisp
+  (use-package deadgrep
+    :bind ("<f7>" . deadgrep))
 #+end_src
 
 ** Anzu
 
-Though not really part of the ~ivy~ universe, I rely on search and replace a
-lot. The ~anzu~ package provides a nicer interface to the built-in search and
-replace, and by rebinding the built-in commands, anzu gets nicely integrated
-into ~meow~ as well.
+I rely on search and replace a lot. The ~anzu~ package provides a nicer interface
+to the built-in search and replace, and by rebinding the built-in commands, anzu
+gets nicely integrated into ~meow~ as well.
 
 #+begin_src emacs-lisp
   (use-package anzu
@@ -420,29 +413,28 @@ separate.
       (persp-state-load (concat user-emacs-directory "persp-state")))
     #+end_src
 
-* Navigation
+** File system
 
-Avy is fantastic for jumping around the buffer. I'm partial to the two-key jump,
-word jump, and line jump, since that combination allows moving anywhere on
-screen pretty easily. Avy is important enough that it gets it's own leader key
-bindings, so ~avy-goto-char-2~ is bound there.
+Dired is great for generic movement around the file system, as well as generic
+options such as copying and renaming files across folders. However, it defaults
+to displaying too much information, and feels cluttered. Disable this extra
+information. If needed, it is available under the ~(~ key.
 
-#+begin_src emacs-lisp :noweb-ref "leader-avy" :tangle no
-  '("r" . avy-goto-char-2)
+#+begin_src emacs-lisp
+  (use-package dired
+    :straight nil
+    :ensure nil
+    :hook (dired-mode . dired-hide-details-mode))
 #+end_src
 
-Combined with ~swiper~ for in-buffer search and ~counsel-rg~ for cross-buffer
-search, it is easy to navigate anywhere quite easily.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package avy
-    :bind (("M-g M-g" . avy-goto-line)
-	   ("M-g g" . avy-goto-line)
-	   ("M-g w" . avy-goto-word-1)))
-#+END_SRC
+Treemacs is  nice for working with files in-project, and is a dependency of
+=lsp-mode=, so it is available for use anyways.
+#+begin_src emacs-lisp
+  (use-package treemacs
+    :bind ("<f2>" . treemacs))
+#+end_src
 
 * Prose and life management
-
 
 By default, text should auto-fill to 80 characters. This makes it easier to work
 with olivetti, and makes vertical splits much more comfortable.
@@ -687,15 +679,6 @@ In buffers with ~lsp-ui~ enabled, rebind the ~xref~ commands to use the peek mod
 #+begin_src emacs-lisp :noweb-ref "lsp-ui-peek-binds" :tangle no
   (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
   (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
-#+end_src
-
-~lsp-mode~ integrates with Ivy for jumping to symbols in the current workspace.
-
-#+begin_src emacs-lisp
-  (use-package lsp-ivy
-    :bind (:map lsp-ui-mode-map
-		("C-c l g s" . lsp-ivy-workspace-symbol))
-    :commands lsp-ivy-workspace-symbol)
 #+end_src
 
 ** Debugging
