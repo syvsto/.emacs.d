@@ -518,9 +518,8 @@ The org files needed for my agenda is available in my Dropbox folder.
   (setq my/org-agenda-dir "~/Dropbox/orgfiles/")
 #+end_src
 
-#+begin_src emacs-lisp :noweb-ref "org-dirs" :tangle no
-  (setq org-directory my/org-agenda-dir
-	org-agenda-files (list my/org-agenda-dir))
+#+begin_src emacs-lisp
+  (setq org-directory my/org-agenda-dir)
 #+end_src
 
 Org capture requires capture templates to be the most useful.
@@ -535,37 +534,37 @@ Org agenda is nice for seeing an overview of the state of various org files at
 once. Set it up so it shows my todos from various files.
 
 #+begin_src emacs-lisp
-    (setq my/org-agenda-todo-view
-	  `(" " "Agenda"
-	    ((agenda ""
-		     ((org-agenda-span 'day)
-		      (org-deadline-warning-days 365)))
-	     (todo "TODO"
-		   ((org-agenda-overriding-header "Inbox")
-		    (org-agenda-files '(,(concat my/org-agenda-dir "inbox.org")))))
-	     (todo "TODO"
-		   ((org-agenda-overriding-header "Eposter")
-		    (org-agenda-files '(,(concat my/org-agenda-dir "emails.org")))))
-	     (todo "NEXT"
-		   ((org-agenda-overriding-header "In Progress")
-		    (org-agenda-files '(,(concat my/org-agenda-dir "someday.org")
-					,(concat my/org-agenda-dir "projects.org")
-					,(concat my/org-agenda-dir "next.org")))
-		    ))
-	     (todo "TODO"
-		   ((org-agenda-overriding-header "Prosjekter")
-		    (org-agenda-files '(,(concat my/org-agenda-dir "projects.org")))
-		    ))
-	     (todo "TODO"
-		   ((org-agenda-overriding-header "Enkeltoppgaver")
-		    (org-agenda-files '(,(concat my/org-agenda-dir "next.org")))
-		    (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
-	     nil)))
+  (setq my/org-agenda-todo-view
+	`(" " "Agenda"
+	  ((agenda ""
+		   ((org-agenda-span 'day)
+		    (org-deadline-warning-days 365)))
+	   (todo "TODO"
+		 ((org-agenda-overriding-header "Inbox")
+		  (org-agenda-files '(,(concat my/org-agenda-dir "inbox.org")))))
+	   (todo "TODO"
+		 ((org-agenda-overriding-header "Eposter")
+		  (org-agenda-files '(,(concat my/org-agenda-dir "emails.org")))))
+	   (todo "NEXT"
+		 ((org-agenda-overriding-header "In Progress")
+		  (org-agenda-files '(,(concat my/org-agenda-dir "someday.org")
+				      ,(concat my/org-agenda-dir "projects.org")
+				      ,(concat my/org-agenda-dir "next.org")))
+		  ))
+	   (todo "TODO"
+		 ((org-agenda-overriding-header "Prosjekter")
+		  (org-agenda-files '(,(concat my/org-agenda-dir "projects.org")))
+		  ))
+	   (todo "TODO"
+		 ((org-agenda-overriding-header "Enkeltoppgaver")
+		  (org-agenda-files '(,(concat my/org-agenda-dir "next.org")))
+		  (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
+	   nil)))
 
-    (use-package org
-      :config
-      (setq org-agenda-custom-commands (list my/org-agenda-todo-view))
-      <<org-dirs>>)
+  (use-package org
+    :config
+    (setq org-agenda-custom-commands (list my/org-agenda-todo-view))
+    (setq org-agenda-files (concat user-emacs-directory "agenda-files")))
 #+end_src
 
 Show todo items in agenda that have been set to done in this session, or are
