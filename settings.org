@@ -150,7 +150,7 @@ A small aesthetic change is keeping the title bar and theme in the same color.
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 #+end_src
 
-* Key binding setup
+* Key bindings and navigation
 
 ~meow~ is used for modal editing. The package uses some ideas from the /kakoune/
 editor and integrates those with native emacs bindings and decent keybind setups
@@ -238,6 +238,17 @@ IMenu is a useful, built-in navigation tool for many modes, but is unbound. Bind
 since that's only used for indentation by default.
 #+begin_src emacs-lisp
   (bind-key "M-i" 'imenu)
+#+end_src
+
+** Kill ring navigation
+
+It can be a hassle to navigate the kill ring manually (~C-y M-y M-y M-y~
+etc.). =browse-kill-ring= brings up the kill ring as a navigable buffer for easier
+candidate selection.
+
+#+begin_src emacs-lisp
+  (use-package browse-kill-ring
+    :bind ("M-y" . browse-kill-ring))
 #+end_src
 
 * Looks and layout
