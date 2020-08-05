@@ -235,6 +235,14 @@ gets nicely integrated into ~meow~ as well.
     (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp))
 #+end_src
 
+** Imenu
+
+IMenu is a useful, built-in navigation tool for many modes, but is unbound. Bind to ~M-i~,
+since that's only used for indentation by default.
+#+begin_src emacs-lisp
+  (bind-key "M-i" 'imenu)
+#+end_src
+
 * Looks and layout
 
 ** Theme and fonts  
