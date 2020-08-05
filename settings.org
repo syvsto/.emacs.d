@@ -659,7 +659,9 @@ Yasnippet is used for snippet support.
 A bunch of default snippets are found in an external package.
 
 #+begin_src emacs-lisp
-  (use-package yasnippet-snippets)
+      (use-package yasnippet-snippets
+	:config
+	(yasnippet-snippets-initialize))
 #+end_src
 
 ** Errors
