@@ -516,7 +516,8 @@ The org files needed for my agenda is available in my Dropbox folder.
 #+end_src
 
 #+begin_src emacs-lisp
-  (setq org-directory my/org-agenda-dir)
+    (setq org-directory my/org-agenda-dir
+	  org-agenda-files (concat user-emacs-directory "agenda-files"))
 #+end_src
 
 Org capture requires capture templates to be the most useful.
@@ -559,9 +560,8 @@ once. Set it up so it shows my todos from various files.
 	   nil)))
 
   (use-package org
-    :config
-    (setq org-agenda-custom-commands (list my/org-agenda-todo-view))
-    (setq org-agenda-files (concat user-emacs-directory "agenda-files")))
+    :init
+    (setq org-agenda-custom-commands (list my/org-agenda-todo-view)))
 #+end_src
 
 Show todo items in agenda that have been set to done in this session, or are
