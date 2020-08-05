@@ -258,7 +258,6 @@ variant.
     (setq modus-operandi-theme-variable-pitch-headings t
 	  modus-operandi-theme-slanted-constructs t
 	  modus-operandi-theme-bold-constructs t
-	  modus-operandi-theme-3d-modeline t
 	  modus-operandi-theme-scale-headings t
 	  modus-operandi-theme-scale-1 1.05
 	  modus-operandi-theme-scale-2 1.1
@@ -286,6 +285,14 @@ Variable-pitch fonts should be enabled by default.
 #+BEGIN_SRC emacs-lisp
   (add-hook 'text-mode-hook 'variable-pitch-mode)
 #+END_SRC
+
+** Modeline fonts
+
+The modeline can also use a little facelift.
+#+begin_src emacs-lisp
+    (use-package mood-line
+      :hook (after-init . mood-line-mode))
+#+end_src
 
 ** Icons
 
