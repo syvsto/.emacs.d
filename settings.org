@@ -757,10 +757,10 @@ earlier modes, and supports JSX syntax well.
 #+begin_src emacs-lisp
   (use-package js-mode
     :straight nil
-    :hook ((js-mode . lsp-mode)
+    :hook ((js-mode . lsp-deferred)
 	   (js-mode . dap-auto-configure-mode)
 	   (js-mode . (lambda () (setq tab-width 2)))
-	   (js-jsx-mode . lsp-mode)
+	   (js-jsx-mode . lsp-deferred)
 	   (js-jsx-mode . dap-auto-configure-mode))
     :bind ((:map js-mode-map
 		 <<dap-bindings>>)
