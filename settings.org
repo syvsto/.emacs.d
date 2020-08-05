@@ -628,14 +628,23 @@ packages at work.
 
 ** Autocompletion
 
-Since ~lsp-mode~ has started using ~capf~ as the completion backend, I can use the
-~complete-symbol~ with Ivy to fuzzy find completion matches.  This is nice, since
-for me completion is mainly useful while exploring new libraries and codebases,
-and can be distracting otherwise. Using ~ivy~ and ~complete-symbol~ makes completion
-something that doesn't distract when it doesn't have to, and makes it possible
-to explore symbols using the ~ivy~ fuzzy search when completion is needed.
+The =company= package provides autocompletion, and is integrated with LSP.
 
-Completion can be called using the default binding ~<C-M-i>~.
+#+begin_src emacs-lisp
+  (use-package company
+    :hook (prog-mode . company-mode)
+    :config
+    (setq company-idle-delay 0.0))
+#+end_src
+
+Company also supports =prescient= candidate sorting.
+
+#+begin_src emacs-lisp
+  (use-package company-prescient
+    :after company
+    :config
+    (company-presient-mode +1))
+#+end_src
 
 ** Snippets
 
