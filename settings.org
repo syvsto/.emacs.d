@@ -681,12 +681,11 @@ Integration with ~lsp-mode~ is automatic.
 The main coding environment is provided by the ~lsp-mode~ package family, which
 just keeps getting better and better.
 
-It is available under the ~<C-c l>~ prefix.
+It is available under the ~<f6>~ prefix.
 
 #+begin_src emacs-lisp
   (use-package lsp-mode
     :hook ((lsp-mode . lsp-enable-which-key-integration))
-    :defer nil
     :custom
     (lsp-keymap-prefix "<f6>")
     (lsp-prefer-capf t))
