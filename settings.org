@@ -283,12 +283,22 @@ Variable-pitch fonts should be enabled by default.
   (add-hook 'text-mode-hook 'variable-pitch-mode)
 #+END_SRC
 
-** Modeline fonts
+** Modeline
 
 The modeline can also use a little facelift.
 #+begin_src emacs-lisp
     (use-package mood-line
       :hook (after-init . mood-line-mode))
+#+end_src
+
+I like seeing the current time when I'm working, as I often run Emacs in
+full-screen mode. I don't need to see my computer's load level, so that is
+hidden.
+
+#+begin_src emacs-lisp
+  (display-time-mode 1)
+  (setq display-time-default-load-average nil)
+  (setq display-time-format " %k:%M")
 #+end_src
 
 ** Icons
