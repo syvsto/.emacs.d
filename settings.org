@@ -633,6 +633,16 @@ packages at work.
     (setq markdown-command "multimarkdown"))
 #+end_src
 
+** PDF-tools
+
+PDF-tools lets you view and work with PDFs directly from within Emacs!
+
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :config
+    (pdf-tools-install))
+#+end_src
+
 * Programming
 
 ** Autocompletion
