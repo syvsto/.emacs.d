@@ -517,7 +517,8 @@ leader key bindings under the "a" prefix.
   '("a l" . org-store-link)
 #+end_src
 
-* The agenda
+
+*** The agenda
 
 The org files needed for my agenda is available in my Dropbox folder.
 
@@ -600,7 +601,7 @@ management. This binds a shortcut to my agenda view to ~<F1>~.
 #+end_src
 
 
-*** Refiling
+***** Refiling
 
 Org mode is better if you can move stuff around easily. This is called refiling.
 #+begin_src emacs-lisp
@@ -614,7 +615,8 @@ I need some targets to refile to.
   (setq org-refile-targets '(("next.org" :level . 0)
 			     ("someday.org" :level . 0)
 			     ("calendar.org" :level . 0)
-			      ("projects.org" :maxlevel . 1)))
+			     ("emails.org" :level . 0)
+			     ("projects.org" :maxlevel . 1)))
 #+end_src
  
 ** Markdown
