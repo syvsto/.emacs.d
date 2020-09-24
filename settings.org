@@ -4,7 +4,7 @@
 
 This configuration focuses on modal bindings and general ergonomics to reduce
 risk of RSI while sticking to "the emacs way", meaning it tries to avoid too
-much rebinding across packages such as done by ~evil~ and ~evil-collection~.
+much rebinding across packages such as done by spacemacs and doom.
 
 * Initialization
 
@@ -152,34 +152,20 @@ A small aesthetic change is keeping the title bar and theme in the same color.
 
 * Key bindings and navigation
 
-~meow~ is used for modal editing. The package uses some ideas from the /kakoune/
-editor and integrates those with native emacs bindings and decent keybind setups
-for different keyboard layouts (including /colemak/). In contrast with other,
-similar packages such as ~objed~, it does not require much in the way of other
-packages, though it can integrate with yasnippet, company, smartparens, etc.
+Vim bindings for that sweet RSI relief.
 
-#+BEGIN_SRC emacs-lisp
-  (use-package meow
-    :defer 1
-    :commands (meow-global-mode meow-leader-define-key meow-leader-define-mode-key)
-    :straight (meow :type git
-		    :host github
-		    :repo "DogLooksGood/meow")
-    :config
-    (meow-global-mode 1)
-    (meow-leader-define-key
-     <<leader-org>>
-     )
-    :custom
-    (meow-layout 'colemak))
-#+END_SRC
+#+begin_src emacs-lisp
+    (use-package evil
+      :init
+      (setq evil-want-keybinding nil)
+      :hook (after-init . evil-mode))
 
-The default meow bindings are quite bare-bones, and requires setting up a leader
-key map for maximum effect.
+    (use-package evil-collection
+      :hook (evil-mode . evil-collection-init))
 
-The leader key bindings are structured around two principles:
-- Common navigation commands should have one-key bindings
-- Other bindings should default to using mnemonics
+    (use-package evil-magit
+      :hook (evil-mode . evil-magit-init))
+#+end_src
 
 ** Selectrum and presicent
 
@@ -221,7 +207,7 @@ with the =rg.el= package.
 
 I rely on search and replace a lot. The ~anzu~ package provides a nicer interface
 to the built-in search and replace, and by rebinding the built-in commands, anzu
-gets nicely integrated into ~meow~ as well.
+gets nicely integrated into ~evil~ as well.
 
 #+begin_src emacs-lisp
   (use-package anzu
@@ -432,27 +418,6 @@ reuse more of the existing windows.
 (setq display-buffer-reuse-frames t)         ; reuse windows in other frames
 (setq even-window-sizes nil)                 ; display-buffer: avoid resizing
 #+end_src
-
-** Perspectives
-
-=perspective.el= is very useful for keeping different projects and window layouts
-separate.
-
-#+begin_src emacs-lisp
-    (use-package perspective
-      :bind (("C-x b" . persp-switch-to-buffer*)
-	     ("C-x k" . persp-kill-buffer*)
-	     ("C-x C-b" . persp-ibuffer))
-      :hook ((kill-emacs . persp-state-save)
-	     (after-init . my/load-persps))
-      :commands (persp-state-load)
-      :config
-      (setq persp-state-default-file (concat user-emacs-directory "persp-state")))
-
-    (defun my/load-persps ()
-      "Load default perspective"
-      (persp-state-load (concat user-emacs-directory "persp-state")))
-    #+end_src
 
 ** File system
 
@@ -764,7 +729,7 @@ The ~dap-mode~ binding setup is used for modes that support debugging.
 ** Structured editing
 
 Smartparens enables features of structured editing into any language that can
-display pairs, and integrates with ~meow~.
+display pairs. 
 
 #+begin_src emacs-lisp
   (use-package smartparens
@@ -793,6 +758,7 @@ earlier modes, and supports JSX syntax well.
 	   (js-jsx-mode . lsp-deferred)
 	   (js-jsx-mode . dap-auto-configure-mode))
     :bind ((:map js-mode-map
+		 ("M-." . xref-find-references)
 		 <<dap-bindings>>)
 	   (:map js-jsx-mode-map
 		 <<dap-bindings>>))
