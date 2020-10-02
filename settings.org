@@ -167,6 +167,15 @@ Vim bindings for that sweet RSI relief.
       :hook (evil-mode . evil-magit-init))
 #+end_src
 
+Some additional plugins are essential.
+#+begin_src emacs-lisp
+  (use-package evil-surround
+    :hook (evil-mode . global-evil-surround-mode))
+
+  (use-package evil-commentary
+    :hook (evil-mode . evil-commentary-mode))
+#+end_src
+
 ** Selectrum and presicent
 
 =Selectrum= and the =prescient= selection styles are used for candidate selection,
@@ -269,9 +278,9 @@ fixed-pitch fonts are set.  I'm a sucker for narrow fonts, so I use Iosevka and
 Spectral.
 
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :family "Iosevka" :height 130)
-  (set-face-attribute 'fixed-pitch nil :family "Iosevka" :height 130)
-  (set-face-attribute 'variable-pitch nil :family "Spectral" :height 140)
+  (set-face-attribute 'default nil :family "Iosevka" :height 140)
+  (set-face-attribute 'fixed-pitch nil :family "Iosevka" :height 140)
+  (set-face-attribute 'variable-pitch nil :family "Spectral" :height 150)
 #+END_SRC
 
 Variable-pitch fonts should be enabled by default.
@@ -806,13 +815,11 @@ of useful features for working with Haskell.
 #+begin_src emacs-lisp
   (use-package haskell-mode
     :bind (:map haskell-mode-map
-		("<f8>" . haskell-navigate-imports)
-		("M-." . haskell-mode-jump-to-def-or-tag))
+		("<f8>" . haskell-navigate-imports))
     :hook ((haskell-mode . haskell-auto-insert-module-template)))
 #+end_src
 
-The interactive haskell mode of =haskell-mode= struggles with finding projects on
-windows. Instead, use =dante=.
+This sets up Dante, with the assumption that nix is installed and used.
 
 #+begin_src emacs-lisp
   (use-package dante
@@ -821,6 +828,7 @@ windows. Instead, use =dante=.
     :hook ((haskell-mode . flycheck-mode)
 	   (haskell-mode . dante-mode))
     :config
+    (setq dante-methods '(new-build bare-ghci))
     (setq flycheck-hlintrc ".hlint.yaml")
     (flycheck-add-next-checker 'haskell-dante '(info . haskell-hlint)))
 #+end_src
@@ -829,6 +837,15 @@ windows. Instead, use =dante=.
 option for UTF-8 in Region settings for it to work).
 #+begin_src emacs-lisp
   (use-package attrap)
+#+end_src
+
+*** Nix
+
+Nix syntax  is used to write code for the Nix package management/build/system
+management/OS tool.
+
+#+begin_src emacs-lisp
+  (use-package nix-mode)
 #+end_src
 
 * Version control
