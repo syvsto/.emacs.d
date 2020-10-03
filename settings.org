@@ -253,7 +253,7 @@ Most themes are optimized for code. Since this Emacs config should be useable
 for both code and prose, a theme that supports both is chosen. ~Modus Operandi~
 and ~Modus Vivendi~ are nice light and dark themes with a focus on accessibility
 and support for any mode under the sun. For the most part, I like the light
-variant.
+variant, however, in a terminal the dark theme is better.
 
 #+BEGIN_SRC emacs-lisp
   (use-package modus-operandi-theme
@@ -268,9 +268,13 @@ variant.
 	  modus-operandi-theme-scale-4 1.2
 	  modus-operandi-theme-scale-5 1.3
 	  modus-operandi-theme-org-blocks 'rainbow)
-    (load-theme 'modus-operandi t))
+    (when (display-graphic-p)
+    (load-theme 'modus-operandi t)))
 
-  (use-package modus-vivendi-theme)
+  (use-package modus-vivendi-theme
+    :init
+    (when (not (display-graphic-p))
+      (load-theme 'modus-vivendi t)))
 #+END_SRC
 
 The modus themes work much better for writing when both proportional and
@@ -293,8 +297,8 @@ Variable-pitch fonts should be enabled by default.
 
 The modeline can also use a little facelift.
 #+begin_src emacs-lisp
-    (use-package mood-line
-      :hook (after-init . mood-line-mode))
+  (use-package mood-line
+  :hook (after-init . mood-line-mode))
 #+end_src
 
 I like seeing the current time when I'm working, as I often run Emacs in
@@ -443,10 +447,16 @@ information. If needed, it is available under the ~(~ key.
 #+end_src
 
 Treemacs is  nice for working with files in-project, and is a dependency of
-=lsp-mode=, so it is available for use anyways.
+=lsp-mode=, so it is available for use anyways. Treemacs-evil sets treemacs and
+Evil mode up for collaboration.
 #+begin_src emacs-lisp
-  (use-package treemacs
-    :bind ("<f2>" . treemacs))
+    (use-package treemacs
+      :bind ("<f2>" . treemacs))
+
+    (use-package treemacs-evil
+      :init
+      (require 'treemacs-evil))
+
 #+end_src
 
 * Prose and life management
