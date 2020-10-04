@@ -203,21 +203,6 @@ with the =deadgrep= package.
     :bind ("<f7>" . deadgrep))
 #+end_src
 
-** Anzu
-
-I rely on search and replace a lot. The ~anzu~ package provides a nicer interface
-to the built-in search and replace, and by rebinding the built-in commands, anzu
-gets nicely integrated into ~evil~ as well.
-
-#+begin_src emacs-lisp
-  (use-package anzu
-    :delight
-    :init
-    (global-anzu-mode +1)
-    (global-set-key [remap query-replace] 'anzu-query-replace)
-    (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp))
-#+end_src
-
 ** Imenu
 
 IMenu is a useful, built-in navigation tool for many modes, but is unbound. Bind to ~M-i~,
