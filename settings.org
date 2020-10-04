@@ -195,17 +195,8 @@ sessions.
 	     (after-init . prescient-persist-mode)))
 #+end_src
 
-** Ctrlf
-
-CtrlF is similar to the built-in ISearch, but is more robust.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package ctrlf
-    :hook (after-init . ctrlf-mode))
-#+END_SRC
-
 When searching across buffers, I like ~ripgrep~, which can be invoked
-with the =rg.el= package.
+with the =deadgrep= package.
 
 #+begin_src emacs-lisp
   (use-package deadgrep
