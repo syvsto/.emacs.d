@@ -450,12 +450,12 @@ Treemacs is  nice for working with files in-project, and is a dependency of
 =lsp-mode=, so it is available for use anyways. Treemacs-evil sets treemacs and
 Evil mode up for collaboration.
 #+begin_src emacs-lisp
-    (use-package treemacs
-      :bind ("<f2>" . treemacs))
+  (use-package treemacs
+    :bind ("<f2>" . treemacs))
 
-    (use-package treemacs-evil
-      :init
-      (require 'treemacs-evil))
+  (use-package treemacs-evil
+    :init
+    (require 'treemacs-evil))
 
 #+end_src
 
