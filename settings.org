@@ -848,9 +848,7 @@ This sets up Dante, with the assumption that nix is installed and used.
     :hook ((haskell-mode . flycheck-mode)
 	   (haskell-mode . dante-mode))
     :config
-    (setq dante-methods '(new-build bare-ghci))
-    (setq flycheck-hlintrc ".hlint.yaml")
-    (flycheck-add-next-checker 'haskell-dante '(info . haskell-hlint)))
+    (setq dante-methods '(new-build bare-ghci)))
 #+end_src
 
 =Attrap= adds various code actions to =dante= (on windows you need to set the beta
