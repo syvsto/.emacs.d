@@ -279,20 +279,13 @@ variant, however, in a terminal the dark theme is better.
       (load-theme 'modus-vivendi t)))
 #+END_SRC
 
-The modus themes work much better for writing when both proportional and
-fixed-pitch fonts are set.  I'm a sucker for narrow fonts, so I use Iosevka and
-Spectral.
+Jetbrains Mono is a great coding font; clear to read and with enough of a
+personal look to make it fun.
 
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :family "Iosevka" :height 140)
-  (set-face-attribute 'fixed-pitch nil :family "Iosevka" :height 140)
-  (set-face-attribute 'variable-pitch nil :family "Spectral" :height 150)
-#+END_SRC
-
-Variable-pitch fonts should be enabled by default.
-
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'text-mode-hook 'variable-pitch-mode)
+  (set-face-attribute 'default nil :family "Jetbrains Mono" :height 140)
+  (set-face-attribute 'fixed-pitch nil :family "Jetbrains Mono" :height 140)
+  (set-face-attribute 'variable-pitch nil :family "Jetbrains Mono" :height 140)
 #+END_SRC
 
 ** Modeline
@@ -371,7 +364,7 @@ width of 70, which is a tad too narrow for my taste, so it is raised to 80.
   (use-package olivetti
     :hook (text-mode . olivetti-mode)
     :custom
-    (olivetti-body-width 80))
+    (olivetti-body-width 82))
 #+END_SRC
 
 Emacs is commonly used maximized. Default to maximizing Emacs on startup.
