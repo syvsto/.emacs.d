@@ -214,6 +214,14 @@ since that's only used for indentation by default.
   (bind-key "M-i" 'imenu)
 #+end_src
 
+** IBuffer
+
+Similar to IMenu, IBuffer is a nice built-in replacement for ~list-buffers~
+
+#+begin_src emacs-lisp
+(bind-key "C-x C-b" 'ibuffer)
+#+end_src
+
 ** Kill ring navigation
 
 It can be a hassle to navigate the kill ring manually (~C-y M-y M-y M-y~
@@ -376,12 +384,16 @@ Great if you accidentally close your windows!
 
 ** Project management
 
-~Project.el~ is shipping with newer versions of Emacs and can replace my uses of
-~projectile~ while being a simpler package. In Emacs 27 and beyond, project.el has
-a default binding of ~<C-x p>~.
+Projectile, you know.
 
-NOTE: ~project.el~ needs access to a ~find~ executable which is unavailable on
-Windows by default, so MSYS2 or Cygwin must be installed.
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :config
+    (setq projectile-indexing-method 'alien)
+    (setq projectile-completion-system 'default)
+    :hook (after-init . projectile-mode)
+    :bind-keymap ("C-x p" . projectile-command-map))
+#+END_SRC
 
 ** Buffer management
 IBuffer is a built-in replacement for list-buffers which is much nicer and with
