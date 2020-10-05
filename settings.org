@@ -395,13 +395,12 @@ Great if you accidentally close your windows!
 Projectile, you know.
 
 #+BEGIN_SRC emacs-lisp
-    (use-package projectile
-      :config
-      (setq projectile-indexing-method 'alien)
-      (setq projectile-completion-system 'default)
-      :hook (after-init . projectile-mode)
-      :bind-keymap (("C-x p" . projectile-command-map)
-		    ("s-n" . projectile-command-map)))
+  (use-package projectile
+    :config
+    (setq projectile-indexing-method 'alien)
+    (setq projectile-completion-system 'default)
+    :hook (after-init . projectile-mode)
+    :bind-keymap ("C-x p" . projectile-command-map))
 #+END_SRC
 
 ** Buffer management
@@ -713,7 +712,7 @@ It is available under the ~<f6>~ prefix.
   (use-package lsp-mode
     :hook ((lsp-mode . lsp-enable-which-key-integration))
     :custom
-    (lsp-keymap-prefix "s-i")
+    (lsp-keymap-prefix "<f6>")
     (lsp-prefer-capf t))
 #+end_src
 
