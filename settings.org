@@ -222,6 +222,21 @@ Similar to IMenu, IBuffer is a nice built-in replacement for ~list-buffers~
 (bind-key "C-x C-b" 'ibuffer)
 #+end_src
 
+** Crux
+
+  The Crux package contains a bunch of useful shortcuts.
+
+#+begin_src emacs-lisp
+  (use-package crux
+    :bind (("C-c o" . crux-open-with)
+	   ("C-c n" . crux-cleanup-buffer-or-region)
+	   ("C-c u" . crux-view-url)
+	   ("C-c e" . crux-eval-and-replace)
+	   ("C-x 4 t" . crux-transpose-windows)
+	   ("C-c k" . crux-kill-other-buffers)
+	   ("C-c D" . crux-delete-file-and-buffer)))
+#+end_src
+
 ** Kill ring navigation
 
 It can be a hassle to navigate the kill ring manually (~C-y M-y M-y M-y~
