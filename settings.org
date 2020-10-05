@@ -651,14 +651,16 @@ Line numbers are useful for navigation when using prog-mode.
 The =company= package provides autocompletion, and is integrated with LSP.
 
 #+begin_src emacs-lisp
-    (use-package company
-      :hook (prog-mode . company-mode)
-      :config
-      (setq company-idle-delay 0.0)
-      (setq company-minimum-prefix-length 1)
-      (setq company-selection-wrap-around t)
-      (setq company-show-numbers t)
-      (setq company-tooltip-align-annotations t))
+  (use-package company
+    :hook (prog-mode . company-mode)
+    :bind (:map company-active-map
+		("C-f" . company-filter-candidates))
+    :config
+    (setq company-idle-delay 0.0)
+    (setq company-minimum-prefix-length 1)
+    (setq company-selection-wrap-around t)
+    (setq company-show-numbers t)
+    (setq company-tooltip-align-annotations t))
 #+end_src
 
 Company also supports =prescient= candidate sorting.
