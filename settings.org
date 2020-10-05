@@ -155,16 +155,19 @@ A small aesthetic change is keeping the title bar and theme in the same color.
 Vim bindings for that sweet RSI relief.
 
 #+begin_src emacs-lisp
-    (use-package evil
-      :init
-      (setq evil-want-keybinding nil)
-      :hook (after-init . evil-mode))
+  (use-package evil
+    :init
+    (setq evil-want-keybinding nil)
+    :hook (after-init . evil-mode))
 
-    (use-package evil-collection
-      :hook (evil-mode . evil-collection-init))
+  (use-package evil-collection
+    :hook (evil-mode . evil-collection-init))
 
-    (use-package evil-magit
-      :hook (evil-mode . evil-magit-init))
+  (use-package evil-magit
+    :hook (evil-mode . evil-magit-init))
+
+  (use-package evil-matchit
+    :hook (after-init . global-evil-matchit-mode))
 #+end_src
 
 Some additional plugins are essential.
