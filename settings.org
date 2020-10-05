@@ -896,5 +896,5 @@ alternative.
   (use-package git-timemachine
     :delight
     :commands (git-timemachine)
-    :bind ("C-x M-g" . git-timemachine))
+    :bind ("C-x G" . git-timemachine))
 #+END_SRC
