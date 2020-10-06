@@ -219,6 +219,9 @@ together with ~orderless~ gives a pretty nice completion experience.
     (orderless-component-separator "[\s_-]+"))
 #+END_SRC
 
+
+** Search
+
 When searching across buffers, I like ~ripgrep~, which can be invoked
 with the =deadgrep= package.
 
