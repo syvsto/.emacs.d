@@ -41,15 +41,6 @@ for ~use-package~ need to be set.
   (setq use-package-always-defer t)
 #+END_SRC
 
-~use-package~ requires the ~delight~ package to hide things on the mode line using
-the ~:delight~ keyword, which is the simplest way of hiding modeline lighters.
-
-#+begin_src emacs-lisp
-  (use-package delight
-    :init
-    (delight '((buffer-face-mode))))
-#+end_src
-
 ** Cleaning up Emacs' trash
 
 By default, emacs will put a lot of files on various places on the hard drive.
@@ -398,7 +389,6 @@ short while. This helps discoverability immensely.
 
 #+BEGIN_SRC emacs-lisp
   (use-package which-key
-    :delight
     :init
     (which-key-mode))
 #+END_SRC
@@ -709,7 +699,6 @@ display pairs.
 
 #+begin_src emacs-lisp
   (use-package smartparens
-    :delight
     :commands (sp-local-pair smartparens-global-mode sp-use-paredit-bindings)
     :init
     (sp-local-pair 'emacs-lisp-mode "`" "'")
@@ -828,7 +817,6 @@ minimal skin.
 
 #+BEGIN_SRC emacs-lisp
   (use-package git-gutter-fringe+
-    :delight
     :hook (prog-mode . git-gutter+-mode)
     :init
     (require 'git-gutter-fringe+)
@@ -842,7 +830,6 @@ alternative.
 
 #+BEGIN_SRC emacs-lisp
   (use-package git-timemachine
-    :delight
     :commands (git-timemachine)
     :bind ("C-x G" . git-timemachine))
 #+END_SRC
