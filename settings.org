@@ -223,11 +223,30 @@ The completion mechanism can be used for in-buffer completions as well. By
 default, the buffer pops up covering the entire screen, which is not what I want.
 
 #+begin_src emacs-lisp
-  (setq tab-always-indent 'complete)
-  (push '("\\*Completions\\*"
-	  (display-buffer-use-some-window display-buffer-pop-up-window)
-	  (inhibit-same-window . t))
-	display-buffer-alist)
+    (setq tab-always-indent 'complete)
+
+    (defun completing-read-in-region (start end collection &optional predicate)
+      "Prompt for completion of region in the minibuffer if non-unique.
+			    Use as a value for `completion-in-region-function'."
+      (if (and (minibufferp) (not (string= (minibuffer-prompt) "Eval: ")))
+	  (completion--in-region start end collection predicate)
+	(let* ((initial (buffer-substring-no-properties start end))
+	       (limit (car (completion-boundaries initial collection predicate "")))
+	       (all (completion-all-completions initial collection predicate
+						(length initial)))
+	       (completion (cond
+			    ((atom all) nil)
+			    ((and (consp all) (atom (cdr all)))
+			     (concat (substring initial 0 limit) (car all)))
+			    (t (completing-read
+				"Completion: " collection predicate t initial)))))
+	  (if (null completion)
+	      (progn (message "No completion") nil)
+	    (delete-region start end)
+	    (insert completion)
+	    t))))
+
+  (setq completion-in-region-function #'completing-read-in-region)
 #+end_src
 
 
@@ -687,34 +706,6 @@ Line numbers are useful for navigation when using prog-mode.
 
 #+begin_src emacs-lisp
   (add-hook 'prog-mode-hook 'display-line-numbers-mode)
-#+end_src
-
-** Autocompletion
-
-The =company= package provides autocompletion, and is integrated with LSP.
-
-#+begin_src emacs-lisp
-  (use-package company
-    :hook (prog-mode . company-mode)
-    :config
-    (setq company-idle-delay 0.0)
-    (setq company-minimum-prefix-length 1)
-    (setq company-selection-wrap-around t)
-    (setq company-show-numbers t)
-    (setq company-tooltip-align-annotations t)
-    (defun just-one-face (fn &rest args)
-      (let ((orderless-match-faces [completions-common-part]))
-	(apply fn args)))
-    (advice-add 'company-capf--candidates :around #'just-one-face))
-#+end_src
-
-Company also supports =prescient= candidate sorting.
-
-#+begin_src emacs-lisp
-  (use-package company-prescient
-    :after company
-    :config
-    (company-presient-mode +1))
 #+end_src
 
 ** Snippets
