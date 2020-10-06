@@ -176,13 +176,20 @@ I'm trying out using the built-in minibuffer and completion styles, which
 together with ~orderless~ gives a pretty nice completion experience.
 
 #+BEGIN_SRC emacs-lisp
+  (defun up-directory (arg)
+    "Move up a directory"
+    (interactive "p")
+    (if (string-match-p "/." (minibuffer-contents))
+	(zap-up-to-char (- arg) ?/)
+      (delete-minibuffer-contents)))
+
   (use-package minibuffer
     :straight nil
     :bind ((:map minibuffer-local-completion-map
 		 ("<tab>" . minibuffer-complete)
 		 ("<M-enter>" . minibuffer-force-complete))
 	   (:map minibuffer-local-filename-completion-map
-		 ("<C-backspace>" . icomplete-fido-backward-updir)))
+		 ("<C-backspace>" . up-directory)))
     :custom
     (completion-category-defaults nil)
     (completion-cycle-threshold 5)
