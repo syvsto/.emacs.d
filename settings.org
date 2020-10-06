@@ -181,34 +181,33 @@ Some additional plugins are essential.
 
 ** Completion
 
-Since Emacs 27, the built-in IComplete does the job of completion well. By
-adding a more flexible candidate selection through ~orderless~, it becomes even
-better. Orderless is a thin layer on top of the default ~completion-at-point~, so
-it works in ~company~ as well. I'm too used to vertical selection by now, so the
-~icomplete-vertical~ package helps with that
+I'm trying out using the built-in minibuffer and completion styles, which
+together with ~orderless~ gives a pretty nice completion experience.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package orderless
-    :init (icomplete-mode)
-    :custom
-    (completion-styles '(orderless))
-    (orderless-component-separator "[ -]"))
+    (use-package minibuffer
+      :straight nil
+      :bind ((:map minibuffer-local-completion-map
+		   ("<tab>" . minibuffer-complete)
+		   ("<enter>" . minibuffer-force-complete)
+		   ("<M-enter>" . minibuffer-exit))
+	     (:map minibuffer-local-filename-completion-map
+		   ("<C-backspace>" . icomplete-fido-backward-updir)))
+      :custom
+      (completion-category-defaults nil)
+      (completion-cycle-threshold 5)
+      (completion-ignore-case t)
+      (resize-mini-windows t)
+      (completions-format 'vertical)
+      (enable-recursive-minibuffers t)
+      (minibuffer-depth-indicate-mode t)
+      (minibuffer-eldef-shorten-default t)
+      (minibuffer-electric-default-mode t))
 
-  (use-package icomplete-vertical
-    :after icomplete
-    :init
-    (icomplete-mode)
-    (icomplete-vertical-mode)
-    :bind (:map icomplete-minibuffer-map
-		("<tab>" . icomplete-force-complete)
-		("C-m" . icomplete-force-complete-and-exit)
-		("C-j" . exit-minibuffer)
-		("C-v" . icomplete-vertical-toggle)
-		("<up>" . icomplete-backward-completions)
-		("C-p" . icomplete-backward-completions)
-		("<down>" . icomplete-forward-completions)
-		("C-n" . icomplete-forward-completions)
-		("<C-backspace>" . icomplete-fido-backward-updir)))
+    (use-package orderless
+      :custom
+      (completion-styles '(orderless))
+      (orderless-component-separator "[ -]"))
 #+END_SRC
 
 When searching across buffers, I like ~ripgrep~, which can be invoked
