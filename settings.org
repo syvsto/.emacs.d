@@ -257,7 +257,7 @@ with the =deadgrep= package.
 
 #+begin_src emacs-lisp
   (use-package deadgrep
-    :bind ("<f7>" . deadgrep))
+    :bind ("C-c r" . deadgrep))
 #+end_src
 
 ** Imenu
@@ -321,34 +321,20 @@ and support for any mode under the sun. For the most part, I like the light
 variant, however, in a terminal the dark theme is better.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package modus-operandi-theme
-    :init
-    (setq modus-operandi-theme-variable-pitch-headings t
-	  modus-operandi-theme-slanted-constructs t
-	  modus-operandi-theme-bold-constructs t
-	  modus-operandi-theme-scale-headings t
-	  modus-operandi-theme-scale-1 1.05
-	  modus-operandi-theme-scale-2 1.1
-	  modus-operandi-theme-scale-3 1.15
-	  modus-operandi-theme-scale-4 1.2
-	  modus-operandi-theme-scale-5 1.3
-	  modus-operandi-theme-org-blocks 'rainbow)
-    (when (display-graphic-p)
-    (load-theme 'modus-operandi t)))
+  (use-package modus-operandi-theme)
 
   (use-package modus-vivendi-theme
     :init
-    (when (not (display-graphic-p))
-      (load-theme 'modus-vivendi t)))
+    (load-theme 'modus-vivendi t))
 #+END_SRC
 
 Jetbrains Mono is a great coding font; clear to read and with enough of a
 personal look to make it fun.
 
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :family "Jetbrains Mono" :height 140)
-  (set-face-attribute 'fixed-pitch nil :family "Jetbrains Mono" :height 140)
-  (set-face-attribute 'variable-pitch nil :family "Jetbrains Mono" :height 140)
+  (set-face-attribute 'default nil :family "Jetbrains Mono" :height 110)
+  (set-face-attribute 'fixed-pitch nil :family "Jetbrains Mono" :height 110)
+  (set-face-attribute 'variable-pitch nil :family "Jetbrains Mono" :height 110)
 #+END_SRC
 
 ** Modeline
@@ -364,9 +350,9 @@ full-screen mode. I don't need to see my computer's load level, so that is
 hidden.
 
 #+begin_src emacs-lisp
-  (display-time-mode 1)
   (setq display-time-default-load-average nil)
   (setq display-time-format " %k:%M")
+  (display-time-mode 1)
 #+end_src
 
 ** Icons
@@ -455,16 +441,7 @@ Great if you accidentally close your windows!
 
 ** Project management
 
-Projectile, you know.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package projectile
-    :config
-    (setq projectile-indexing-method 'alien)
-    (setq projectile-completion-system 'default)
-    :hook (after-init . projectile-mode)
-    :bind-keymap ("C-x p" . projectile-command-map))
-#+END_SRC
+Done by the built-in ~project.el~.
 
 ** Buffer management
 IBuffer is a built-in replacement for list-buffers which is much nicer and with
@@ -482,18 +459,6 @@ are very useful!
     :bind ("M-o" . ace-window))
 #+END_SRC
 
-Emacs has a tendency to go a bit crazy and creating windows all over the
-place. [[https://github.com/nex3/perspective-el][The perspective.el readme]] suggests the following settings to have Emacs
-reuse more of the existing windows.
-
-#+begin_src emacs-lisp
-(setq display-buffer-alist
-      '((".*" (display-buffer-reuse-window display-buffer-same-window))))
-
-(setq display-buffer-reuse-frames t)         ; reuse windows in other frames
-(setq even-window-sizes nil)                 ; display-buffer: avoid resizing
-#+end_src
-
 ** File system
 
 Dired is great for generic movement around the file system, as well as generic
@@ -506,19 +471,6 @@ information. If needed, it is available under the ~(~ key.
     :straight nil
     :ensure nil
     :hook (dired-mode . dired-hide-details-mode))
-#+end_src
-
-Treemacs is  nice for working with files in-project, and is a dependency of
-=lsp-mode=, so it is available for use anyways. Treemacs-evil sets treemacs and
-Evil mode up for collaboration.
-#+begin_src emacs-lisp
-  (use-package treemacs
-    :bind ("<f2>" . treemacs))
-
-  (use-package treemacs-evil
-    :init
-    (require 'treemacs-evil))
-
 #+end_src
 
 * Prose and life management
@@ -566,15 +518,6 @@ when they are closed.
 			    (plain-list-item . nil)))
 #+END_SRC
 
-Globally useful org commands such as ~org-store-link~ are made available in the
-leader key bindings under the "a" prefix.
-
-#+begin_src emacs-lisp :noweb-ref "leader-org" :tangle no
-  '("a c" . org-capture)
-  '("a l" . org-store-link)
-#+end_src
-
-
 *** The agenda
 
 The org files needed for my agenda is available in my Dropbox folder.
@@ -600,36 +543,38 @@ Org agenda is nice for seeing an overview of the state of various org files at
 once. Set it up so it shows my todos from various files.
 
 #+begin_src emacs-lisp
-  (setq my/org-agenda-todo-view
-	`(" " "Agenda"
-	  ((agenda ""
-		   ((org-agenda-span 'day)
-		    (org-deadline-warning-days 365)))
-	   (todo "TODO"
-		 ((org-agenda-overriding-header "Inbox")
-		  (org-agenda-files '(,(concat my/org-agenda-dir "inbox.org")))))
-	   (todo "TODO"
-		 ((org-agenda-overriding-header "Eposter")
-		  (org-agenda-files '(,(concat my/org-agenda-dir "emails.org")))))
-	   (todo "NEXT"
-		 ((org-agenda-overriding-header "In Progress")
-		  (org-agenda-files '(,(concat my/org-agenda-dir "someday.org")
-				      ,(concat my/org-agenda-dir "projects.org")
-				      ,(concat my/org-agenda-dir "next.org")))
-		  ))
-	   (todo "TODO"
-		 ((org-agenda-overriding-header "Prosjekter")
-		  (org-agenda-files '(,(concat my/org-agenda-dir "projects.org")))
-		  ))
-	   (todo "TODO"
-		 ((org-agenda-overriding-header "Enkeltoppgaver")
-		  (org-agenda-files '(,(concat my/org-agenda-dir "next.org")))
-		  (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
-	   nil)))
+    (setq my/org-agenda-todo-view
+	  `(" " "Agenda"
+	    ((agenda ""
+		     ((org-agenda-span 'day)
+		      (org-deadline-warning-days 365)))
+	     (todo "TODO"
+		   ((org-agenda-overriding-header "Inbox")
+		    (org-agenda-files '(,(concat my/org-agenda-dir "inbox.org")))))
+	     (todo "TODO"
+		   ((org-agenda-overriding-header "Eposter")
+		    (org-agenda-files '(,(concat my/org-agenda-dir "emails.org")))))
+	     (todo "NEXT"
+		   ((org-agenda-overriding-header "In Progress")
+		    (org-agenda-files '(,(concat my/org-agenda-dir "someday.org")
+					,(concat my/org-agenda-dir "projects.org")
+					,(concat my/org-agenda-dir "next.org")))
+		    ))
+	     (todo "TODO"
+		   ((org-agenda-overriding-header "Prosjekter")
+		    (org-agenda-files '(,(concat my/org-agenda-dir "projects.org")))
+		    ))
+	     (todo "TODO"
+		   ((org-agenda-overriding-header "Enkeltoppgaver")
+		    (org-agenda-files '(,(concat my/org-agenda-dir "next.org")))
+		    (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
+	     nil)))
 
-  (use-package org
-    :init
-    (setq org-agenda-custom-commands (list my/org-agenda-todo-view)))
+    (use-package org
+      :bind (("C-c c" . org-capture)
+	     ("C-c l" . org-store-link))
+      :init
+      (setq org-agenda-custom-commands (list my/org-agenda-todo-view)))
 #+end_src
 
 Show todo items in agenda that have been set to done in this session, or are
@@ -688,16 +633,6 @@ packages at work.
 	   ("\\.markdown\\'" . markdown-mode))
     :init
     (setq markdown-command "multimarkdown"))
-#+end_src
-
-** PDF-tools
-
-PDF-tools lets you view and work with PDFs directly from within Emacs!
-
-#+begin_src emacs-lisp
-  (use-package pdf-tools
-    :config
-    (pdf-tools-install))
 #+end_src
 
 * Programming
@@ -764,34 +699,7 @@ display, as it is too noisy.
     :custom
     (lsp-ui-sideline-enable nil)
     (lsp-ui-doc-enable nil)
-(lsp-ui-doc-position 'at-point)
-    :config
-    <<lsp-ui-peek-binds>>)
-#+end_src
-
-In buffers with ~lsp-ui~ enabled, rebind the ~xref~ commands to use the peek mode.
-
-#+begin_src emacs-lisp :noweb-ref "lsp-ui-peek-binds" :tangle no
-  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
-#+end_src
-
-** Debugging
-
-The ~lsp-mode~ supports debugging through the Debug Adapter Protocol.
-It is available when LSP is enabled, but only for filetypes that have
-a DAP adapter installed.
-
-#+begin_src emacs-lisp
-  (use-package dap-mode
-    :commands (dap-mode dap-debug dap-hydra/body))
-#+end_src
-
-The ~dap-mode~ binding setup is used for modes that support debugging.
-
-#+begin_src emacs-lisp :noweb-ref "dap-bindings" :tangle no
-  ("M-<f5>" . dap-debug)
-  ("<f5>" . dap-hydra/body)
+    (lsp-ui-doc-position 'at-point))
 #+end_src
 
 ** Structured editing
