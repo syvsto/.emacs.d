@@ -179,24 +179,37 @@ Some additional plugins are essential.
     :hook (evil-mode . evil-commentary-mode))
 #+end_src
 
-** Selectrum and presicent
+** Completion
 
-=Selectrum= and the =prescient= selection styles are used for candidate selection,
-as they are lightweight and makes it easy to select commonly used candidates.
+Since Emacs 27, the built-in IComplete does the job of completion well. By
+adding a more flexible candidate selection through ~orderless~, it becomes even
+better. Orderless is a thin layer on top of the default ~completion-at-point~, so
+it works in ~company~ as well. I'm too used to vertical selection by now, so the
+~icomplete-vertical~ package helps with that
 
 #+BEGIN_SRC emacs-lisp
-  (use-package selectrum
-    :hook (after-init . selectrum-mode))
-#+END_SRC
+  (use-package orderless
+    :init (icomplete-mode)
+    :custom
+    (completion-styles '(orderless))
+    (orderless-component-separator "[ -]"))
 
-Prescient makes candidate sorting more intelligent, and persists between
-sessions.
-#+begin_src emacs-lisp
-    (use-package prescient)
-    (use-package selectrum-prescient
-      :hook ((after-init . selectrum-prescient-mode)
-	     (after-init . prescient-persist-mode)))
-#+end_src
+  (use-package icomplete-vertical
+    :after icomplete
+    :init
+    (icomplete-mode)
+    (icomplete-vertical-mode)
+    :bind (:map icomplete-minibuffer-map
+		("<tab>" . icomplete-force-complete)
+		("C-m" . icomplete-force-complete-and-exit)
+		("C-j" . exit-minibuffer)
+		("C-v" . icomplete-vertical-toggle)
+		("<up>" . icomplete-backward-completions)
+		("C-p" . icomplete-backward-completions)
+		("<down>" . icomplete-forward-completions)
+		("C-n" . icomplete-forward-completions)
+		("<C-backspace>" . icomplete-fido-backward-updir)))
+#+END_SRC
 
 When searching across buffers, I like ~ripgrep~, which can be invoked
 with the =deadgrep= package.
@@ -212,6 +225,15 @@ IMenu is a useful, built-in navigation tool for many modes, but is unbound. Bind
 since that's only used for indentation by default.
 #+begin_src emacs-lisp
   (bind-key "M-i" 'imenu)
+#+end_src
+
+However, IMenu will often require navigating through multiple menus. Since I
+have fuzzy completion it's better if the list of IMenu entries can be searched
+in its entirety. The ~flimenu~ package flattens the ~imenu~ so this works.
+
+#+begin_src emacs-lisp
+  (use-package flimenu
+    :config (flimenu-global-mode 1))
 #+end_src
 
 ** IBuffer
@@ -652,14 +674,16 @@ The =company= package provides autocompletion, and is integrated with LSP.
 #+begin_src emacs-lisp
   (use-package company
     :hook (prog-mode . company-mode)
-    :bind (:map company-active-map
-		("C-f" . company-filter-candidates))
     :config
     (setq company-idle-delay 0.0)
     (setq company-minimum-prefix-length 1)
     (setq company-selection-wrap-around t)
     (setq company-show-numbers t)
-    (setq company-tooltip-align-annotations t))
+    (setq company-tooltip-align-annotations t)
+    (defun just-one-face (fn &rest args)
+      (let ((orderless-match-faces [completions-common-part]))
+	(apply fn args)))
+    (advice-add 'company-capf--candidates :around #'just-one-face))
 #+end_src
 
 Company also supports =prescient= candidate sorting.
