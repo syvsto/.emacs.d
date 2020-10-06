@@ -219,6 +219,17 @@ together with ~orderless~ gives a pretty nice completion experience.
     (orderless-component-separator "[\s_-]+"))
 #+END_SRC
 
+The completion mechanism can be used for in-buffer completions as well. By
+default, the buffer pops up covering the entire screen, which is not what I want.
+
+#+begin_src emacs-lisp
+  (setq tab-always-indent 'complete)
+  (push '("\\*Completions\\*"
+	  (display-buffer-use-some-window display-buffer-pop-up-window)
+	  (inhibit-same-window . t))
+	display-buffer-alist)
+#+end_src
+
 
 ** Search
 
@@ -244,7 +255,7 @@ in its entirety. The ~flimenu~ package flattens the ~imenu~ so this works.
 
 #+begin_src emacs-lisp
   (use-package flimenu
-    :config (flimenu-global-mode 1))
+    :hook (after-init . flimenu-global-mode))
 #+end_src
 
 ** IBuffer
