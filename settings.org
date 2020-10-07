@@ -147,6 +147,7 @@ Vim bindings for that sweet RSI relief.
 
 #+begin_src emacs-lisp
   (use-package evil
+    :commands (evil-initial-state)
     :init
     (setq evil-want-keybinding nil)
     :hook (after-init . evil-mode))
@@ -168,6 +169,13 @@ Some additional plugins are essential.
 
   (use-package evil-commentary
     :hook (evil-mode . evil-commentary-mode))
+#+end_src
+
+** Avy
+
+Avy allows quick candidate selection
+#+begin_src emacs-lisp
+  (use-package avy)
 #+end_src
 
 ** Completion
@@ -193,7 +201,7 @@ together with ~orderless~ gives a pretty nice completion experience.
 		 ("<C-backspace>" . up-directory)))
     :custom
     (completion-category-defaults nil)
-    (completion-cycle-threshold 5)
+    (completion-cycle-threshold t)
     (completion-ignore-case t)
     (resize-mini-windows t)
     (completions-format 'vertical)
@@ -252,32 +260,37 @@ Embark makes it possible to act upon completion candidates, and has a nice
 occur live display for showing completions.
 
 #+begin_src emacs-lisp
-  (use-package embark
-    :straight (:type git :host github :repo "oantolin/embark")
-    :commands (embark-completing-read)
-    :bind
-    (:map minibuffer-local-map
-	  (">" . embark-become))
-    (:map minibuffer-local-completion-map
-	  (";" . embark-act-noexit)
-	  ("C-o" . embark-occur)
-	  ("C-l" . embark-live-occur)
-	  ("M-v" . embark-switch-to-live-occur)
-	  (":" . embark-act))
-    (:map completion-list-mode-map
-	  (";" . embark-act))
-    (:map embark-occur-mode-map
-	  ("j" . next-line)
-	  ("k" . previous-line)
-	  ("n" . evil-search-next)
-	  ("N" . evil-search-previous)
-	  ("/" . evil-search-forward)
-	  ("?" . evil-search-backward))
-    :custom
-    (embark-occur-minibuffer-completion t)
-    (completing-read-function 'embark-completing-read)
-    :config
-    (add-to-list 'evil-emacs-state-modes 'embark-occur-mode))
+    (use-package embark
+      :straight (:type git :host github :repo "oantolin/embark")
+      :commands (embark-completing-read)
+      :bind
+      (:map minibuffer-local-map
+	    (">" . embark-become))
+      (:map minibuffer-local-completion-map
+	    (";" . embark-act-noexit)
+	    ("C-o" . embark-occur)
+	    ("C-l" . embark-live-occur)
+	    ("M-v" . embark-switch-to-live-occur)
+	    ("'" . avy-embark-occur-choose)
+	    ("\"" . avy-embark-occur-act)
+	    (":" . embark-act))
+      (:map completion-list-mode-map
+	    (";" . embark-act))
+      (:map embark-occur-mode-map
+	    ("j" . next-line)
+	    ("k" . previous-line)
+	    ("n" . evil-search-next)
+	    ("'" . avy-embark-occur-choose)
+	    ("\"" . avy-embark-occur-act)
+	    ("N" . evil-search-previous)
+	    ("/" . evil-search-forward)
+	    ("?" . evil-search-backward))
+      :custom
+      (embark-occur-minibuffer-completion t)
+      (completing-read-function 'embark-completing-read)
+      :init
+      (require 'avy-embark-occur)
+      (evil-initial-state 'embark-occur-mode))
 #+end_src
 
 Embark creates a lot of buffers by default, which I would like to hide. By
@@ -286,8 +299,8 @@ creating my own ~read-buffer~ I can control how the buffers are filtered.
   (defun my/match-buffers (buf)
     (let ((b (if (stringp buf)
 		 buf
-	       (car buf)))))
-    (not (string-match "\\*Embark Live Occur\\*" (car buf))))
+	       (car buf))))
+      (not (string-match "\\*Embark Live Occur\\*" (car buf)))))
 
   (defun my/read-buffer (prompt &optional def require-match predicate)
     (let ((read-buffer-function nil))
@@ -308,8 +321,7 @@ with the =deadgrep= package.
 
 ** Imenu
 
-IMenu is a useful, built-in navigation tool for many modes, but is unbound. Bind to ~M-i~,
-since that's only used for indentation by default.
+IMenu is a useful, built-in navigation tool for many modes, but is unbound. Bind to ~M-i~, since that's only used for indentation by default.
 #+begin_src emacs-lisp
   (bind-key "M-i" 'imenu)
 #+end_src
@@ -329,6 +341,15 @@ Similar to IMenu, IBuffer is a nice built-in replacement for ~list-buffers~
 
 #+begin_src emacs-lisp
 (bind-key "C-x C-b" 'ibuffer)
+#+end_src
+
+IBuffer-vc automatically creates filter groups for VC folders.
+#+begin_src emacs-lisp
+  (use-package ibuffer-vc
+    :hook (ibuffer . (lambda ()
+		       (ibuffer-vc-set-filter-groups-by-vc-root)
+		       (unless (eq ibuffer-sorting-mode 'alphabetic)
+			 (ibuffer-do-sort-by-alphabetic)))))
 #+end_src
 
 ** Crux
@@ -367,11 +388,10 @@ and support for any mode under the sun. For the most part, I like the light
 variant, however, in a terminal the dark theme is better.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package modus-operandi-theme)
+  (use-package modus-operandi-theme
+    :init (load-theme 'modus-operandi t))
 
-  (use-package modus-vivendi-theme
-    :init
-    (load-theme 'modus-vivendi t))
+  (use-package modus-vivendi-theme)
 #+END_SRC
 
 Jetbrains Mono is a great coding font; clear to read and with enough of a
@@ -487,12 +507,6 @@ Great if you accidentally close your windows!
 ** Project management
 
 Done by the built-in ~project.el~.
-
-** Buffer management
-IBuffer is a built-in replacement for list-buffers which is much nicer and with
-a lot of additional functionality. It can be used in conjunction with the
-=perspective.el= wrapper ~persp-ibuffer~ to show only buffers in the current
-perspective. It is bound in the [[*Perspectives][perspective section]] of this document.
 
 ** Windows
    
@@ -770,19 +784,11 @@ In Emacs 27, there is a new built-in JavaScript mode which is much better than
 earlier modes, and supports JSX syntax well.
 
 #+begin_src emacs-lisp
-  (use-package js-mode
+  (use-package js
     :straight nil
     :hook ((js-mode . lsp-deferred)
-	   (js-mode . dap-auto-configure-mode)
 	   (js-mode . (lambda () (setq tab-width 2)))
-	   (js-jsx-mode . lsp-deferred)
-	   (js-jsx-mode . dap-auto-configure-mode))
-    :bind ((:map js-mode-map
-		 ("M-." . xref-find-references)
-		 <<dap-bindings>>)
-	   (:map js-jsx-mode-map
-		 <<dap-bindings>>))
-    )
+	   (js-jsx-mode . lsp-deferred)))
 #+end_src
 
 I often use =prettier= as my formatter. The =prettier.el= package is good for
