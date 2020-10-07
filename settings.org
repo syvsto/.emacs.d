@@ -394,6 +394,20 @@ variant, however, in a terminal the dark theme is better.
   (use-package modus-vivendi-theme)
 #+END_SRC
 
+When it's dark outside, I use modus-vivendi. Toggling between the two modus
+themes can be done using a function.
+
+#+begin_src emacs-lisp
+  (defun toggle-modus-themes ()
+    (interactive)
+    (if (eq (car custom-enabled-themes) 'modus-operandi)
+	(progn
+	  (disable-theme 'modus-operandi)
+	  (load-theme 'modus-vivendi t))
+      (disable-theme 'modus-vivendi)
+      (load-theme 'modus-operandi t)))
+#+end_src
+
 Jetbrains Mono is a great coding font; clear to read and with enough of a
 personal look to make it fun.
 
