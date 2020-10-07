@@ -419,10 +419,40 @@ personal look to make it fun.
 
 ** Modeline
 
-The modeline can also use a little facelift.
+Push some elements to the right on the modeline, so it looks more balanced.
+
 #+begin_src emacs-lisp
-  (use-package mood-line
-  :hook (after-init . mood-line-mode))
+  (defun mode-line-fill (reserve)
+    "Return empty space using FACE and leaving RESERVE space on the right."
+    (unless reserve
+      (setq reserve 20))
+    (when (and window-system (eq 'right (get-scroll-bar-mode)))
+      (setq reserve (- reserve 3)))
+    (propertize " "
+		'display `((space :align-to (- (+ right right-fringe right-margin) ,reserve)))))
+#+end_src
+
+The minions package gathers minor modes together in a nice manner
+#+begin_src emacs-lisp
+  (use-package minions
+    :init
+    (minions-mode)
+    (setq-default mode-line-format (list
+				    "%e"
+				    mode-line-front-space
+				    mode-line-mule-info
+				    mode-line-client
+				    mode-line-modified
+				    mode-line-remote
+				    mode-line-frame-identification
+				    mode-line-buffer-identification
+				    "   "
+				    mode-line-position
+				    vc-mode
+				    minions-mode-line-modes
+				    (mode-line-fill 10)
+				    mode-line-misc-info))
+    )
 #+end_src
 
 I like seeing the current time when I'm working, as I often run Emacs in
@@ -434,6 +464,7 @@ hidden.
   (setq display-time-format " %k:%M")
   (display-time-mode 1)
 #+end_src
+
 
 ** Icons
 
