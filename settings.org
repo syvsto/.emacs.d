@@ -389,9 +389,11 @@ variant, however, in a terminal the dark theme is better.
 
 #+BEGIN_SRC emacs-lisp
   (use-package modus-operandi-theme
+    :custom (modus-operandi-theme-org-blocks 'rainbow)
     :init (load-theme 'modus-operandi t))
 
-  (use-package modus-vivendi-theme)
+  (use-package modus-vivendi-theme
+    :custom (modus-vivendi-theme-org-blocks 'rainbow))
 #+END_SRC
 
 When it's dark outside, I use modus-vivendi. Toggling between the two modus
@@ -412,9 +414,9 @@ Jetbrains Mono is a great coding font; clear to read and with enough of a
 personal look to make it fun.
 
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :family "Jetbrains Mono" :height 140)
-  (set-face-attribute 'fixed-pitch nil :family "Jetbrains Mono" :height 140)
-  (set-face-attribute 'variable-pitch nil :family "Jetbrains Mono" :height 140)
+  (set-face-attribute 'default nil :family "Jetbrains Mono" :height 120)
+  (set-face-attribute 'fixed-pitch nil :family "Jetbrains Mono" :height 120)
+  (set-face-attribute 'variable-pitch nil :family "Jetbrains Mono" :height 120)
 #+END_SRC
 
 ** Modeline
@@ -509,12 +511,8 @@ short while. This helps discoverability immensely.
 
 #+BEGIN_SRC emacs-lisp
       (use-package which-key
-	:custom
-	(which-key-show-transient-maps t)
 	:init
-	(which-key-mode)
-	(push '(("^[0-9-]\\|kp-[0-9]\\|kp-subtract\\|C-u$" . nil) . ignore)
-	      which-key-replacement-alist))
+	(which-key-mode))
 #+END_SRC
    
 ** Layout
