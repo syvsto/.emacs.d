@@ -463,9 +463,13 @@ be increased by not compacting font caches, at the cost of some RAM.
 short while. This helps discoverability immensely.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package which-key
-    :init
-    (which-key-mode))
+      (use-package which-key
+	:custom
+	(which-key-show-transient-maps t)
+	:init
+	(which-key-mode)
+	(push '(("^[0-9-]\\|kp-[0-9]\\|kp-subtract\\|C-u$" . nil) . ignore)
+	      which-key-replacement-alist))
 #+END_SRC
    
 ** Layout
@@ -740,11 +744,11 @@ just keeps getting better and better.
 It is available under the ~<f6>~ prefix.
 
 #+begin_src emacs-lisp
-  (use-package lsp-mode
-    :hook ((lsp-mode . lsp-enable-which-key-integration))
-    :custom
-    (lsp-keymap-prefix "<f6>")
-    (lsp-prefer-capf t))
+    (use-package lsp-mode
+      :hook ((lsp-mode . lsp-enable-which-key-integration))
+      :custom
+      (lsp-keymap-prefix "<f6>")
+      (lsp-completion-provider :none))
 #+end_src
 
 ~lsp-ui~ provides some nice additional features such as a peek mode for finding
