@@ -187,7 +187,8 @@ together with ~orderless~ gives a pretty nice completion experience.
     :straight nil
     :bind ((:map minibuffer-local-completion-map
 		 ("<tab>" . minibuffer-complete)
-		 ("<M-enter>" . minibuffer-force-complete))
+		 ("<M-enter>" . minibuffer-force-complete)
+		 ("SPC"))
 	   (:map minibuffer-local-filename-completion-map
 		 ("<C-backspace>" . up-directory)))
     :custom
@@ -214,7 +215,7 @@ together with ~orderless~ gives a pretty nice completion experience.
   (use-package orderless
     :custom
     (completion-styles '(orderless))
-    (orderless-component-separator "[\s_-]+"))
+    (orderless-component-separator "[ ]+"))
 #+END_SRC
 
 The completion mechanism can be used for in-buffer completions as well. By
@@ -247,6 +248,53 @@ default, the buffer pops up covering the entire screen, which is not what I want
   (setq completion-in-region-function #'completing-read-in-region)
 #+end_src
 
+Embark makes it possible to act upon completion candidates, and has a nice
+occur live display for showing completions.
+
+#+begin_src emacs-lisp
+  (use-package embark
+    :straight (:type git :host github :repo "oantolin/embark")
+    :commands (embark-completing-read)
+    :bind
+    (:map minibuffer-local-map
+	  (">" . embark-become))
+    (:map minibuffer-local-completion-map
+	  (";" . embark-act-noexit)
+	  ("C-o" . embark-occur)
+	  ("C-l" . embark-live-occur)
+	  ("M-v" . embark-switch-to-live-occur)
+	  (":" . embark-act))
+    (:map completion-list-mode-map
+	  (";" . embark-act))
+    (:map embark-occur-mode-map
+	  ("j" . next-line)
+	  ("k" . previous-line)
+	  ("n" . evil-search-next)
+	  ("N" . evil-search-previous)
+	  ("/" . evil-search-forward)
+	  ("?" . evil-search-backward))
+    :custom
+    (embark-occur-minibuffer-completion t)
+    (completing-read-function 'embark-completing-read)
+    :config
+    (add-to-list 'evil-emacs-state-modes 'embark-occur-mode))
+#+end_src
+
+Embark creates a lot of buffers by default, which I would like to hide. By
+creating my own ~read-buffer~ I can control how the buffers are filtered.
+#+begin_src emacs-lisp
+  (defun my/match-buffers (buf)
+    (let ((b (if (stringp buf)
+		 buf
+	       (car buf)))))
+    (not (string-match "\\*Embark Live Occur\\*" (car buf))))
+
+  (defun my/read-buffer (prompt &optional def require-match predicate)
+    (let ((read-buffer-function nil))
+      (read-buffer prompt def require-match #'my/match-buffers)))
+
+  (setq read-buffer-function 'my/read-buffer)
+#+end_src
 
 ** Search
 
@@ -330,9 +378,9 @@ Jetbrains Mono is a great coding font; clear to read and with enough of a
 personal look to make it fun.
 
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :family "Jetbrains Mono" :height 110)
-  (set-face-attribute 'fixed-pitch nil :family "Jetbrains Mono" :height 110)
-  (set-face-attribute 'variable-pitch nil :family "Jetbrains Mono" :height 110)
+  (set-face-attribute 'default nil :family "Jetbrains Mono" :height 140)
+  (set-face-attribute 'fixed-pitch nil :family "Jetbrains Mono" :height 140)
+  (set-face-attribute 'variable-pitch nil :family "Jetbrains Mono" :height 140)
 #+END_SRC
 
 ** Modeline
