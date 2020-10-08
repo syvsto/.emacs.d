@@ -457,7 +457,7 @@ The minions package gathers minor modes together in a nice manner
 				    mode-line-position
 				    vc-mode
 				    minions-mode-line-modes
-				    (mode-line-fill 10)
+				    '(:eval (mode-line-fill (+ (length (format-mode-line mode-line-misc-info)) 3)))
 				    mode-line-misc-info))
     )
 #+end_src
