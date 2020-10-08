@@ -83,7 +83,7 @@ On MacOS, you often don't get the correct $PATH when using GUI Emacs. The
 #+end_src
 
 ** Important initial settings
-   
+
 Some settings *must* be changed to make Emacs usable. Importantly, it should not
 be necessary to type "yes" and "no" for every prompt!  However, to avoid killing
 Emacs by accident, prompt when the ~kill-emacs~ function is called.
@@ -126,7 +126,7 @@ buffer.
   (setq initial-scratch-message ";; INITIALIZED...")
 #+end_src
 
-** Mac specifics 
+** Mac specifics
 
 On Mac, I like keeping the right alt modifier as-is, to be able to input special
 characters with ease.
@@ -375,12 +375,15 @@ candidate selection.
 
 #+begin_src emacs-lisp
   (use-package browse-kill-ring
-    :bind ("M-y" . browse-kill-ring))
-#+end_src
+    :bind (("M-y" . browse-kill-ring)
+	   (:map browse-kill-ring-mode-map
+		 ("j" . browse-kill-ring-forward)
+		 ("k" . browse-kill-ring-previous))))
+		 #+end_src
 
 * Looks and layout
 
-** Theme and fonts  
+** Theme and fonts
 Most themes are optimized for code. Since this Emacs config should be useable
 for both code and prose, a theme that supports both is chosen. ~Modus Operandi~
 and ~Modus Vivendi~ are nice light and dark themes with a focus on accessibility
@@ -389,11 +392,13 @@ variant, however, in a terminal the dark theme is better.
 
 #+BEGIN_SRC emacs-lisp
   (use-package modus-operandi-theme
-    :custom (modus-operandi-theme-org-blocks 'rainbow)
+    :custom
+    (modus-operandi-theme-org-blocks 'rainbow)
     :init (load-theme 'modus-operandi t))
 
   (use-package modus-vivendi-theme
-    :custom (modus-vivendi-theme-org-blocks 'rainbow))
+    :custom
+    (modus-vivendi-theme-org-blocks 'rainbow))
 #+END_SRC
 
 When it's dark outside, I use modus-vivendi. Toggling between the two modus
@@ -414,9 +419,9 @@ Jetbrains Mono is a great coding font; clear to read and with enough of a
 personal look to make it fun.
 
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :family "Jetbrains Mono" :height 120)
-  (set-face-attribute 'fixed-pitch nil :family "Jetbrains Mono" :height 120)
-  (set-face-attribute 'variable-pitch nil :family "Jetbrains Mono" :height 120)
+  (set-face-attribute 'default nil :family "Jetbrains Mono" :height 140)
+  (set-face-attribute 'fixed-pitch nil :family "Jetbrains Mono" :height 140)
+  (set-face-attribute 'variable-pitch nil :family "Jetbrains Mono" :height 140)
 #+END_SRC
 
 ** Modeline
@@ -510,11 +515,11 @@ be increased by not compacting font caches, at the cost of some RAM.
 short while. This helps discoverability immensely.
 
 #+BEGIN_SRC emacs-lisp
-      (use-package which-key
-	:init
-	(which-key-mode))
+  (use-package which-key
+    :init
+    (which-key-mode))
 #+END_SRC
-   
+
 ** Layout
 
 When writing prose, I want the layout be as distraction-free as
@@ -543,7 +548,7 @@ Rainbow delimiters make it easier to spot nesting of parentheses etc.
 #+end_src
 
 * Windows, projects, and buffers
-  
+
 Emacs comes with ~winner-mode~, which allows navigating to old window layouts.
 Great if you accidentally close your windows!
 
@@ -553,10 +558,19 @@ Great if you accidentally close your windows!
 
 ** Project management
 
-Done by the built-in ~project.el~.
+Done by the built-in ~project.el~. I use Magit instead of the built-in VC-mode and
+ripgrep for search, so bind those commands.
+
+#+begin_src emacs-lisp
+  (use-package project
+    :straight nil
+    :init
+    (add-to-list 'project-switch-commands '(?\m "Magit" magit-status))
+    (add-to-list 'project-switch-commands '(?r "Ripgrep" deadgrep)))
+#+end_src
 
 ** Windows
-   
+
 The ~ace-window~ package is great for jumping between windows.  The [[https://github.com/abo-abo/ace-window#change-the-action-midway][dispatch keys]]
 are very useful!
 
@@ -633,8 +647,8 @@ The org files needed for my agenda is available in my Dropbox folder.
 #+end_src
 
 #+begin_src emacs-lisp
-    (setq org-directory my/org-agenda-dir
-	  org-agenda-files (concat user-emacs-directory "agenda-files"))
+  (setq org-directory my/org-agenda-dir
+	org-agenda-files (concat user-emacs-directory "agenda-files"))
 #+end_src
 
 Org capture requires capture templates to be the most useful.
@@ -649,38 +663,38 @@ Org agenda is nice for seeing an overview of the state of various org files at
 once. Set it up so it shows my todos from various files.
 
 #+begin_src emacs-lisp
-    (setq my/org-agenda-todo-view
-	  `(" " "Agenda"
-	    ((agenda ""
-		     ((org-agenda-span 'day)
-		      (org-deadline-warning-days 365)))
-	     (todo "TODO"
-		   ((org-agenda-overriding-header "Inbox")
-		    (org-agenda-files '(,(concat my/org-agenda-dir "inbox.org")))))
-	     (todo "TODO"
-		   ((org-agenda-overriding-header "Eposter")
-		    (org-agenda-files '(,(concat my/org-agenda-dir "emails.org")))))
-	     (todo "NEXT"
-		   ((org-agenda-overriding-header "In Progress")
-		    (org-agenda-files '(,(concat my/org-agenda-dir "someday.org")
-					,(concat my/org-agenda-dir "projects.org")
-					,(concat my/org-agenda-dir "next.org")))
-		    ))
-	     (todo "TODO"
-		   ((org-agenda-overriding-header "Prosjekter")
-		    (org-agenda-files '(,(concat my/org-agenda-dir "projects.org")))
-		    ))
-	     (todo "TODO"
-		   ((org-agenda-overriding-header "Enkeltoppgaver")
-		    (org-agenda-files '(,(concat my/org-agenda-dir "next.org")))
-		    (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
-	     nil)))
+  (setq my/org-agenda-todo-view
+	`(" " "Agenda"
+	  ((agenda ""
+		   ((org-agenda-span 'day)
+		    (org-deadline-warning-days 365)))
+	   (todo "TODO"
+		 ((org-agenda-overriding-header "Inbox")
+		  (org-agenda-files '(,(concat my/org-agenda-dir "inbox.org")))))
+	   (todo "TODO"
+		 ((org-agenda-overriding-header "Eposter")
+		  (org-agenda-files '(,(concat my/org-agenda-dir "emails.org")))))
+	   (todo "NEXT"
+		 ((org-agenda-overriding-header "In Progress")
+		  (org-agenda-files '(,(concat my/org-agenda-dir "someday.org")
+				      ,(concat my/org-agenda-dir "projects.org")
+				      ,(concat my/org-agenda-dir "next.org")))
+		  ))
+	   (todo "TODO"
+		 ((org-agenda-overriding-header "Prosjekter")
+		  (org-agenda-files '(,(concat my/org-agenda-dir "projects.org")))
+		  ))
+	   (todo "TODO"
+		 ((org-agenda-overriding-header "Enkeltoppgaver")
+		  (org-agenda-files '(,(concat my/org-agenda-dir "next.org")))
+		  (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
+	   nil)))
 
-    (use-package org
-      :bind (("C-c c" . org-capture)
-	     ("C-c l" . org-store-link))
-      :init
-      (setq org-agenda-custom-commands (list my/org-agenda-todo-view)))
+  (use-package org
+    :bind (("C-c c" . org-capture)
+	   ("C-c l" . org-store-link))
+    :init
+    (setq org-agenda-custom-commands (list my/org-agenda-todo-view)))
 #+end_src
 
 Show todo items in agenda that have been set to done in this session, or are
@@ -726,7 +740,7 @@ I need some targets to refile to.
 			     ("emails.org" :level . 0)
 			     ("projects.org" :maxlevel . 1)))
 #+end_src
- 
+
 ** Markdown
 
 Sometimes I work with markdown, for instance when writing documentation for
@@ -762,9 +776,9 @@ Yasnippet is used for snippet support.
 A bunch of default snippets are found in an external package.
 
 #+begin_src emacs-lisp
-      (use-package yasnippet-snippets
-	:config
-	(yasnippet-snippets-initialize))
+  (use-package yasnippet-snippets
+    :config
+    (yasnippet-snippets-initialize))
 #+end_src
 
 ** Errors
@@ -787,11 +801,11 @@ just keeps getting better and better.
 It is available under the ~<f6>~ prefix.
 
 #+begin_src emacs-lisp
-    (use-package lsp-mode
-      :hook ((lsp-mode . lsp-enable-which-key-integration))
-      :custom
-      (lsp-keymap-prefix "<f6>")
-      (lsp-completion-provider :none))
+  (use-package lsp-mode
+    :hook ((lsp-mode . lsp-enable-which-key-integration))
+    :custom
+    (lsp-keymap-prefix "C-c i")
+    (lsp-completion-provider :none))
 #+end_src
 
 ~lsp-ui~ provides some nice additional features such as a peek mode for finding
@@ -811,7 +825,7 @@ display, as it is too noisy.
 ** Structured editing
 
 Smartparens enables features of structured editing into any language that can
-display pairs. 
+display pairs.
 
 #+begin_src emacs-lisp
   (use-package smartparens
@@ -872,9 +886,8 @@ etc. commands. By default it is bound to ~<C-c C-p>~.
 
 *** Haskell
 
-Haskell does not yet have great LSP support in Emacs, though it is in the works in the
-form of =haskell-language-server=. Instead, the emacs =haskell-mode= contains a lot
-of useful features for working with Haskell.
+The emacs =haskell-mode= contains a lot of useful features for working with
+Haskell, including syntax highlighting.
 
 #+begin_src emacs-lisp
   (use-package haskell-mode
@@ -883,23 +896,13 @@ of useful features for working with Haskell.
     :hook ((haskell-mode . haskell-auto-insert-module-template)))
 #+end_src
 
-This sets up Dante, with the assumption that nix is installed and used.
-
+The ~haskell-language-server~ provides IDE features through LSP.
 #+begin_src emacs-lisp
-  (use-package dante
-    :after haskell-mode
-    :commands 'dante-mode
-    :hook ((haskell-mode . flycheck-mode)
-	   (haskell-mode . dante-mode))
-    :config
-    (setq dante-methods '(new-build bare-ghci)))
+  (use-package lsp-haskell
+    :hook ((haskell-mode . lsp)
+	   (literate-haskell-mode . lsp)))
 #+end_src
 
-=Attrap= adds various code actions to =dante= (on windows you need to set the beta
-option for UTF-8 in Region settings for it to work).
-#+begin_src emacs-lisp
-  (use-package attrap)
-#+end_src
 
 *** Nix
 
