@@ -117,6 +117,12 @@ Emacs should use UTF-8 encoding by default, as has become common.
   (set-selection-coding-system 'utf-8)
 #+end_src
 
+I like seeing the current line highlighted.
+
+#+begin_src emacs-lisp
+(global-hl-line-mode 1)
+#+end_src
+
 Finally, get rid of the default splash screen and jump straight to a scratch
 buffer.
 
@@ -162,7 +168,7 @@ Vim bindings for that sweet RSI relief.
     :hook (after-init . global-evil-matchit-mode))
 #+end_src
 
-Some additional plugins are essential.
+Some additional tpope plugins are essential.
 #+begin_src emacs-lisp
   (use-package evil-surround
     :hook (evil-mode . global-evil-surround-mode))
