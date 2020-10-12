@@ -152,9 +152,17 @@ A small aesthetic change is keeping the title bar and theme in the same color.
 Vim bindings for that sweet RSI relief.
 
 #+begin_src emacs-lisp
+  (defun my/magit-status (n n)
+    (magit-status))
+
+  (defun my/ace-window (n n arg)
+    (ace-window arg))
+
   (use-package objed
     :init
-    (objed-mode 1))
+    (objed-mode 1)
+    (objed-define-op "x g" my/magit-status (lambda (n) (objed-quit)))
+    (objed-define-op "x o" my/ace-window))
 #+end_src
 
 ** Avy
@@ -168,6 +176,29 @@ Multiple cursors also integrate with objed, and allows modifying many instances
 of something simultaneously.
 #+begin_src emacs-lisp
   (use-package multiple-cursors)
+#+end_src
+
+** Anzu
+
+Updates search-and-replace with some nice features such as seeing number of
+candidates in modeline and seeing the replacement as you type.
+
+#+begin_src emacs-lisp
+  (use-package anzu
+    :bind (([remap query-replace] . anzu-query-replace)
+	   ([remap query-replace-regexp] . anzu-query-replace-regexp))
+    :init
+    (global-anzu-mode +1))
+#+end_src
+
+** Undo tree
+
+Undo tree is perfect when making mistakes.
+
+#+begin_src emacs-lisp
+  (use-package undo-tree
+    :init
+    (global-undo-tree-mode))
 #+end_src
 
 ** Completion
