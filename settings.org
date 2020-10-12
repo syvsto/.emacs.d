@@ -169,7 +169,8 @@ Vim bindings for that sweet RSI relief.
 
 Avy allows quick candidate selection, and integrates with objed and embark.
 #+begin_src emacs-lisp
-  (use-package avy)
+  (use-package avy
+    :bind ("M-g M-g" . avy-goto-line))
 #+end_src
 
 Multiple cursors also integrate with objed, and allows modifying many instances
@@ -824,6 +825,9 @@ display, as it is too noisy.
   (use-package lsp-ui
     :commands lsp-ui-mode
     :hook (lsp-mode . lsp-ui-mode)
+    :bind (:map lsp-ui-mode-map
+		([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+		([remap xref-find-references] . lsp-ui-peek-find-references))
     :custom
     (lsp-ui-sideline-enable nil)
     (lsp-ui-doc-enable nil)
@@ -853,11 +857,17 @@ In Emacs 27, there is a new built-in JavaScript mode which is much better than
 earlier modes, and supports JSX syntax well.
 
 #+begin_src emacs-lisp
-  (use-package js
-    :straight nil
-    :hook ((js-mode . lsp-deferred)
-	   (js-mode . (lambda () (setq tab-width 2)))
-	   (js-jsx-mode . lsp-deferred)))
+  (use-package rjsx-mode
+    :mode ("\\.js\\'" "\\.jsx\\'")
+    :custom
+    (js2-mode-show-parse-errors nil)
+    (js2-mode-show-strict-warnings nil)
+    (js2-basic-offset 2)
+    (js-indent-level 2)
+    :hook ((js2-mode rjsx-mode) . lsp-deferred)
+    :bind (:map rjsx-mode-map
+		("M-." . lsp-ui-peek-find-definitions)
+		("M-?" . lsp-ui-peek-find-references)))
 #+end_src
 
 I often use =prettier= as my formatter. The =prettier.el= package is good for
