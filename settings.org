@@ -152,36 +152,22 @@ A small aesthetic change is keeping the title bar and theme in the same color.
 Vim bindings for that sweet RSI relief.
 
 #+begin_src emacs-lisp
-  (use-package evil
-    :commands (evil-initial-state)
+  (use-package objed
     :init
-    (setq evil-want-keybinding nil)
-    :hook (after-init . evil-mode))
-
-  (use-package evil-collection
-    :hook (evil-mode . evil-collection-init))
-
-  (use-package evil-magit
-    :hook (evil-mode . evil-magit-init))
-
-  (use-package evil-matchit
-    :hook (after-init . global-evil-matchit-mode))
-#+end_src
-
-Some additional tpope plugins are essential.
-#+begin_src emacs-lisp
-  (use-package evil-surround
-    :hook (evil-mode . global-evil-surround-mode))
-
-  (use-package evil-commentary
-    :hook (evil-mode . evil-commentary-mode))
+    (objed-mode 1))
 #+end_src
 
 ** Avy
 
-Avy allows quick candidate selection
+Avy allows quick candidate selection, and integrates with objed and embark.
 #+begin_src emacs-lisp
   (use-package avy)
+#+end_src
+
+Multiple cursors also integrate with objed, and allows modifying many instances
+of something simultaneously.
+#+begin_src emacs-lisp
+  (use-package multiple-cursors)
 #+end_src
 
 ** Completion
@@ -215,16 +201,6 @@ together with ~orderless~ gives a pretty nice completion experience.
     (minibuffer-depth-indicate-mode t)
     (minibuffer-eldef-shorten-default t)
     (minibuffer-electric-default-mode t))
-
-  (use-package completion-list
-    :straight nil
-    :bind (:map completion-list-mode-map
-		("j" . next-completion)
-		("k" . previous-completion)
-		("/" . evil-search-forward)
-		("?" . evil-search-backward)
-		("n" . evil-search-next)
-		("N" . evil-search-previous)))
 
   (use-package orderless
     :custom
@@ -266,37 +242,32 @@ Embark makes it possible to act upon completion candidates, and has a nice
 occur live display for showing completions.
 
 #+begin_src emacs-lisp
-    (use-package embark
-      :straight (:type git :host github :repo "oantolin/embark")
-      :commands (embark-completing-read)
-      :bind
-      (:map minibuffer-local-map
-	    (">" . embark-become))
-      (:map minibuffer-local-completion-map
-	    (";" . embark-act-noexit)
-	    ("C-o" . embark-occur)
-	    ("C-l" . embark-live-occur)
-	    ("M-v" . embark-switch-to-live-occur)
-	    ("'" . avy-embark-occur-choose)
-	    ("\"" . avy-embark-occur-act)
-	    (":" . embark-act))
-      (:map completion-list-mode-map
-	    (";" . embark-act))
-      (:map embark-occur-mode-map
-	    ("j" . next-line)
-	    ("k" . previous-line)
-	    ("n" . evil-search-next)
-	    ("'" . avy-embark-occur-choose)
-	    ("\"" . avy-embark-occur-act)
-	    ("N" . evil-search-previous)
-	    ("/" . evil-search-forward)
-	    ("?" . evil-search-backward))
-      :custom
-      (embark-occur-minibuffer-completion t)
-      (completing-read-function 'embark-completing-read)
-      :init
-      (require 'avy-embark-occur)
-      (evil-initial-state 'embark-occur-mode))
+  (use-package embark
+    :straight (:type git :host github :repo "oantolin/embark")
+    :commands (embark-completing-read)
+    :bind
+    (:map minibuffer-local-map
+	  (">" . embark-become))
+    (:map minibuffer-local-completion-map
+	  (";" . embark-act-noexit)
+	  ("C-o" . embark-occur)
+	  ("C-l" . embark-live-occur)
+	  ("M-v" . embark-switch-to-live-occur)
+	  ("'" . avy-embark-occur-choose)
+	  ("\"" . avy-embark-occur-act)
+	  (":" . embark-act))
+    (:map completion-list-mode-map
+	  (";" . embark-act))
+    (:map embark-occur-mode-map
+	  ("j" . next-line)
+	  ("k" . previous-line)
+	  ("'" . avy-embark-occur-choose)
+	  ("\"" . avy-embark-occur-act)) 
+   :custom
+    (embark-occur-minibuffer-completion t)
+    (completing-read-function 'embark-completing-read)
+    :init
+    (require 'avy-embark-occur))
 #+end_src
 
 Embark creates a lot of buffers by default, which I would like to hide. By
