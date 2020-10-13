@@ -397,35 +397,9 @@ candidate selection.
 * Looks and layout
 
 ** Theme and fonts
-Most themes are optimized for code. Since this Emacs config should be useable
-for both code and prose, a theme that supports both is chosen. ~Modus Operandi~
-and ~Modus Vivendi~ are nice light and dark themes with a focus on accessibility
-and support for any mode under the sun. For the most part, I like the light
-variant, however, in a terminal the dark theme is better.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package modus-operandi-theme
-    :custom
-    (modus-operandi-theme-org-blocks 'rainbow)
-    :init (load-theme 'modus-operandi t))
-
-  (use-package modus-vivendi-theme
-    :custom
-    (modus-vivendi-theme-org-blocks 'rainbow))
-#+END_SRC
-
-When it's dark outside, I use modus-vivendi. Toggling between the two modus
-themes can be done using a function.
-
 #+begin_src emacs-lisp
-  (defun toggle-modus-themes ()
-    (interactive)
-    (if (eq (car custom-enabled-themes) 'modus-operandi)
-	(progn
-	  (disable-theme 'modus-operandi)
-	  (load-theme 'modus-vivendi t))
-      (disable-theme 'modus-vivendi)
-      (load-theme 'modus-operandi t)))
+  (load (concat user-emacs-directory "synthetiq-theme.el"))
+  (load-theme 'synthetiq t)
 #+end_src
 
 Jetbrains Mono is a great coding font; clear to read and with enough of a
@@ -483,6 +457,14 @@ hidden.
   (setq display-time-default-load-average nil)
   (setq display-time-format " %k:%M")
   (display-time-mode 1)
+#+end_src
+
+** Rainbow delimiters
+
+Rainbow delimiters make it easier to spot nesting of parentheses etc.
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
 #+end_src
 
 
