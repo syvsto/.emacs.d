@@ -154,7 +154,9 @@ Vim bindings for that sweet RSI relief.
 #+begin_src emacs-lisp
   (use-package objed
     :init
-    (objed-mode 1))
+    (objed-mode 1)
+    (define-key 'objed-user-map (kbd "g") 'magit-dispatch)
+    (define-key 'objed-user-map (kbd "f") 'project-find-file))
 #+end_src
 
 ** FFAP
