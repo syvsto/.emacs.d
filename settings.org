@@ -152,17 +152,9 @@ A small aesthetic change is keeping the title bar and theme in the same color.
 Vim bindings for that sweet RSI relief.
 
 #+begin_src emacs-lisp
-  (defun my/magit-status (n n)
-    (magit-status))
-
-  (defun my/ace-window (n n arg)
-    (ace-window arg))
-
   (use-package objed
     :init
-    (objed-mode 1)
-    (objed-define-op "x g" my/magit-status)
-    (objed-define-op "x o" my/ace-window))
+    (objed-mode 1))
 #+end_src
 
 ** FFAP
