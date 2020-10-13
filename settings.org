@@ -399,6 +399,7 @@ candidate selection.
 ** Theme and fonts
 #+begin_src emacs-lisp
   (load (concat user-emacs-directory "synthetiq-theme.el"))
+  (load (concat user-emacs-directory "synthetiq-light-theme.el"))
   (load-theme 'synthetiq t)
 #+end_src
 
