@@ -165,6 +165,15 @@ Vim bindings for that sweet RSI relief.
     (objed-define-op "x o" my/ace-window))
 #+end_src
 
+** FFAP
+
+FFAP is great for navigating to imports of different file types, such as CSS
+files in HTML/Javascript.
+
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-c f") 'ffap)
+#+end_src
+
 ** Avy
 
 Avy allows quick candidate selection, and integrates with objed and embark.
