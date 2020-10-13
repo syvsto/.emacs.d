@@ -161,7 +161,7 @@ Vim bindings for that sweet RSI relief.
   (use-package objed
     :init
     (objed-mode 1)
-    (objed-define-op "x g" my/magit-status (lambda (n) (objed-quit)))
+    (objed-define-op "x g" my/magit-status)
     (objed-define-op "x o" my/ace-window))
 #+end_src
 
