@@ -156,7 +156,8 @@ Vim bindings for that sweet RSI relief.
     :init
     (objed-mode 1)
     (define-key 'objed-user-map (kbd "g") 'magit-dispatch)
-    (define-key 'objed-user-map (kbd "f") 'project-find-file))
+    (define-key 'objed-user-map (kbd "f") 'project-find-file)
+    (define-key 'objed-user-map (kbd "p") 'project-switch-project))
 #+end_src
 
 ** FFAP
