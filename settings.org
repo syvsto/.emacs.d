@@ -552,14 +552,6 @@ Emacs is commonly used maximized. Default to maximizing Emacs on startup.
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
 #+end_src
 
-** Rainbow delimiters
-
-Rainbow delimiters make it easier to spot nesting of parentheses etc.
-#+begin_src emacs-lisp
-  (use-package rainbow-delimiters
-    :hook (prog-mode . rainbow-delimiters-mode))
-#+end_src
-
 * Windows, projects, and buffers
 
 Emacs comes with ~winner-mode~, which allows navigating to old window layouts.
