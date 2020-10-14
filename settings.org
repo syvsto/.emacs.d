@@ -936,3 +936,10 @@ alternative.
     :commands (git-timemachine)
     :bind ("C-x G" . git-timemachine))
 #+END_SRC
+
+* Finalization
+
+Make sure theme gets to override other package faces.
+#+begin_src emacs-lisp
+  (enable-theme 'synthetiq-light)
+#+end_src
