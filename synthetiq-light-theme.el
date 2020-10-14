@@ -29,7 +29,7 @@
 
  (deftheme synthetiq-light)
  (let ((class '((class color) (min-colors 89)))
-       (bg "#ffffff")
+       (bg "#fbfbfb")
        (bg-light "#cccccc")
        (fg "#000000")
        (fg2 "#888888")
