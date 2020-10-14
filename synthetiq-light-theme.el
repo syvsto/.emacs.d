@@ -106,6 +106,12 @@
 	`(git-gutter+-added ((,class :foreground ,fg)))
 	`(git-gutter+-deleted ((,class :foreground ,fg)))
 	`(git-gutter+-modified ((,class :foregroun ,fg)))
+	;; completions
+	`(completions-common-part ((,class :background ,blue)))
+	`(orderless-match-face-0 ((,class :background ,blue)))
+	`(orderless-match-face-1 ((,class :background ,warning)))
+	`(orderless-match-face-2 ((,class :background ,warning2)))
+	`(orderless-match-face-3 ((,class :background ,bg-light)))
 ))
 
 ;;;###autoload
