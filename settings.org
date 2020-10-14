@@ -117,12 +117,6 @@ Emacs should use UTF-8 encoding by default, as has become common.
   (set-selection-coding-system 'utf-8)
 #+end_src
 
-I like seeing the current line highlighted.
-
-#+begin_src emacs-lisp
-(global-hl-line-mode 1)
-#+end_src
-
 Finally, get rid of the default splash screen and jump straight to a scratch
 buffer.
 
@@ -152,36 +146,58 @@ A small aesthetic change is keeping the title bar and theme in the same color.
 Vim bindings for that sweet RSI relief.
 
 #+begin_src emacs-lisp
-  (use-package evil
-    :commands (evil-initial-state)
+  (use-package objed
     :init
-    (setq evil-want-keybinding nil)
-    :hook (after-init . evil-mode))
-
-  (use-package evil-collection
-    :hook (evil-mode . evil-collection-init))
-
-  (use-package evil-magit
-    :hook (evil-mode . evil-magit-init))
-
-  (use-package evil-matchit
-    :hook (after-init . global-evil-matchit-mode))
+    (objed-mode 1)
+    (define-key 'objed-user-map (kbd "g") 'magit-dispatch)
+    (define-key 'objed-user-map (kbd "f") 'project-find-file)
+    (define-key 'objed-user-map (kbd "p") 'project-switch-project))
 #+end_src
 
-Some additional tpope plugins are essential.
-#+begin_src emacs-lisp
-  (use-package evil-surround
-    :hook (evil-mode . global-evil-surround-mode))
+** FFAP
 
-  (use-package evil-commentary
-    :hook (evil-mode . evil-commentary-mode))
+FFAP is great for navigating to imports of different file types, such as CSS
+files in HTML/Javascript.
+
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-c f") 'ffap)
 #+end_src
 
 ** Avy
 
-Avy allows quick candidate selection
+Avy allows quick candidate selection, and integrates with objed and embark.
 #+begin_src emacs-lisp
-  (use-package avy)
+  (use-package avy
+    :bind ("M-g M-g" . avy-goto-line))
+#+end_src
+
+Multiple cursors also integrate with objed, and allows modifying many instances
+of something simultaneously.
+#+begin_src emacs-lisp
+  (use-package multiple-cursors)
+#+end_src
+
+** Anzu
+
+Updates search-and-replace with some nice features such as seeing number of
+candidates in modeline and seeing the replacement as you type.
+
+#+begin_src emacs-lisp
+  (use-package anzu
+    :bind (([remap query-replace] . anzu-query-replace)
+	   ([remap query-replace-regexp] . anzu-query-replace-regexp))
+    :init
+    (global-anzu-mode +1))
+#+end_src
+
+** Undo tree
+
+Undo tree is perfect when making mistakes.
+
+#+begin_src emacs-lisp
+  (use-package undo-tree
+    :init
+    (global-undo-tree-mode))
 #+end_src
 
 ** Completion
@@ -215,16 +231,6 @@ together with ~orderless~ gives a pretty nice completion experience.
     (minibuffer-depth-indicate-mode t)
     (minibuffer-eldef-shorten-default t)
     (minibuffer-electric-default-mode t))
-
-  (use-package completion-list
-    :straight nil
-    :bind (:map completion-list-mode-map
-		("j" . next-completion)
-		("k" . previous-completion)
-		("/" . evil-search-forward)
-		("?" . evil-search-backward)
-		("n" . evil-search-next)
-		("N" . evil-search-previous)))
 
   (use-package orderless
     :custom
@@ -266,37 +272,32 @@ Embark makes it possible to act upon completion candidates, and has a nice
 occur live display for showing completions.
 
 #+begin_src emacs-lisp
-    (use-package embark
-      :straight (:type git :host github :repo "oantolin/embark")
-      :commands (embark-completing-read)
-      :bind
-      (:map minibuffer-local-map
-	    (">" . embark-become))
-      (:map minibuffer-local-completion-map
-	    (";" . embark-act-noexit)
-	    ("C-o" . embark-occur)
-	    ("C-l" . embark-live-occur)
-	    ("M-v" . embark-switch-to-live-occur)
-	    ("'" . avy-embark-occur-choose)
-	    ("\"" . avy-embark-occur-act)
-	    (":" . embark-act))
-      (:map completion-list-mode-map
-	    (";" . embark-act))
-      (:map embark-occur-mode-map
-	    ("j" . next-line)
-	    ("k" . previous-line)
-	    ("n" . evil-search-next)
-	    ("'" . avy-embark-occur-choose)
-	    ("\"" . avy-embark-occur-act)
-	    ("N" . evil-search-previous)
-	    ("/" . evil-search-forward)
-	    ("?" . evil-search-backward))
-      :custom
-      (embark-occur-minibuffer-completion t)
-      (completing-read-function 'embark-completing-read)
-      :init
-      (require 'avy-embark-occur)
-      (evil-initial-state 'embark-occur-mode))
+  (use-package embark
+    :straight (:type git :host github :repo "oantolin/embark")
+    :commands (embark-completing-read)
+    :bind
+    (:map minibuffer-local-map
+	  (">" . embark-become))
+    (:map minibuffer-local-completion-map
+	  (";" . embark-act-noexit)
+	  ("C-o" . embark-occur)
+	  ("C-l" . embark-live-occur)
+	  ("M-v" . embark-switch-to-live-occur)
+	  ("'" . avy-embark-occur-choose)
+	  ("\"" . avy-embark-occur-act)
+	  (":" . embark-act))
+    (:map completion-list-mode-map
+	  (";" . embark-act))
+    (:map embark-occur-mode-map
+	  ("j" . next-line)
+	  ("k" . previous-line)
+	  ("'" . avy-embark-occur-choose)
+	  ("\"" . avy-embark-occur-act)) 
+   :custom
+    (embark-occur-minibuffer-completion t)
+    (completing-read-function 'embark-completing-read)
+    :init
+    (require 'avy-embark-occur))
 #+end_src
 
 Embark creates a lot of buffers by default, which I would like to hide. By
@@ -365,6 +366,7 @@ IBuffer-vc automatically creates filter groups for VC folders.
 #+begin_src emacs-lisp
   (use-package crux
     :bind (("C-c o" . crux-open-with)
+	   ("C-^" . crux-top-join-line)
 	   ("C-c n" . crux-cleanup-buffer-or-region)
 	   ("C-c u" . crux-view-url)
 	   ("C-c e" . crux-eval-and-replace)
@@ -390,35 +392,10 @@ candidate selection.
 * Looks and layout
 
 ** Theme and fonts
-Most themes are optimized for code. Since this Emacs config should be useable
-for both code and prose, a theme that supports both is chosen. ~Modus Operandi~
-and ~Modus Vivendi~ are nice light and dark themes with a focus on accessibility
-and support for any mode under the sun. For the most part, I like the light
-variant, however, in a terminal the dark theme is better.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package modus-operandi-theme
-    :custom
-    (modus-operandi-theme-org-blocks 'rainbow)
-    :init (load-theme 'modus-operandi t))
-
-  (use-package modus-vivendi-theme
-    :custom
-    (modus-vivendi-theme-org-blocks 'rainbow))
-#+END_SRC
-
-When it's dark outside, I use modus-vivendi. Toggling between the two modus
-themes can be done using a function.
-
 #+begin_src emacs-lisp
-  (defun toggle-modus-themes ()
-    (interactive)
-    (if (eq (car custom-enabled-themes) 'modus-operandi)
-	(progn
-	  (disable-theme 'modus-operandi)
-	  (load-theme 'modus-vivendi t))
-      (disable-theme 'modus-vivendi)
-      (load-theme 'modus-operandi t)))
+  (load (concat user-emacs-directory "synthetiq-theme.el"))
+  (load (concat user-emacs-directory "synthetiq-light-theme.el"))
+  (load-theme 'synthetiq t)
 #+end_src
 
 Jetbrains Mono is a great coding font; clear to read and with enough of a
@@ -476,6 +453,14 @@ hidden.
   (setq display-time-default-load-average nil)
   (setq display-time-format " %k:%M")
   (display-time-mode 1)
+#+end_src
+
+** Rainbow delimiters
+
+Rainbow delimiters make it easier to spot nesting of parentheses etc.
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
 #+end_src
 
 
@@ -543,14 +528,6 @@ Emacs is commonly used maximized. Default to maximizing Emacs on startup.
 
 #+begin_src emacs-lisp
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
-#+end_src
-
-** Rainbow delimiters
-
-Rainbow delimiters make it easier to spot nesting of parentheses etc.
-#+begin_src emacs-lisp
-  (use-package rainbow-delimiters
-    :hook (prog-mode . rainbow-delimiters-mode))
 #+end_src
 
 * Windows, projects, and buffers
@@ -822,6 +799,9 @@ display, as it is too noisy.
   (use-package lsp-ui
     :commands lsp-ui-mode
     :hook (lsp-mode . lsp-ui-mode)
+    :bind (:map lsp-ui-mode-map
+		([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+		([remap xref-find-references] . lsp-ui-peek-find-references))
     :custom
     (lsp-ui-sideline-enable nil)
     (lsp-ui-doc-enable nil)
@@ -840,7 +820,7 @@ display pairs.
     (sp-local-pair 'emacs-lisp-mode "`" "'")
     (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
     (smartparens-global-mode)
-    (sp-use-paredit-bindings))
+    (sp-use-smartparens-bindings))
 #+end_src
 
 ** Languages
@@ -851,11 +831,17 @@ In Emacs 27, there is a new built-in JavaScript mode which is much better than
 earlier modes, and supports JSX syntax well.
 
 #+begin_src emacs-lisp
-  (use-package js
-    :straight nil
-    :hook ((js-mode . lsp-deferred)
-	   (js-mode . (lambda () (setq tab-width 2)))
-	   (js-jsx-mode . lsp-deferred)))
+  (use-package rjsx-mode
+    :mode ("\\.js\\'" "\\.jsx\\'")
+    :custom
+    (js2-mode-show-parse-errors nil)
+    (js2-mode-show-strict-warnings nil)
+    (js2-basic-offset 2)
+    (js-indent-level 2)
+    :hook ((js2-mode rjsx-mode) . lsp-deferred)
+    :bind (:map rjsx-mode-map
+		("M-." . lsp-ui-peek-find-definitions)
+		("M-?" . lsp-ui-peek-find-references)))
 #+end_src
 
 I often use =prettier= as my formatter. The =prettier.el= package is good for
@@ -938,7 +924,7 @@ minimal skin.
     :init
     (require 'git-gutter-fringe+)
     (git-gutter-fr+-minimal)
-    (git-gutter+-toggle-fringe))
+    )
 #+END_SRC
 
 Every once in a while it's nice to visit older versions of a file. Magit can do
