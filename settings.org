@@ -117,12 +117,6 @@ Emacs should use UTF-8 encoding by default, as has become common.
   (set-selection-coding-system 'utf-8)
 #+end_src
 
-I like seeing the current line highlighted.
-
-#+begin_src emacs-lisp
-(global-hl-line-mode 1)
-#+end_src
-
 Finally, get rid of the default splash screen and jump straight to a scratch
 buffer.
 
@@ -372,6 +366,7 @@ IBuffer-vc automatically creates filter groups for VC folders.
 #+begin_src emacs-lisp
   (use-package crux
     :bind (("C-c o" . crux-open-with)
+	   ("C-^" . crux-top-join-line)
 	   ("C-c n" . crux-cleanup-buffer-or-region)
 	   ("C-c u" . crux-view-url)
 	   ("C-c e" . crux-eval-and-replace)
@@ -929,7 +924,7 @@ minimal skin.
     :init
     (require 'git-gutter-fringe+)
     (git-gutter-fr+-minimal)
-    (git-gutter+-toggle-fringe))
+    )
 #+END_SRC
 
 Every once in a while it's nice to visit older versions of a file. Magit can do
