@@ -104,6 +104,9 @@
 	`(magit-branch-local ((,class :inherit italic :foreground ,fg :underline t)))
 	`(magit-section-heading ((,class :inherit bold :foreground ,fg :height 1.1 :underline t)))
 	`(magit-branch-remote ((,class :inherit italic :foreground ,fg :underline t)))
+	
+	`(transient-argument ((,class :inherit bold :foreground ,fg)))
+	`(transient-value ((,class :inherit bold :foreground ,fg)))
 
 	;; git gutter
 	`(git-gutter-fr+-added ((,class :foreground ,fg)))
