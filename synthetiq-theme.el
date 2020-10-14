@@ -1,4 +1,4 @@
-;;; synthetiq-theme.el --- Theme 
+ ;;; synthetiq-theme.el --- Theme 
 
 ;; Copyright (C) 2020 , 
 
@@ -59,8 +59,11 @@
 	`(cursor ((,class (:background ,fg :foreground ,bg))))
         `(show-paren-match-face ((,class (:background ,blue))))
         `(isearch ((,class (:bold t :foreground ,bg :background ,blue))))
-        `(mode-line ((,class (:bold t :foreground ,bg :background ,fg))))
-        `(mode-line-inactive ((,class ( :foreground ,fg :background ,bg-light :weight normal))))
+	`(isearch-fail ((,class :inherit warning)))
+	`(lazy-highlight ((,class :bold t :background ,bg-light)))
+	`(match ((,class :bold t :background ,bg-light)))
+        `(mode-line ((,class (:overline ,fg :bold t :foreground ,bg :background ,fg))))
+        `(mode-line-inactive ((,class (:overline ,fg :foreground ,fg :background ,bg :weight normal))))
 	`(vertical-border ((,class (:foreground ,fg))))
         `(minibuffer-prompt ((,class (:bold t :foreground ,fg))))
         `(default-italic ((,class (:italic t))))
@@ -93,7 +96,17 @@
 	`(rainbow-delimiters-depth-9-face ((,class :inherit rainbow-delimiters-base-face)))
 	`(rainbow-delimiters-mismatched-face ((,class :inherit bold :foreground ,warning)))
 	`(rainbow-delimiters-unmatched-face ((,class :inherit bold :foreground ,warning2)))
-))
+	`(magit-branch-local ((,class :inherit italic :foreground ,fg :underline t)))
+	`(magit-section-heading ((,class :inherit bold :foreground ,fg :height 1.1 :underline t)))
+	`(magit-branch-remote ((,class :inherit italic :foreground ,fg :underline t)))
+	`(git-gutter-fr+-added ((,class :foreground ,fg)))
+	`(git-gutter-fr+-deleted ((,class :foreground ,fg)))
+	`(git-gutter-fr+-modified ((,class :foregroun ,fg)))
+	`(git-gutter+-added ((,class :foreground ,fg)))
+	`(git-gutter+-deleted ((,class :foreground ,fg)))
+	`(git-gutter+-modified ((,class :foregroun ,fg)))
+)
+   )
 
 ;;;###autoload
 (when load-file-name
