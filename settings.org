@@ -820,7 +820,7 @@ display pairs.
     (sp-local-pair 'emacs-lisp-mode "`" "'")
     (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
     (smartparens-global-mode)
-    (sp-use-paredit-bindings))
+    (sp-use-smartparens-bindings))
 #+end_src
 
 ** Languages
