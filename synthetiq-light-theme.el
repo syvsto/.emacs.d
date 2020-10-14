@@ -84,6 +84,8 @@
 	`(anzu-replace-highlight ((,class :inherit isearch :underline t)))
 	`(anzu-replace-to ((,class :background ,warning2 :foreground ,bg :underline t)))
 	`(objed-mode-line ((,class :background ,blue)))
+
+	;; rainbow delimiters
 	`(rainbow-delimiters-base-face-error ((,class :foreground ,warning)))
 	`(rainbow-delimiters-base-face ((,class :foreground ,fg2)))
 	`(rainbow-delimiters-depth-1-face ((,class :inherit rainbow-delimiters-base-face)))
@@ -97,15 +99,29 @@
 	`(rainbow-delimiters-depth-9-face ((,class :inherit rainbow-delimiters-base-face)))
 	`(rainbow-delimiters-mismatched-face ((,class :inherit bold :foreground ,warning)))
 	`(rainbow-delimiters-unmatched-face ((,class :inherit bold :foreground ,warning2)))
+
+	;; magit
 	`(magit-branch-local ((,class :inherit italic :foreground ,fg :underline t)))
 	`(magit-section-heading ((,class :inherit bold :foreground ,fg :height 1.1 :underline t)))
 	`(magit-branch-remote ((,class :inherit italic :foreground ,fg :underline t)))
+
+	;; git gutter
 	`(git-gutter-fr+-added ((,class :foreground ,fg)))
 	`(git-gutter-fr+-deleted ((,class :foreground ,fg)))
 	`(git-gutter-fr+-modified ((,class :foregroun ,fg)))
 	`(git-gutter+-added ((,class :foreground ,fg)))
 	`(git-gutter+-deleted ((,class :foreground ,fg)))
-	`(git-gutter+-modified ((,class :foregroun ,fg)))
+	`(git-gutter+-modified ((,class :foreground ,fg)))
+	
+	;; avy
+	`(avy-lead-face ((,class :background ,blue :foreground ,bg)))
+	`(avy-lead-face-0 ((,class :background ,warning :foreground ,bg)))
+	`(avy-lead-face-1 ((,class :background ,warning2 :foreground ,bg)))
+	`(avy-lead-face-2 ((,class :background ,bg-light :foreground ,bg)))
+
+	;; ace-window
+	`(aw-leading-char-face ((,class :inherit bold :height 1.5 :background ,bg :foreground ,warning)))
+	
 	;; completions
 	`(completions-common-part ((,class :background ,blue)))
 	`(orderless-match-face-0 ((,class :background ,blue)))
