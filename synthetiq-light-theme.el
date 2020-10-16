@@ -137,6 +137,14 @@
 
 	;; eshell
 	`(eshell-prompt ((,class :bold t :foreground ,fg :background ,blue)))
+
+	;; dired-subtree
+	`(dired-subtree-depth-1-face ((,class :background nil)))
+	`(dired-subtree-depth-2-face ((,class :background nil)))
+	`(dired-subtree-depth-3-face ((,class :background nil)))
+	`(dired-subtree-depth-4-face ((,class :background nil)))
+	`(dired-subtree-depth-5-face ((,class :background nil)))
+	`(dired-subtree-depth-6-face ((,class :background nil)))
 ))
 
 ;;;###autoload
