@@ -141,6 +141,60 @@ A small aesthetic change is keeping the title bar and theme in the same color.
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 #+end_src
 
+** Dired
+
+Dired has some rough edges. The series of packages from ~dired-hacks~ helps add some
+features that make dired easier to use in certain cases.
+
+#+begin_src emacs-lisp
+  (use-package dired-subtree
+    :init
+    (bind-keys :map dired-mode-map
+	       :prefix ","
+	       :prefix-map dired-subtree-map
+	       :prefix-docstring "Dired subtree map."
+	       ("i" . dired-subtree-insert)
+	       ("/" . dired-subtree-apply-filter)
+	       ("k" . dired-subtree-remove)
+	       ("n" . dired-subtree-next-sibling)
+	       ("p" . dired-subtree-previous-sibling)
+	       ("u" . dired-subtree-up)
+	       ("d" . dired-subtree-down)
+	       ("a" . dired-subtree-beginning)
+	       ("e" . dired-subtree-end)
+	       ("c" . dired-subtree-cycle)
+	       ("m" . dired-subtree-mark-subtree)
+	       ("u" . dired-subtree-unmark-subtree)
+	       ("o f" . dired-subtree-only-this-file)
+	       ("o d" . dired-subtree-only-this-directory))
+    (bind-keys :map dired-mode-map
+	       ("i" . dired-subtree-insert)))
+
+  (use-package dired-filter
+    :bind (:map dired-mode-map
+		("C-o" . dired-filter-mode)
+		("C-S-o" . dired-filter-group-mode)))
+
+  (use-package dired-narrow
+    :commands dired-narrow
+    :init
+    (bind-key "s" 'dired-narrow dired-mode-map))
+
+  (use-package dired-ranger
+    :init
+    (bind-keys :map dired-mode-map
+	       :prefix "c"
+	       :prefix-map dired-ranger-map
+	       :prefix-docstring "Map for ranger operations."
+      ("c" . dired-ranger-copy)
+      ("p" . dired-ranger-paste)
+      ("m" . dired-ranger-move))
+
+    (bind-keys :map dired-mode-map
+      ("'" . dired-ranger-bookmark)
+      ("`" . dired-ranger-bookmark-visit)))
+#+end_src
+
 * Key bindings and navigation
 
 Vim bindings for that sweet RSI relief.
@@ -602,12 +656,6 @@ slowdowns for some larger org documents.
 
 #+BEGIN_SRC emacs-lisp
   (setq org-hide-leading-stars 't)
-#+END_SRC
-
-When reading documents, it's better if markup is hidden unless hovered.
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-hide-emphasis-markers t)
 #+END_SRC
 
 Org has a tendency to do weird stuff with whitespace when toggling
