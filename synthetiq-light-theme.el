@@ -102,7 +102,7 @@
 
 	;; magit
 	`(magit-branch-local ((,class :inherit italic :foreground ,fg :underline t)))
-	`(magit-section-heading ((,class :inherit bold :foreground ,fg :height 1.1 :underline t)))
+	`(magit-section-heading ((,class :bold t :foreground ,fg :height 1.1 :underline t)))
 	`(magit-branch-remote ((,class :inherit italic :foreground ,fg :underline t)))
 	
 	`(transient-argument ((,class :inherit bold :foreground ,fg)))
@@ -131,6 +131,12 @@
 	`(orderless-match-face-1 ((,class :background ,warning)))
 	`(orderless-match-face-2 ((,class :background ,warning2)))
 	`(orderless-match-face-3 ((,class :background ,bg-light)))
+	
+	;; js2 and derived modes
+	`(js2-function-param ((,class :foreground ,fg :italic t)))
+
+	;; eshell
+	`(eshell-prompt ((,class :bold t :foreground ,fg :background ,blue)))
 ))
 
 ;;;###autoload

@@ -37,7 +37,7 @@
       (warning "#e61c1c")
       (warning2 "#fcba03"))
   (custom-theme-set-faces
-   'synthetiq
+   'synthetiq-light
    `(default ((,class (:background ,bg :foreground ,fg))))
    `(font-lock-comment-face ((,class (:foreground ,fg2))))
    `(font-lock-negation-char-face ((,class (:foreground ,fg))))
@@ -102,8 +102,11 @@
 
    ;; magit
    `(magit-branch-local ((,class :inherit italic :foreground ,fg :underline t)))
-   `(magit-section-heading ((,class :inherit bold :foreground ,fg :height 1.1 :underline t)))
+   `(magit-section-heading ((,class :bold t :foreground ,fg :height 1.1 :underline t)))
    `(magit-branch-remote ((,class :inherit italic :foreground ,fg :underline t)))
+   
+   `(transient-argument ((,class :inherit bold :foreground ,fg)))
+   `(transient-value ((,class :inherit bold :foreground ,fg)))
 
    ;; git gutter
    `(git-gutter-fr+-added ((,class :foreground ,fg)))
@@ -128,8 +131,13 @@
    `(orderless-match-face-1 ((,class :background ,warning)))
    `(orderless-match-face-2 ((,class :background ,warning2)))
    `(orderless-match-face-3 ((,class :background ,bg-light)))
-   )
-  )
+   
+   ;; js2 and derived modes
+   `(js2-function-param ((,class :foreground ,fg :italic t)))
+
+   ;; eshell
+   `(eshell-prompt ((,class :bold t :foreground ,fg :background ,blue)))
+   ))
 
 ;;;###autoload
 (when load-file-name
