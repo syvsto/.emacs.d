@@ -421,19 +421,14 @@ To make it clearer whether I'm in God mode or not, the mode line should change
 color when god mode is active. Additionally, the cursor should change into a
 line.
 #+begin_src emacs-lisp
-  (defun my-god-mode-update-cursor ()
-      (setq cursor-type (if (or god-local-mode buffer-read-only)
-			  'box
-			  'bar)))
-  (add-hook 'god-mode-enabled-hook #'my-god-mode-update-cursor)
-  (add-hook 'god-mode-disabled-hook #'my-god-mode-update-cursor)
+  (setq cursor-type 'bar)
 
-  (defun my-god-mode-enabled-modeline () 
-      (set-face-background 'mode-line "#d7d7d7"))
-  (defun my-god-mode-disabled-modeline () 
-      (set-face-background 'mode-line "#fff1c9"))
-  (add-hook 'god-mode-enabled-hook #'my-god-mode-enabled-modeline)
-  (add-hook 'god-mode-disabled-hook #'my-god-mode-disabled-modeline)
+    (defun my-god-mode-update-cursor ()
+	(setq cursor-type (if (or god-local-mode buffer-read-only)
+			    'box
+			    'bar)))
+    (add-hook 'god-mode-enabled-hook #'my-god-mode-update-cursor)
+    (add-hook 'god-mode-disabled-hook #'my-god-mode-update-cursor)
 #+end_src
 
 ** Rainbow delimiters
