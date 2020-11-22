@@ -148,7 +148,7 @@ features that make dired easier to use in certain cases.
 
 #+begin_src emacs-lisp
   (use-package dired-subtree
-    :init
+    :config
     (bind-keys :map dired-mode-map
 	       :prefix ","
 	       :prefix-map dired-subtree-map
@@ -177,11 +177,11 @@ features that make dired easier to use in certain cases.
 
   (use-package dired-narrow
     :commands dired-narrow
-    :init
+    :config
     (bind-key "s" 'dired-narrow dired-mode-map))
 
   (use-package dired-ranger
-    :init
+    :config
     (bind-keys :map dired-mode-map
 	       :prefix "c"
 	       :prefix-map dired-ranger-map
@@ -360,9 +360,9 @@ Jetbrains Mono is a great coding font; clear to read and with enough of a
 personal look to make it fun.
 
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :family "Jetbrains Mono" :height 110)
-  (set-face-attribute 'fixed-pitch nil :family "Jetbrains Mono" :height 110)
-  (set-face-attribute 'variable-pitch nil :family "Jetbrains Mono" :height 110)
+  (set-face-attribute 'default nil :family "JuliaMono" :height 100)
+  (set-face-attribute 'fixed-pitch nil :family "JuliaMono" :height 100)
+  (set-face-attribute 'variable-pitch nil :family "JuliaMono" :height 100)
 #+END_SRC
 
 ** Modeline
@@ -887,9 +887,10 @@ Syntax highlighting for zig files.
 
 #+begin_src emacs-lisp
   (use-package agda2-mode
+    :straight nil
     :mode (("\\.agda\\'" . agda2-mode)
 	   ("\\.lagda.md\\'" . agda2-mode))
-    :config
+    :init
     (load-file (let ((coding-system-for-read 'utf-8))
 		 (shell-command-to-string "agda-mode locate"))))
 #+end_src
