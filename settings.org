@@ -200,13 +200,24 @@ features that make dired easier to use in certain cases.
 Vim bindings for that sweet RSI relief.
 
 #+begin_src emacs-lisp
-  (use-package objed
-    :init
-    (objed-mode 1)
-    (define-key 'objed-user-map (kbd "g") 'magit-dispatch)
-    (define-key 'objed-user-map (kbd "f") 'project-find-file)
-    (define-key 'objed-user-map (kbd "p") 'project-switch-project))
-#+end_src
+  (use-package god-mode
+    :bind
+    (("<escape>" . god-local-mode)
+     ("C-x C-1" . delete-other-windows)
+     ("C-x C-2" . split-window-below)
+     ("C-x C-3" . split-window-right)
+     ("C-x C-0" . delete-window)
+     (:map god-local-mode-map
+	   ("z" . repeat)
+	   ("i" . god-local-mode))
+     (:map isearch-mode-map
+	   ("<escape>" . god-mode-isearch-activate))
+     (:map god-mode-isearch-map
+	   ("<escape>" . god-mode-isearch-disable)))
+    :config
+    (require 'god-mode-isearch)
+    (global-set-key (kbd "<escape>") #'god-local-mode))
+#+END_src
 
 ** FFAP
 
@@ -219,10 +230,11 @@ files in HTML/Javascript.
 
 ** Avy
 
-Avy allows quick candidate selection, and integrates with objed and embark.
+Avy allows quick candidate selection.
 #+begin_src emacs-lisp
   (use-package avy
-    :bind ("M-g M-g" . avy-goto-line))
+    :bind (("M-g M-g" . avy-goto-line)
+	   ("C-'" . avy-goto-word-1)))
 #+end_src
 
 Multiple cursors also integrate with objed, and allows modifying many instances
@@ -254,130 +266,22 @@ Undo tree is perfect when making mistakes.
     (global-undo-tree-mode))
 #+end_src
 
-** Completion
+** Completion framework
 
-I'm trying out using the built-in minibuffer and completion styles, which
-together with ~orderless~ gives a pretty nice completion experience.
-
-#+BEGIN_SRC emacs-lisp
-  (defun up-directory (arg)
-    "Move up a directory"
-    (interactive "p")
-    (if (string-match-p "/." (minibuffer-contents))
-	(zap-up-to-char (- arg) ?/)
-      (delete-minibuffer-contents)))
-
-  (use-package minibuffer
-    :straight nil
-    :bind ((:map minibuffer-local-completion-map
-		 ("<tab>" . minibuffer-complete)
-		 ("<M-enter>" . minibuffer-force-complete)
-		 ("SPC"))
-	   (:map minibuffer-local-filename-completion-map
-		 ("<C-backspace>" . up-directory)))
-    :custom
-    (completion-category-defaults nil)
-    (completion-cycle-threshold t)
-    (completion-ignore-case t)
-    (resize-mini-windows t)
-    (completions-format 'vertical)
-    (enable-recursive-minibuffers t)
-    (minibuffer-depth-indicate-mode t)
-    (minibuffer-eldef-shorten-default t)
-    (minibuffer-electric-default-mode t))
-
-  (use-package orderless
-    :custom
-    (completion-styles '(orderless))
-    (orderless-component-separator "[ ]+"))
-#+END_SRC
-
-The completion mechanism can be used for in-buffer completions as well. By
-default, the buffer pops up covering the entire screen, which is not what I want.
+Helm.
 
 #+begin_src emacs-lisp
-    (setq tab-always-indent 'complete)
-
-    (defun completing-read-in-region (start end collection &optional predicate)
-      "Prompt for completion of region in the minibuffer if non-unique.
-			    Use as a value for `completion-in-region-function'."
-      (if (and (minibufferp) (not (string= (minibuffer-prompt) "Eval: ")))
-	  (completion--in-region start end collection predicate)
-	(let* ((initial (buffer-substring-no-properties start end))
-	       (limit (car (completion-boundaries initial collection predicate "")))
-	       (all (completion-all-completions initial collection predicate
-						(length initial)))
-	       (completion (cond
-			    ((atom all) nil)
-			    ((and (consp all) (atom (cdr all)))
-			     (concat (substring initial 0 limit) (car all)))
-			    (t (completing-read
-				"Completion: " collection predicate t initial)))))
-	  (if (null completion)
-	      (progn (message "No completion") nil)
-	    (delete-region start end)
-	    (insert completion)
-	    t))))
-
-  (setq completion-in-region-function #'completing-read-in-region)
-#+end_src
-
-Embark makes it possible to act upon completion candidates, and has a nice
-occur live display for showing completions.
-
-#+begin_src emacs-lisp
-  (use-package embark
-    :straight (:type git :host github :repo "oantolin/embark")
-    :commands (embark-completing-read)
+  (use-package helm
     :bind
-    (:map minibuffer-local-map
-	  (">" . embark-become))
-    (:map minibuffer-local-completion-map
-	  (";" . embark-act-noexit)
-	  ("C-o" . embark-occur)
-	  ("C-l" . embark-live-occur)
-	  ("M-v" . embark-switch-to-live-occur)
-	  ("'" . avy-embark-occur-choose)
-	  ("\"" . avy-embark-occur-act)
-	  (":" . embark-act))
-    (:map completion-list-mode-map
-	  (";" . embark-act))
-    (:map embark-occur-mode-map
-	  ("j" . next-line)
-	  ("k" . previous-line)
-	  ("'" . avy-embark-occur-choose)
-	  ("\"" . avy-embark-occur-act)) 
-   :custom
-    (embark-occur-minibuffer-completion t)
-    (completing-read-function 'embark-completing-read)
-    :init
-    (require 'avy-embark-occur))
-#+end_src
+    (("M-x" . helm-M-x)
+     ("C-x C-f" . helm-find-files)
+     ("C-x b" . helm-mini))
+    :config
+    (helm-mode 1))
 
-Embark creates a lot of buffers by default, which I would like to hide. By
-creating my own ~read-buffer~ I can control how the buffers are filtered.
-#+begin_src emacs-lisp
-  (defun my/match-buffers (buf)
-    (let ((b (if (stringp buf)
-		 buf
-	       (car buf))))
-      (not (string-match "\\*Embark Live Occur\\*" (car buf)))))
-
-  (defun my/read-buffer (prompt &optional def require-match predicate)
-    (let ((read-buffer-function nil))
-      (read-buffer prompt def require-match #'my/match-buffers)))
-
-  (setq read-buffer-function 'my/read-buffer)
-#+end_src
-
-** Search
-
-When searching across buffers, I like ~ripgrep~, which can be invoked
-with the =deadgrep= package.
-
-#+begin_src emacs-lisp
-  (use-package deadgrep
-    :bind ("C-c r" . deadgrep))
+  (use-package helm-rg
+    :bind
+    ("C-c r" . helm-rg))
 #+end_src
 
 ** Imenu
@@ -441,24 +345,24 @@ candidate selection.
 	   (:map browse-kill-ring-mode-map
 		 ("j" . browse-kill-ring-forward)
 		 ("k" . browse-kill-ring-previous))))
-		 #+end_src
+ #+end_src
 
 * Looks and layout
 
 ** Theme and fonts
 #+begin_src emacs-lisp
-  (load (concat user-emacs-directory "synthetiq-theme.el"))
-  (load (concat user-emacs-directory "synthetiq-light-theme.el"))
-  (load-theme 'synthetiq t)
+    (use-package modus-operandi-theme
+      :init
+      (load-theme 'modus-operandi t))
 #+end_src
 
 Jetbrains Mono is a great coding font; clear to read and with enough of a
 personal look to make it fun.
 
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :family "Jetbrains Mono" :height 140)
-  (set-face-attribute 'fixed-pitch nil :family "Jetbrains Mono" :height 140)
-  (set-face-attribute 'variable-pitch nil :family "Jetbrains Mono" :height 140)
+  (set-face-attribute 'default nil :family "Jetbrains Mono" :height 110)
+  (set-face-attribute 'fixed-pitch nil :family "Jetbrains Mono" :height 110)
+  (set-face-attribute 'variable-pitch nil :family "Jetbrains Mono" :height 110)
 #+END_SRC
 
 ** Modeline
@@ -507,6 +411,25 @@ hidden.
   (setq display-time-default-load-average nil)
   (setq display-time-format " %k:%M")
   (display-time-mode 1)
+#+end_src
+
+To make it clearer whether I'm in God mode or not, the mode line should change
+color when god mode is active. Additionally, the cursor should change into a
+line.
+#+begin_src emacs-lisp
+  (defun my-god-mode-update-cursor ()
+      (setq cursor-type (if (or god-local-mode buffer-read-only)
+			  'box
+			  'bar)))
+  (add-hook 'god-mode-enabled-hook #'my-god-mode-update-cursor)
+  (add-hook 'god-mode-disabled-hook #'my-god-mode-update-cursor)
+
+  (defun my-god-mode-enabled-modeline () 
+      (set-face-background 'mode-line "#d7d7d7"))
+  (defun my-god-mode-disabled-modeline () 
+      (set-face-background 'mode-line "#fff1c9"))
+  (add-hook 'god-mode-enabled-hook #'my-god-mode-enabled-modeline)
+  (add-hook 'god-mode-disabled-hook #'my-god-mode-disabled-modeline)
 #+end_src
 
 ** Rainbow delimiters
@@ -953,6 +876,24 @@ management/OS tool.
   (use-package nix-mode)
 #+end_src
 
+*** Zig
+
+Syntax highlighting for zig files.
+#+begin_src emacs-lisp
+  (use-package zig-mode)
+#+end_src
+
+*** Agda
+
+#+begin_src emacs-lisp
+  (use-package agda2-mode
+    :mode (("\\.agda\\'" . agda2-mode)
+	   ("\\.lagda.md\\'" . agda2-mode))
+    :config
+    (load-file (let ((coding-system-for-read 'utf-8))
+		 (shell-command-to-string "agda-mode locate"))))
+#+end_src
+
 * Version control
 
 Magit is the best git client ever.
@@ -984,10 +925,3 @@ alternative.
     :commands (git-timemachine)
     :bind ("C-x G" . git-timemachine))
 #+END_SRC
-
-* Finalization
-
-Make sure theme gets to override other package faces.
-#+begin_src emacs-lisp
-  (enable-theme 'synthetiq-light)
-#+end_src
