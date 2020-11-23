@@ -37,7 +37,7 @@
       (warning "#e61c1c")
       (warning2 "#fcba03"))
   (custom-theme-set-faces
-   'synthetiq-light
+   'synthetiq
    `(default ((,class (:background ,bg :foreground ,fg))))
    `(font-lock-comment-face ((,class (:foreground ,fg2))))
    `(font-lock-negation-char-face ((,class (:foreground ,fg))))

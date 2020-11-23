@@ -148,6 +148,7 @@ features that make dired easier to use in certain cases.
 
 #+begin_src emacs-lisp
   (use-package dired-subtree
+    :after dired
     :init
     (bind-keys :map dired-mode-map
 	       :prefix ","
@@ -171,28 +172,31 @@ features that make dired easier to use in certain cases.
 	       ("i" . dired-subtree-insert)))
 
   (use-package dired-filter
+    :after dired
     :bind (:map dired-mode-map
 		("C-o" . dired-filter-mode)
 		("C-S-o" . dired-filter-group-mode)))
 
   (use-package dired-narrow
+    :after dired
     :commands dired-narrow
     :init
     (bind-key "s" 'dired-narrow dired-mode-map))
 
   (use-package dired-ranger
+    :after dired
     :init
     (bind-keys :map dired-mode-map
 	       :prefix "c"
 	       :prefix-map dired-ranger-map
 	       :prefix-docstring "Map for ranger operations."
-      ("c" . dired-ranger-copy)
-      ("p" . dired-ranger-paste)
-      ("m" . dired-ranger-move))
+	       ("c" . dired-ranger-copy)
+	       ("p" . dired-ranger-paste)
+	       ("m" . dired-ranger-move))
 
     (bind-keys :map dired-mode-map
-      ("'" . dired-ranger-bookmark)
-      ("`" . dired-ranger-bookmark-visit)))
+	       ("'" . dired-ranger-bookmark)
+	       ("`" . dired-ranger-bookmark-visit)))
 #+end_src
 
 * Key bindings and navigation
@@ -449,7 +453,6 @@ candidate selection.
 #+begin_src emacs-lisp
   (load (concat user-emacs-directory "synthetiq-theme.el"))
   (load (concat user-emacs-directory "synthetiq-light-theme.el"))
-  (load-theme 'synthetiq t)
 #+end_src
 
 Jetbrains Mono is a great coding font; clear to read and with enough of a
@@ -989,5 +992,5 @@ alternative.
 
 Make sure theme gets to override other package faces.
 #+begin_src emacs-lisp
-  (enable-theme 'synthetiq-light)
+(load-theme 'synthetiq-light t)
 #+end_src
