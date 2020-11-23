@@ -29,9 +29,9 @@
 
  (deftheme synthetiq-light)
  (let ((class '((class color) (min-colors 89)))
-       (bg "#fbfbfb")
+       (bg "#f2eddf")
        (bg-light "#cccccc")
-       (fg "#000000")
+       (fg "#101010")
        (fg2 "#888888")
        (blue "#42d9ff")       
        (warning "#e61c1c")
@@ -117,8 +117,8 @@
 	`(git-gutter+-modified ((,class :foreground ,fg)))
 	
 	;; avy
-	`(avy-lead-face ((,class :background ,blue :foreground ,bg)))
-	`(avy-lead-face-0 ((,class :background ,warning :foreground ,bg)))
+	`(avy-lead-face ((,class :background ,warning :foreground ,bg)))
+	`(avy-lead-face-0 ((,class :background ,blue :foreground ,bg)))
 	`(avy-lead-face-1 ((,class :background ,warning2 :foreground ,bg)))
 	`(avy-lead-face-2 ((,class :background ,bg-light :foreground ,bg)))
 
@@ -145,6 +145,12 @@
 	`(dired-subtree-depth-4-face ((,class :background nil)))
 	`(dired-subtree-depth-5-face ((,class :background nil)))
 	`(dired-subtree-depth-6-face ((,class :background nil)))
+
+	;; ibuffer
+	`(ibuffer-deletion-face '((,class :foreground ,warning)))
+	`(ibuffer-filter-group-name-face ((,class :bold t)))
+	`(ibuffer-marked-face ((,class :bold t :foreground ,bg :background ,fg)))
+	`(ibuffer-title-face ((,class :bold t :height 1.1)))
 ))
 
 ;;;###autoload
