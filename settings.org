@@ -364,9 +364,9 @@ Jetbrains Mono is a great coding font; clear to read and with enough of a
 personal look to make it fun.
 
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :family "JuliaMono" :height 100)
-  (set-face-attribute 'fixed-pitch nil :family "JuliaMono" :height 100)
-  (set-face-attribute 'variable-pitch nil :family "JuliaMono" :height 100)
+  (set-face-attribute 'default nil :family "JuliaMono" :height 130)
+  (set-face-attribute 'fixed-pitch nil :family "JuliaMono" :height 130)
+  (set-face-attribute 'variable-pitch nil :family "JuliaMono" :height 130)
 #+END_SRC
 
 ** Modeline
@@ -421,14 +421,13 @@ To make it clearer whether I'm in God mode or not, the mode line should change
 color when god mode is active. Additionally, the cursor should change into a
 line.
 #+begin_src emacs-lisp
-  (setq cursor-type 'bar)
-
-    (defun my-god-mode-update-cursor ()
-	(setq cursor-type (if (or god-local-mode buffer-read-only)
-			    'box
-			    'bar)))
-    (add-hook 'god-mode-enabled-hook #'my-god-mode-update-cursor)
-    (add-hook 'god-mode-disabled-hook #'my-god-mode-update-cursor)
+  (defun my-god-mode-update-cursor ()
+      (setq cursor-type (if (or god-local-mode buffer-read-only)
+			  'box
+			  'bar)))
+  (add-hook 'god-mode-enabled-hook #'my-god-mode-update-cursor)
+  (add-hook 'god-mode-disabled-hook #'my-god-mode-update-cursor)
+  (setq-default cursor-type 'bar)
 #+end_src
 
 ** Rainbow delimiters
