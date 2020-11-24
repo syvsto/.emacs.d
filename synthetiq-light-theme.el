@@ -29,11 +29,11 @@
 
  (deftheme synthetiq-light)
  (let ((class '((class color) (min-colors 89)))
-       (bg "#f2eddf")
-       (bg-light "#cccccc")
+       (bg "#f0ede4")
+       (bg-light "#f5f3ed")
        (fg "#101010")
        (fg2 "#888888")
-       (blue "#42d9ff")       
+       (blue "#19cdfa")       
        (warning "#e61c1c")
        (warning2 "#fcba03"))
    (custom-theme-set-faces
@@ -147,10 +147,18 @@
 	`(dired-subtree-depth-6-face ((,class :background nil)))
 
 	;; ibuffer
-	`(ibuffer-deletion-face '((,class :foreground ,warning)))
+	`(ibuffer-deletion-face ((,class :foreground ,warning)))
 	`(ibuffer-filter-group-name-face ((,class :bold t)))
 	`(ibuffer-marked-face ((,class :bold t :foreground ,bg :background ,fg)))
 	`(ibuffer-title-face ((,class :bold t :height 1.1)))
+
+	;; Helm
+	`(helm-action ((,class :underline t)))
+	`(helm-selection ((,class :bold t :underline t)))
+	`(helm-ff-directory ((,class :bold t)))
+	`(helm-ff-dotted-directory ((,class :italic t :bold t)))
+	`(helm-match ((,class :foreground ,blue)))
+	`(helm-ff-file-extension ((,class :foreground ,fg2)))
 ))
 
 ;;;###autoload
