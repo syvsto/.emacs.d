@@ -154,10 +154,12 @@
 
 	;; Helm
 	`(helm-action ((,class :underline t)))
-	`(helm-selection ((,class :bold t :underline t)))
+	`(helm-selection ((,class :foreground ,bg :background ,fg)))
+	`(helm-selection-line ((,class :bold t :underline t)))
 	`(helm-ff-directory ((,class :bold t)))
 	`(helm-ff-dotted-directory ((,class :italic t :bold t)))
 	`(helm-match ((,class :foreground ,blue)))
+	`(helm-match-item ((,class :background ,blue :foreground ,fg)))
 	`(helm-ff-file-extension ((,class :foreground ,fg2)))
 ))
 
