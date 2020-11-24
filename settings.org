@@ -141,6 +141,11 @@ A small aesthetic change is keeping the title bar and theme in the same color.
   (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 #+end_src
 
+Highlight the current line.
+#+begin_src emacs-lisp
+  (global-hl-line-mode 1)
+#+end_src
+
 ** Dired
 
 Dired has some rough edges. The series of packages from ~dired-hacks~ helps add some
@@ -197,7 +202,7 @@ features that make dired easier to use in certain cases.
 
 * Key bindings and navigation
 
-Vim bindings for that sweet RSI relief.
+Modal Emacs bindings for that sweet RSI relief.
 
 #+begin_src emacs-lisp
   (use-package god-mode
@@ -216,7 +221,8 @@ Vim bindings for that sweet RSI relief.
 	   ("<escape>" . god-mode-isearch-disable)))
     :config
     (require 'god-mode-isearch)
-    (global-set-key (kbd "<escape>") #'god-local-mode))
+    (global-set-key (kbd "<escape>") #'god-local-mode)
+    (which-key-enable-god-mode-support))
 #+END_src
 
 ** FFAP
@@ -235,12 +241,6 @@ Avy allows quick candidate selection.
   (use-package avy
     :bind (("M-g M-g" . avy-goto-line)
 	   ("C-'" . avy-goto-word-1)))
-#+end_src
-
-Multiple cursors also integrate with objed, and allows modifying many instances
-of something simultaneously.
-#+begin_src emacs-lisp
-  (use-package multiple-cursors)
 #+end_src
 
 ** Anzu
@@ -355,9 +355,8 @@ candidate selection.
 
 ** Theme and fonts
 #+begin_src emacs-lisp
-    (use-package modus-operandi-theme
-      :init
-      (load-theme 'modus-operandi t))
+    (load (concat user-emacs-directory "synthetiq-theme.el"))
+  (load (concat user-emacs-directory "synthetiq-light-theme.el"))
 #+end_src
 
 Jetbrains Mono is a great coding font; clear to read and with enough of a
@@ -924,3 +923,9 @@ alternative.
     :commands (git-timemachine)
     :bind ("C-x G" . git-timemachine))
 #+END_SRC
+
+* Finalization
+
+#+begin_src emacs-lisp
+(load-theme 'synthetiq-light t)
+#+end_src
