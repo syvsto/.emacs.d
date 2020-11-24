@@ -268,7 +268,9 @@ Undo tree is perfect when making mistakes.
 
 ** Completion framework
 
-Helm.
+Helm, because it collects many different sources in a single buffer so I don't
+need to mess as much about with many different commands (such as when using
+~helm-mini~).
 
 #+begin_src emacs-lisp
   (use-package helm
@@ -286,6 +288,26 @@ Helm.
      ("C-c r" . helm-do-grep-ag))
     :config
     (helm-mode 1))
+#+end_src
+
+Company for completion at point, since it's nice. I don't like the auto-popup
+from company, so I only trigger it manually. 
+
+#+begin_src emacs-lisp
+  (use-package company
+    :custom
+    (company-idle-delay nil)
+    :init
+    (global-company-mode 1))
+#+end_src
+
+Helm-company allows displaying company candidates in a helm buffer, so it's
+easier to narrow down the list of options.
+
+#+begin_src emacs-lisp
+  (use-package helm-company
+    :bind (:map company-mode-map
+		("C-;" . helm-company)))
 #+end_src
 
 ** Imenu
@@ -755,8 +777,7 @@ It is available under the ~<C-c i>~ prefix.
   (use-package lsp-mode
     :hook ((lsp-mode . lsp-enable-which-key-integration))
     :custom
-    (lsp-keymap-prefix "C-c i")
-    (lsp-completion-provider :none))
+    (lsp-keymap-prefix "C-c i"))
 #+end_src
 
 ~lsp-ui~ provides some nice additional features such as a peek mode for finding
@@ -774,6 +795,16 @@ display, as it is too noisy.
     (lsp-ui-sideline-enable nil)
     (lsp-ui-doc-enable nil)
     (lsp-ui-doc-position 'at-point))
+#+end_src
+
+~helm-lsp~ enables navigating an LSP project using helm. Pretty cool.
+#+begin_src emacs-lisp
+  (defun my/bind-helm-lsp ()
+    (define-key lsp-mode-map [remap xref-find-apropos] #'helm-lsp-workspace-symbol)
+    (define-key lsp-mode-map [remap lsp-execute-code-action] #'helm-lsp-code-action))
+
+  (use-package helm-lsp
+    :hook (lsp-mode . my/bind-helm-lsp))
 #+end_src
 
 ** Structured editing
