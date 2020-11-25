@@ -156,6 +156,7 @@
 	`(helm-action ((,class :underline t)))
 	`(helm-selection ((,class :foreground ,fg :background ,blue)))
 	`(helm-selection-line ((,class :bold t :underline t)))
+        `(helm-source-header ((,class :bold t :underline t :height 1.3)))
 	`(helm-ff-directory ((,class :bold t)))
 	`(helm-ff-dotted-directory ((,class :italic t :bold t)))
 	`(helm-match ((,class :foreground ,blue :background ,bg)))
