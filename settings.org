@@ -923,6 +923,19 @@ Syntax highlighting for zig files.
 		 (shell-command-to-string "agda-mode locate"))))
 #+end_src
 
+*** REST Queries
+
+The ~restclient~ package can be used for querying REST endpoints, and is well
+suited for use with literate org files through ~ob-restclient~.
+#+begin_src emacs-lisp
+  (use-package restclient)
+  (use-package ob-restclient)
+  (use-package company-restclient
+    :after company
+    :init
+    (add-to-list 'company-backends 'company-restclient))
+#+end_src
+
 * Version control
 
 Magit is the best git client ever.
