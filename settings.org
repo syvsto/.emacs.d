@@ -380,8 +380,7 @@ recent files etc., akin to ~helm-mini~.
   (load (concat user-emacs-directory "synthetiq-light-theme.el"))
 #+end_src
 
-Jetbrains Mono is a great coding font; clear to read and with enough of a
-personal look to make it fun.
+Julia Mono has a lot of unicode symbols, perfect for e.g. Agda.
 
 #+BEGIN_SRC emacs-lisp
   (set-face-attribute 'default nil :family "JuliaMono" :height 130)
