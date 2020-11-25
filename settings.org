@@ -286,7 +286,8 @@ need to mess as much about with many different commands (such as when using
     :bind
     (("M-x" . helm-M-x)
      ("C-x C-f" . helm-find-files)
-     ("C-c r" . helm-do-grep-ag))
+     ("C-c r" . helm-do-grep-ag)
+     ("M-y" . helm-show-kill-ring))
     :config
     (helm-mode 1))
 #+end_src
@@ -351,7 +352,7 @@ recent files etc., akin to ~helm-mini~.
 #+begin_src emacs-lisp
   (defun my/helm-bufler-mini ()
     (interactive)
-    (helm :sources (list helm-bufler-source helm-source-recentf helm-source-buffer-not-found)))
+    (helm :sources (list helm-source-recentf helm-bufler-source helm-source-buffer-not-found)))
 #+end_src
 
 ** Crux
@@ -364,25 +365,12 @@ recent files etc., akin to ~helm-mini~.
 	   ("C-^" . crux-top-join-line)
 	   ("C-c n" . crux-cleanup-buffer-or-region)
 	   ("C-c u" . crux-view-url)
+	   ("C-a" . crux-move-beginning-of-line)
 	   ("C-c e" . crux-eval-and-replace)
 	   ("C-x 4 t" . crux-transpose-windows)
 	   ("C-c k" . crux-kill-other-buffers)
 	   ("C-c D" . crux-delete-file-and-buffer)))
 #+end_src
-
-** Kill ring navigation
-
-It can be a hassle to navigate the kill ring manually (~C-y M-y M-y M-y~
-etc.). =browse-kill-ring= brings up the kill ring as a navigable buffer for easier
-candidate selection.
-
-#+begin_src emacs-lisp
-  (use-package browse-kill-ring
-    :bind (("M-y" . browse-kill-ring)
-	   (:map browse-kill-ring-mode-map
-		 ("j" . browse-kill-ring-forward)
-		 ("k" . browse-kill-ring-previous))))
- #+end_src
 
 * Looks and layout
 
