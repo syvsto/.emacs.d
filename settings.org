@@ -336,7 +336,8 @@ with magit.
 
 #+begin_src emacs-lisp
   (use-package bufler
-    :bind ("C-x C-b" . bufler))
+    :bind ("C-x C-b" . bufler)
+    :hook (after-init . bufler-mode))
 #+end_src
 
 Helm-bufler lets helm use bufler as a completion source.
@@ -352,7 +353,7 @@ recent files etc., akin to ~helm-mini~.
 #+begin_src emacs-lisp
   (defun my/helm-bufler-mini ()
     (interactive)
-    (helm :sources (list helm-source-recentf helm-bufler-source helm-source-buffer-not-found)))
+    (helm :sources (list helm-bufler-source helm-source-recentf helm-source-buffer-not-found)))
 #+end_src
 
 ** Crux
