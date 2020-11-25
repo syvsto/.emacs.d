@@ -240,7 +240,9 @@ Avy allows quick candidate selection.
 #+begin_src emacs-lisp
   (use-package avy
     :bind (("M-g M-g" . avy-goto-line)
-	   ("C-'" . avy-goto-word-1)))
+	   ("C-'" . avy-goto-word-1)
+	   (:map isearch-mode-map
+		 ("C-'" . avy-isearch))))
 #+end_src
 
 ** Anzu
