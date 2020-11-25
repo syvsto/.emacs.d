@@ -286,7 +286,6 @@ need to mess as much about with many different commands (such as when using
     :bind
     (("M-x" . helm-M-x)
      ("C-x C-f" . helm-find-files)
-     ("C-x b" . helm-mini)
      ("C-c r" . helm-do-grep-ag))
     :config
     (helm-mode 1))
@@ -328,21 +327,31 @@ in its entirety. The ~flimenu~ package flattens the ~imenu~ so this works.
     :hook (after-init . flimenu-global-mode))
 #+end_src
 
-** IBuffer
+** Bufler
 
-Similar to IMenu, IBuffer is a nice built-in replacement for ~list-buffers~
+Bufler is a nice replacement for IBuffer that allows better and simpler
+grouping, grouping into many levels, and an interaction scheme somewhat aligned
+with magit.
 
 #+begin_src emacs-lisp
-(bind-key "C-x C-b" 'ibuffer)
+  (use-package bufler
+    :bind ("C-x C-b" . bufler))
 #+end_src
 
-IBuffer-vc automatically creates filter groups for VC folders.
+Helm-bufler lets helm use bufler as a completion source.
 #+begin_src emacs-lisp
-  (use-package ibuffer-vc
-    :hook (ibuffer . (lambda ()
-		       (ibuffer-vc-set-filter-groups-by-vc-root)
-		       (unless (eq ibuffer-sorting-mode 'alphabetic)
-			 (ibuffer-do-sort-by-alphabetic)))))
+  (use-package helm-bufler
+    :after (helm bufler)
+    :bind ("C-x b" . my/helm-bufler-mini))
+#+end_src
+
+It's nice to have a helm source for that includes bufler buffers together with
+recent files etc., akin to ~helm-mini~.
+
+#+begin_src emacs-lisp
+  (defun my/helm-bufler-mini ()
+    (interactive)
+    (helm :sources (list helm-bufler-source helm-source-recentf helm-source-buffer-not-found)))
 #+end_src
 
 ** Crux
