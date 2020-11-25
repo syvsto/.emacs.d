@@ -592,14 +592,6 @@ header, so that I have more horizontal characters for each line.
   (setq org-adapt-indentation nil)
 #+END_SRC
 
-The leading stars in headers can be visually noisy for very nested documents, so
-they are disabled. ~org-bullets-mode~ is another option, but has been causing
-slowdowns for some larger org documents.
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-hide-leading-stars 't)
-#+END_SRC
-
 Org has a tendency to do weird stuff with whitespace when toggling
 headings. Disable this behavior. Also, display the spacing between headings even
 when they are closed.
@@ -662,12 +654,6 @@ once. Set it up so it shows my todos from various files.
 		  (org-agenda-files '(,(concat my/org-agenda-dir "next.org")))
 		  (org-agenda-skip-function '(org-agenda-skip-entry-if 'deadline 'scheduled))))
 	   nil)))
-
-  (use-package org
-    :bind (("C-c c" . org-capture)
-	   ("C-c l" . org-store-link))
-    :init
-    (setq org-agenda-custom-commands (list my/org-agenda-todo-view)))
 #+end_src
 
 Show todo items in agenda that have been set to done in this session, or are
@@ -695,6 +681,14 @@ management. This binds a shortcut to my agenda view to ~<F1>~.
   (bind-key "<f1>" 'my/org-agenda)
 #+end_src
 
+#+begin_src emacs-lisp
+  (defun my/org-babel-langs ()
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((restclient . t))))
+#+end_src
+
+
 
 ***** Refiling
 
@@ -712,6 +706,19 @@ I need some targets to refile to.
 			     ("calendar.org" :level . 0)
 			     ("emails.org" :level . 0)
 			     ("projects.org" :maxlevel . 1)))
+#+end_src
+
+*** Finalization
+
+Setup the actual org package.
+
+#+begin_src emacs-lisp
+  (use-package org
+    :bind (("C-c c" . org-capture)
+	   ("C-c l" . org-store-link))
+    :init
+    (setq org-agenda-custom-commands (list my/org-agenda-todo-view)))
+    (my/org-babel-langs)
 #+end_src
 
 ** Markdown
