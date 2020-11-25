@@ -154,7 +154,7 @@
 
 	;; Helm
 	`(helm-action ((,class :underline t)))
-	`(helm-selection ((,class :foreground ,bg :background ,fg)))
+	`(helm-selection ((,class :foreground ,fg :background ,blue)))
 	`(helm-selection-line ((,class :bold t :underline t)))
 	`(helm-ff-directory ((,class :bold t)))
 	`(helm-ff-dotted-directory ((,class :italic t :bold t)))
