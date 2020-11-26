@@ -345,6 +345,7 @@ with magit.
 Helm-bufler lets helm use bufler as a completion source.
 #+begin_src emacs-lisp
   (use-package helm-bufler
+    :commands (helm-bufler-switch-buffer)
     :bind ("C-x b" . my/helm-bufler-mini))
 #+end_src
 
