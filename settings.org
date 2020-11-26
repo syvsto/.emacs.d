@@ -276,6 +276,7 @@ need to mess as much about with many different commands (such as when using
 
 #+begin_src emacs-lisp
   (use-package helm
+    :defer nil
     :custom
     (helm-grep-ag-command (concat "rg"
 				  " --color=never"
@@ -289,6 +290,7 @@ need to mess as much about with many different commands (such as when using
      ("C-c r" . helm-do-grep-ag)
      ("M-y" . helm-show-kill-ring))
     :config
+    (require 'helm-for-files)
     (helm-mode 1))
 #+end_src
 
@@ -343,7 +345,6 @@ with magit.
 Helm-bufler lets helm use bufler as a completion source.
 #+begin_src emacs-lisp
   (use-package helm-bufler
-    :after (helm bufler)
     :bind ("C-x b" . my/helm-bufler-mini))
 #+end_src
 
@@ -717,7 +718,6 @@ Setup the actual org package.
 	   ("C-c l" . org-store-link))
     :init
     (setq org-agenda-custom-commands (list my/org-agenda-todo-view)))
-    (my/org-babel-langs)
 #+end_src
 
 ** Markdown
@@ -935,7 +935,8 @@ The ~restclient~ package can be used for querying REST endpoints, and is well
 suited for use with literate org files through ~ob-restclient~.
 #+begin_src emacs-lisp
   (use-package restclient)
-  (use-package ob-restclient)
+  (use-package ob-restclient
+    :defer nil)
   (use-package company-restclient
     :after company
     :init
