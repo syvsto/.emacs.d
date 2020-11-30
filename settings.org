@@ -808,7 +808,7 @@ display, as it is too noisy.
 #+begin_src emacs-lisp
   (defun my/bind-helm-lsp ()
     (define-key lsp-mode-map [remap xref-find-apropos] #'helm-lsp-workspace-symbol)
-    (define-key lsp-mode-map [remap lsp-execute-code-action] #'helm-lsp-code-action))
+    (define-key lsp-mode-map [remap lsp-execute-code-action] #'helm-lsp-code-actions))
 
   (use-package helm-lsp
     :hook (lsp-mode . my/bind-helm-lsp))
