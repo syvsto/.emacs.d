@@ -287,6 +287,7 @@ need to mess as much about with many different commands (such as when using
     :bind
     (("M-x" . helm-M-x)
      ("C-x C-f" . helm-find-files)
+     ("C-x b" . helm-mini)
      ("C-c r" . helm-do-grep-ag)
      ("M-y" . helm-show-kill-ring))
     :config
@@ -342,21 +343,10 @@ with magit.
     :hook (after-init . bufler-mode))
 #+end_src
 
-Helm-bufler lets helm use bufler as a completion source.
-#+begin_src emacs-lisp
-  (use-package helm-bufler
-    :commands (helm-bufler-switch-buffer)
-    :bind ("C-x b" . my/helm-bufler-mini))
-#+end_src
-
-It's nice to have a helm source for that includes bufler buffers together with
-recent files etc., akin to ~helm-mini~.
-
-#+begin_src emacs-lisp
-  (defun my/helm-bufler-mini ()
-    (interactive)
-    (helm :sources (list helm-bufler-source helm-source-recentf helm-source-buffer-not-found)))
-#+end_src
+The bufler buffer grouping/switching functionality is a bit buggy, and will
+either add buffer headers to the buffer list, or hide the buffer list
+entirely. I therefore rely on regular buffer switching, and only use bufler as
+an Ibuffer replacement.
 
 ** Crux
 
