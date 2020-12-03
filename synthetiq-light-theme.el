@@ -162,6 +162,14 @@
 	`(helm-match ((,class :foreground ,blue :background ,bg)))
 	`(helm-match-item ((,class :background ,blue :foreground ,fg)))
 	`(helm-ff-file-extension ((,class :foreground ,fg2)))
+
+	;; Selectrum
+	`(selectrum-primary-highlight ((,class :bold t)))
+	`(selectrum-secondary-highlight ((,class :foreground ,blue)))
+
+	;; Consult
+	`(consult-annotation ((,class :foreground ,bg-light)))
+	`(consult-file ((,class :foreground ,fg2)))
 ))
 
 ;;;###autoload
