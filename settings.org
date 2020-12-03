@@ -318,6 +318,10 @@ buffer switching method that includes virtual buffers such as recent files, and
 an annotation mode that displays documentation and key bindings inline. Since it
 extends ~completing-read~, it works well with ~selectrum~.
 
+I don't like popups when coding, so I trigger autocomplete manually. Since I
+mostly use the various LSP servers for code, ~capf~ can be used for completion
+through ~completion-at-point~.
+
 #+begin_src emacs-lisp
   (use-package consult
     :straight (consult :type git :host github :repo "minad/consult" :file "consult.el")
@@ -325,21 +329,10 @@ extends ~completing-read~, it works well with ~selectrum~.
 	   ("M-g l" . consult-line)
 	   ("C-x b" . consult-buffer)
 	   ("C-x 4 b" . consult-buffer-other-window)
-	   ("C-x 5 b" . consult-buffer-other-frame))
+	   ("C-x 5 b" . consult-buffer-other-frame)
+	   ("C-;" . completion-at-point))
     :init
     (consult-annotate-mode))
-#+end_src
-
-Company for completion at point, since it's nice. I don't like the auto-popup
-from company, so I only trigger it manually. 
-
-#+begin_src emacs-lisp
-  (use-package company
-    :custom
-    (company-idle-delay nil)
-    :bind ("C-;" . company-complete)
-    :init
-    (global-company-mode 1))
 #+end_src
 
 ** Imenu
