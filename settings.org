@@ -146,6 +146,11 @@ Highlight the current line.
   (global-hl-line-mode 1)
 #+end_src
 
+Gotta keep a list of recent files so I can navigate back to them.
+#+begin_src emacs-lisp
+  (recentf-mode 1)
+#+end_src
+
 ** Dired
 
 Dired has some rough edges. The series of packages from ~dired-hacks~ helps add some
@@ -268,31 +273,61 @@ Undo tree is perfect when making mistakes.
     (global-undo-tree-mode))
 #+end_src
 
-** Completion framework
+** Kill ring navigation
 
-Helm, because it collects many different sources in a single buffer so I don't
-need to mess as much about with many different commands (such as when using
-~helm-mini~).
+Browse-kill-ring displays a buffer with the kill ring content.
 
 #+begin_src emacs-lisp
-  (use-package helm
-    :defer nil
-    :custom
-    (helm-grep-ag-command (concat "rg"
-				  " --color=never"
-				  " --smart-case"
-				  " --no-heading"
-				  " --line-number %s %s %s"))
-    (helm-grep-file-path-style 'relative)
-    :bind
-    (("M-x" . helm-M-x)
-     ("C-x C-f" . helm-find-files)
-     ("C-x b" . helm-mini)
-     ("C-c r" . helm-do-grep-ag)
-     ("M-y" . helm-show-kill-ring))
-    :config
-    (require 'helm-for-files)
-    (helm-mode 1))
+  (use-package browse-kill-ring
+    :bind ("M-y" . browse-kill-ring))
+#+end_src
+
+** Completion framework
+
+After actively using both Ivy and Helm as a generic completion framework, I've
+settled on something simpler. They both do a lot of things I don't
+need. Overall, I like Ivy slightly better, since Helm has a small but noticable
+delay when opening a buffer.
+
+Selectrum is a nice compromise between Emacs itself and the bigger frameworks like
+Ivy and Helm. It uses the built-in ~completing-read~ function instead of
+implementing it's own, and is therefore easier to hack on than the alternatives.
+
+~Prescient~ is a package for sorting completing-read results according to
+frecency, and importantly works across Emacs sessions. Every time I try a
+different completion package I miss the cross-session sorting this package
+provides.
+
+#+begin_src emacs-lisp
+  (use-package prescient
+    :commands (prescient-persist-mode))
+  (use-package selectrum-prescient
+    :commands (selectrum-prescient-mode))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package selectrum
+    :init
+    (selectrum-mode 1)
+    (selectrum-prescient-mode 1)
+    (prescient-persist-mode 1))
+#+end_src
+
+~Consult~ adds some niceties on top of ~completing-read~, most importantly a
+buffer switching method that includes virtual buffers such as recent files, and
+an annotation mode that displays documentation and key bindings inline. Since it
+extends ~completing-read~, it works well with ~selectrum~.
+
+#+begin_src emacs-lisp
+  (use-package consult
+    :straight (consult :type git :host github :repo "minad/consult" :file "consult.el")
+    :bind (("M-g o" . consult-outline)
+	   ("M-g l" . consult-line)
+	   ("C-x b" . consult-buffer)
+	   ("C-x 4 b" . consult-buffer-other-window)
+	   ("C-x 5 b" . consult-buffer-other-frame))
+    :init
+    (consult-annotate-mode))
 #+end_src
 
 Company for completion at point, since it's nice. I don't like the auto-popup
@@ -302,17 +337,9 @@ from company, so I only trigger it manually.
   (use-package company
     :custom
     (company-idle-delay nil)
+    :bind ("C-;" . company-complete)
     :init
     (global-company-mode 1))
-#+end_src
-
-Helm-company allows displaying company candidates in a helm buffer, so it's
-easier to narrow down the list of options.
-
-#+begin_src emacs-lisp
-  (use-package helm-company
-    :bind (:map company-mode-map
-		("C-;" . helm-company)))
 #+end_src
 
 ** Imenu
@@ -350,7 +377,7 @@ an Ibuffer replacement.
 
 ** Crux
 
-  The Crux package contains a bunch of useful shortcuts.
+The Crux package contains a bunch of useful shortcuts.
 
 #+begin_src emacs-lisp
   (use-package crux
@@ -794,16 +821,6 @@ display, as it is too noisy.
     (lsp-ui-doc-position 'at-point))
 #+end_src
 
-~helm-lsp~ enables navigating an LSP project using helm. Pretty cool.
-#+begin_src emacs-lisp
-  (defun my/bind-helm-lsp ()
-    (define-key lsp-mode-map [remap xref-find-apropos] #'helm-lsp-workspace-symbol)
-    (define-key lsp-mode-map [remap lsp-execute-code-action] #'helm-lsp-code-actions))
-
-  (use-package helm-lsp
-    :hook (lsp-mode . my/bind-helm-lsp))
-#+end_src
-
 ** Structured editing
 
 Smartparens enables features of structured editing into any language that can
@@ -932,6 +949,12 @@ suited for use with literate org files through ~ob-restclient~.
     :after company
     :init
     (add-to-list 'company-backends 'company-restclient))
+#+end_src
+
+*** CSV
+
+#+begin_src emacs-lisp
+  (use-package csv-mode)
 #+end_src
 
 * Version control
