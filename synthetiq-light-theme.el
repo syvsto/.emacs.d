@@ -164,6 +164,7 @@
 	`(helm-ff-file-extension ((,class :foreground ,fg2)))
 
 	;; Selectrum
+`(selectrum-current-candidate ((,class :underline t :bold t)))
 	`(selectrum-primary-highlight ((,class :bold t)))
 	`(selectrum-secondary-highlight ((,class :foreground ,blue)))
 

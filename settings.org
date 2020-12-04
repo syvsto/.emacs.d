@@ -210,24 +210,12 @@ features that make dired easier to use in certain cases.
 Modal Emacs bindings for that sweet RSI relief.
 
 #+begin_src emacs-lisp
-  (use-package god-mode
-    :bind
-    (("<escape>" . god-local-mode)
-     ("C-x C-1" . delete-other-windows)
-     ("C-x C-2" . split-window-below)
-     ("C-x C-3" . split-window-right)
-     ("C-x C-0" . delete-window)
-     (:map god-local-mode-map
-	   ("z" . repeat)
-	   ("i" . god-local-mode))
-     (:map isearch-mode-map
-	   ("<escape>" . god-mode-isearch-activate))
-     (:map god-mode-isearch-map
-	   ("<escape>" . god-mode-isearch-disable)))
-    :config
-    (require 'god-mode-isearch)
-    (global-set-key (kbd "<escape>") #'god-local-mode)
-    (which-key-enable-god-mode-support))
+  (use-package boon
+    :init
+    (require 'boon-colemak)
+    (boon-mode))
+
+  (use-package multiple-cursors)
 #+END_src
 
 ** FFAP
@@ -244,10 +232,7 @@ files in HTML/Javascript.
 Avy allows quick candidate selection.
 #+begin_src emacs-lisp
   (use-package avy
-    :bind (("M-g M-g" . avy-goto-line)
-	   ("C-'" . avy-goto-word-1)
-	   (:map isearch-mode-map
-		 ("C-'" . avy-isearch))))
+    :bind (("M-g g" . avy-goto-line)))
 #+end_src
 
 ** Anzu
@@ -269,6 +254,7 @@ Undo tree is perfect when making mistakes.
 
 #+begin_src emacs-lisp
   (use-package undo-tree
+    :bind ("M-g u" . undo-tree-visualize)
     :init
     (global-undo-tree-mode))
 #+end_src
@@ -279,7 +265,7 @@ Browse-kill-ring displays a buffer with the kill ring content.
 
 #+begin_src emacs-lisp
   (use-package browse-kill-ring
-    :bind ("M-y" . browse-kill-ring))
+    :bind ("M-g y" . browse-kill-ring))
 #+end_src
 
 ** Completion framework
@@ -318,10 +304,6 @@ buffer switching method that includes virtual buffers such as recent files, and
 an annotation mode that displays documentation and key bindings inline. Since it
 extends ~completing-read~, it works well with ~selectrum~.
 
-I don't like popups when coding, so I trigger autocomplete manually. Since I
-mostly use the various LSP servers for code, ~capf~ can be used for completion
-through ~completion-at-point~.
-
 #+begin_src emacs-lisp
   (use-package consult
     :straight (consult :type git :host github :repo "minad/consult" :file "consult.el")
@@ -330,9 +312,25 @@ through ~completion-at-point~.
 	   ("C-x b" . consult-buffer)
 	   ("C-x 4 b" . consult-buffer-other-window)
 	   ("C-x 5 b" . consult-buffer-other-frame)
-	   ("C-;" . completion-at-point))
+	   (:map boon-command-map
+		 ("p" . consult-line)))
     :init
     (consult-annotate-mode))
+#+end_src
+
+The almighty ~company~ provides in-buffer completion. I'm not usually a fan of
+popups while I code, but autocompletion is too useful to ignore.
+
+#+begin_src emacs-lisp
+  (use-package company
+    :custom
+    (company-idle-delay 0.0)
+    (company-minimum-prefix-length 1)
+    (company-selection-wrap-around t)
+    (company-show-numbers t)
+    (company-tooltip-align-annotations t)
+    :config
+    (global-company-mode 1))
 #+end_src
 
 ** Imenu
@@ -411,7 +409,7 @@ Push some elements to the right on the modeline, so it looks more balanced.
     (unless reserve
       (setq reserve 20))
     (when (and window-system (eq 'right (get-scroll-bar-mode)))
-      (setq reserve (- reserve 3)))
+      (setq reserve (- reserve 1)))
     (propertize " "
 		'display `((space :align-to (- (+ right right-fringe right-margin) ,reserve)))))
 #+end_src
@@ -434,7 +432,7 @@ The minions package gathers minor modes together in a nice manner
 				    mode-line-position
 				    vc-mode
 				    minions-mode-line-modes
-				    '(:eval (mode-line-fill (+ (length (format-mode-line mode-line-misc-info)) 3)))
+				    '(:eval (mode-line-fill (+ (length (format-mode-line mode-line-misc-info)) 0)))
 				    mode-line-misc-info))
     )
 #+end_src
@@ -940,7 +938,7 @@ suited for use with literate org files through ~ob-restclient~.
     :defer nil)
   (use-package company-restclient
     :after company
-    :init
+    :config
     (add-to-list 'company-backends 'company-restclient))
 #+end_src
 
