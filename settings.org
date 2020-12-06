@@ -156,12 +156,12 @@ key presses for no extra effort.
 
 #+begin_src emacs-lisp
   (use-package super-save
+    :hook (after-init . super-save-mode)
     :custom
     (super-save-auto-save-when-idle t)
     (auto-save-default nil)
-    :init
-    (add-to-list 'super-save-triggers #'ace-window)
-    (super-save-mode +1))
+    :config
+    (add-to-list 'super-save-triggers #'ace-window))
 #+end_src
 
 ** Dired
@@ -220,18 +220,20 @@ features that make dired easier to use in certain cases.
 
 * Key bindings and navigation
 
-Modal Emacs bindings for that sweet RSI relief.
-
 #+begin_src emacs-lisp
-  (use-package boon
-    :bind (:map boon-command-map
-		(":" . completion-at-point))
-    :init
-    (require 'boon-colemak)
-    (boon-mode))
+  (use-package hydra)
+  (use-package evil
+    :config (evil-mode 1))
 
-  (use-package multiple-cursors)
-#+END_src
+  (use-package symex)
+
+  (use-package epistemic-mode
+    :straight (epistemic-mode :type git :host github :repo "countvajhula/rigpa")
+    :config
+    (require 'eem-char-mode
+    (require 'evil-epistemic-mode))
+#+end_src
+
 
 ** FFAP
 
