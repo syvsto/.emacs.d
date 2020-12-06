@@ -221,17 +221,47 @@ features that make dired easier to use in certain cases.
 * Key bindings and navigation
 
 #+begin_src emacs-lisp
+(cl-defun my-new-empty-buffer (&optional
+                               buffer-name
+                               major-mode-to-use
+                               &key
+                               switch-p)
+  "Create a new empty buffer.
+If BUFFER-NAME is not provided, the new buffer will be named
+“untitled” or “untitled<2>”, “untitled<3>”, etc. The buffer will be
+created in the currently active (at the time of command execution)
+major mode.
+If SWITCH-P is true, switch to the newly created buffer.
+Modified from:
+URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
+Version 2017-11-01"
+  (interactive)
+  (let* ((buffer-name (or buffer-name "untitled"))
+         (major-mode-to-use (or major-mode-to-use major-mode))
+         ($buf (generate-new-buffer buffer-name)))
+    (with-current-buffer $buf
+      (funcall major-mode-to-use)
+      (setq buffer-offer-save t))
+    (when switch-p
+      (switch-to-buffer $buf))
+    $buf))
+
   (use-package hydra)
   (use-package evil
-    :config (evil-mode 1))
+    :init (evil-mode 1))
 
   (use-package symex)
-
+  (use-package parsec)
+  (use-package ht
+    :commands (ht))
+(setq epistemic-show-menus t)
   (use-package epistemic-mode
     :straight (epistemic-mode :type git :host github :repo "countvajhula/rigpa")
     :config
-    (require 'eem-char-mode
-    (require 'evil-epistemic-mode))
+    (require 'eem-char-mode)
+    (require 'evil-epistemic-mode)
+    (setq epistemic-mode t)
+    )
 #+end_src
 
 
