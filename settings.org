@@ -151,6 +151,19 @@ Gotta keep a list of recent files so I can navigate back to them.
   (recentf-mode 1)
 #+end_src
 
+Super-save allows me to not hit the save keys all the time, which saves me some
+key presses for no extra effort.
+
+#+begin_src emacs-lisp
+  (use-package super-save
+    :custom
+    (super-save-auto-save-when-idle t)
+    (auto-save-default nil)
+    :init
+    (add-to-list 'super-save-triggers #'ace-window)
+    (super-save-mode +1))
+#+end_src
+
 ** Dired
 
 Dired has some rough edges. The series of packages from ~dired-hacks~ helps add some
@@ -211,6 +224,8 @@ Modal Emacs bindings for that sweet RSI relief.
 
 #+begin_src emacs-lisp
   (use-package boon
+    :bind (:map boon-command-map
+		(":" . completion-at-point))
     :init
     (require 'boon-colemak)
     (boon-mode))
