@@ -77,7 +77,7 @@ alleviate some of the pain points of the language.
 ~ht~ is a library for hash tables in elisp.
 #+begin_src emacs-lisp
   (use-package ht
-      :commands (ht-set! ht-values))
+      :commands (ht ht-set! ht-values))
 #+end_src
 
 ~hydra~ allows defining ad-hoc menus that have their own key bindings (that
@@ -245,6 +245,7 @@ lot of other packages, such as dired and magit.
     :init (evil-mode 1))
   (use-package evil-collection
     :after evil
+    :custom (evil-want-integration nil)
     :config
     (initialize-evil-collection))
 #+end_src
@@ -253,26 +254,30 @@ General allows very flexible key rebinding, and integrates with ~evil~. It also
 lets me set leader keys.
 #+begin_src emacs-lisp
   (use-package general
-    :config
-    (defhydra hydra-leader (:exit t)
+    :after (evil hydra)
+    :init
+    (defhydra hydra-leader (:exit t :hint nil)
       "
-  ^Modes^                                              ^Applications^
-  ^^^^------------------------------------------------------------
-  _q_: paragraph _w_: line _f_: word _p_: char         _._: Eshell
-  _x_: symex                                           _u_: Undo tree
-                                                       _m_: Magit
-  "
-      ("q" (eem-enter-mode "paragraph"))
+  ^Modes^                                                 ^Applications^ ^^^^^^^^--------------------------------------------------------------------------
+      _q_: activity _w_: line  _f_: word   _p_: char         _._: Eshell
+      _a_: window   _r_: file  _s_: buffer _t_: view         _u_: Undo tree
+      ^ ^           _x_: symex ^ ^         ^ ^               _m_: Magit
+      "
+      ("q" (eem-enter-mode "activity"))
       ("w" (eem-enter-mode "line"))
       ("f" (eem-enter-mode "word"))
       ("p" (eem-enter-mode "char"))
+      ("a" (eem-enter-mode "window"))
+      ("r" (eem-enter-mode "file"))
+      ("s" (eem-enter-mode "buffer"))
+      ("t" (eem-enter-mode "view"))
+      ("x" (eem-enter-mode "symex"))
       ("m" magit-status)
-      ("." eshell)
-      ("u" undo-tree-visualize)
-      ("x" symex-mode-interface))
+      ("u" undo-tree)
+      ("." eshell))
     (general-define-key
-     :states 'normal
-     "SPC" 'hydra-leader/body))
+      "M-SPC" 'hydra-leader/body))
+
 #+end_src
 
 ~Rigpa~ is a new and very interesting system for working with consistent key
@@ -312,11 +317,33 @@ It is very much in beta right now, so I'm expecting some rough edges.
   (use-package epistemic-mode
     :after (ht parsec evil hydra)
     :straight (epistemic-mode :type git :host github :repo "countvajhula/rigpa")
-    :config
+    :init
     (require 'evil-epistemic-mode)
     (setq epistemic-mode t))
 #+end_src
 
+Since rigpa is under development, it uses some of the author's custom functions
+for navigation.
+
+#+begin_src emacs-lisp
+  (defun my-jump-down ()
+    (interactive)
+    (dotimes (i 9)
+      (evil-next-line)))
+
+  (defun my-jump-up ()
+    (interactive)
+    (dotimes (i 9)
+      (evil-previous-line)))
+
+  (defun my-scroll-down ()
+    (interactive)
+    (evil-scroll-line-down 3))
+
+  (defun my-scroll-up ()
+    (interactive)
+    (evil-scroll-line-up 3))
+#+end_src
 
 ** FFAP
 
@@ -412,10 +439,7 @@ extends ~completing-read~, it works well with ~selectrum~.
 	     ("C-x b" . consult-buffer)
 	     ("C-x 4 b" . consult-buffer-other-window)
 	     ("C-x 5 b" . consult-buffer-other-frame)
-	     ("C-s" . consult-line))
-      :init
-      (consult-annotate-mode)
-  )
+	     ("C-s" . consult-line)))
 #+end_src
 
 ** Imenu
@@ -458,7 +482,6 @@ The Crux package contains a bunch of useful shortcuts.
 #+begin_src emacs-lisp
   (use-package crux
     :bind (("C-c o" . crux-open-with)
-	   ("C-^" . crux-top-join-line)
 	   ("C-c n" . crux-cleanup-buffer-or-region)
 	   ("C-c u" . crux-view-url)
 	   ("C-a" . crux-move-beginning-of-line)
@@ -479,9 +502,9 @@ The Crux package contains a bunch of useful shortcuts.
 Julia Mono has a lot of unicode symbols, perfect for e.g. Agda.
 
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :family "JuliaMono" :height 130)
-  (set-face-attribute 'fixed-pitch nil :family "JuliaMono" :height 130)
-  (set-face-attribute 'variable-pitch nil :family "JuliaMono" :height 130)
+  (set-face-attribute 'default nil :family "JuliaMono" :height 110)
+  (set-face-attribute 'fixed-pitch nil :family "JuliaMono" :height 110)
+  (set-face-attribute 'variable-pitch nil :family "JuliaMono" :height 110)
 #+END_SRC
 
 ** Modeline
