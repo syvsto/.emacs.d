@@ -69,6 +69,23 @@ alleviate some of the pain points of the language.
   (use-package dash)
 #+END_SRC
 
+~parsec~ contains parser combinators a la parsec for Haskell.
+#+begin_src emacs-lisp
+  (use-package parsec)
+#+end_src
+
+~ht~ is a library for hash tables in elisp.
+#+begin_src emacs-lisp
+  (use-package ht
+      :commands (ht-set! ht-values))
+#+end_src
+
+~hydra~ allows defining ad-hoc menus that have their own key bindings (that
+don't require modifier keys). Very handy!
+#+begin_src emacs-lisp
+  (use-package hydra)
+#+end_src
+
 ** Environment variables
 
 On MacOS, you often don't get the correct $PATH when using GUI Emacs. The
@@ -220,48 +237,84 @@ features that make dired easier to use in certain cases.
 
 * Key bindings and navigation
 
+Evil for modal editing. It's not the absolute best in terms of usability, but
+vim bindings are available everywhere. ~evil-collection~ integrates evil with a
+lot of other packages, such as dired and magit.
 #+begin_src emacs-lisp
-(cl-defun my-new-empty-buffer (&optional
-                               buffer-name
-                               major-mode-to-use
-                               &key
-                               switch-p)
-  "Create a new empty buffer.
-If BUFFER-NAME is not provided, the new buffer will be named
-“untitled” or “untitled<2>”, “untitled<3>”, etc. The buffer will be
-created in the currently active (at the time of command execution)
-major mode.
-If SWITCH-P is true, switch to the newly created buffer.
-Modified from:
-URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
-Version 2017-11-01"
-  (interactive)
-  (let* ((buffer-name (or buffer-name "untitled"))
-         (major-mode-to-use (or major-mode-to-use major-mode))
-         ($buf (generate-new-buffer buffer-name)))
-    (with-current-buffer $buf
-      (funcall major-mode-to-use)
-      (setq buffer-offer-save t))
-    (when switch-p
-      (switch-to-buffer $buf))
-    $buf))
-
-  (use-package hydra)
   (use-package evil
     :init (evil-mode 1))
+  (use-package evil-collection
+    :after evil
+    :config
+    (initialize-evil-collection))
+#+end_src
 
-  (use-package symex)
-  (use-package parsec)
-  (use-package ht
-    :commands (ht))
-(setq epistemic-show-menus t)
+General allows very flexible key rebinding, and integrates with ~evil~. It also
+lets me set leader keys.
+#+begin_src emacs-lisp
+  (use-package general
+    :config
+    (defhydra hydra-leader (:exit t)
+      "
+  ^Modes^                                              ^Applications^
+  ^^^^------------------------------------------------------------
+  _q_: paragraph _w_: line _f_: word _p_: char         _._: Eshell
+  _x_: symex                                           _u_: Undo tree
+                                                       _m_: Magit
+  "
+      ("q" (eem-enter-mode "paragraph"))
+      ("w" (eem-enter-mode "line"))
+      ("f" (eem-enter-mode "word"))
+      ("p" (eem-enter-mode "char"))
+      ("m" magit-status)
+      ("." eshell)
+      ("u" undo-tree-visualize)
+      ("x" symex-mode-interface))
+    (general-define-key
+     :states 'normal
+     "SPC" 'hydra-leader/body))
+#+end_src
+
+~Rigpa~ is a new and very interesting system for working with consistent key
+bindings across many different domains. For instance, one can use it to navigate
+between buffers, or windows, or lines, or characters, etc. It is therefore
+somewhat like ~objed~, but can be used for non-file editing.
+
+It is very much in beta right now, so I'm expecting some rough edges.
+
+#+begin_src emacs-lisp
+  (cl-defun my-new-empty-buffer (&optional
+				 buffer-name
+				 major-mode-to-use
+				 &key
+				 switch-p)
+    "Create a new empty buffer.
+  If BUFFER-NAME is not provided, the new buffer will be named
+  “untitled” or “untitled<2>”, “untitled<3>”, etc. The buffer will be
+  created in the currently active (at the time of command execution)
+  major mode.
+  If SWITCH-P is true, switch to the newly created buffer.
+  Modified from:
+  URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
+  Version 2017-11-01"
+    (interactive)
+    (let* ((buffer-name (or buffer-name "untitled"))
+	   (major-mode-to-use (or major-mode-to-use major-mode))
+	   ($buf (generate-new-buffer buffer-name)))
+      (with-current-buffer $buf
+	(funcall major-mode-to-use)
+	(setq buffer-offer-save t))
+      (when switch-p
+	(switch-to-buffer $buf))
+      $buf))
+
+  (setq epistemic-show-menus t)
   (use-package epistemic-mode
+    :after (ht parsec evil hydra)
     :straight (epistemic-mode :type git :host github :repo "countvajhula/rigpa")
     :config
-    (require 'eem-char-mode)
     (require 'evil-epistemic-mode)
-    (setq epistemic-mode t)
-    )
+    (setq epistemic-mode t))
 #+end_src
 
 
@@ -352,17 +405,17 @@ an annotation mode that displays documentation and key bindings inline. Since it
 extends ~completing-read~, it works well with ~selectrum~.
 
 #+begin_src emacs-lisp
-  (use-package consult
-    :straight (consult :type git :host github :repo "minad/consult" :file "consult.el")
-    :bind (("M-g o" . consult-outline)
-	   ("M-g l" . consult-line)
-	   ("C-x b" . consult-buffer)
-	   ("C-x 4 b" . consult-buffer-other-window)
-	   ("C-x 5 b" . consult-buffer-other-frame)
-	   (:map boon-command-map
-		 ("p" . consult-line)))
-    :init
-    (consult-annotate-mode))
+    (use-package consult
+      :straight (consult :type git :host github :repo "minad/consult" :file "consult.el")
+      :bind (("M-g o" . consult-outline)
+	     ("M-g l" . consult-line)
+	     ("C-x b" . consult-buffer)
+	     ("C-x 4 b" . consult-buffer-other-window)
+	     ("C-x 5 b" . consult-buffer-other-frame)
+	     ("C-s" . consult-line))
+      :init
+      (consult-annotate-mode)
+  )
 #+end_src
 
 ** Imenu
@@ -849,14 +902,12 @@ display, as it is too noisy.
 Smartparens enables features of structured editing into any language that can
 display pairs.
 
+Symex is specialized for use in Lisp modes and provides a nice modal and
+structured editing experience. Since this is Emacs, I enable it all over the place.
 #+begin_src emacs-lisp
-  (use-package smartparens
-    :commands (sp-local-pair smartparens-global-mode sp-use-paredit-bindings)
-    :init
-    (sp-local-pair 'emacs-lisp-mode "`" "'")
-    (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
-    (smartparens-global-mode)
-    (sp-use-smartparens-bindings))
+  (use-package symex
+    :config
+    (symex-mode 1))
 #+end_src
 
 ** Languages
@@ -982,7 +1033,7 @@ Magit is the best git client ever.
 
 #+BEGIN_SRC emacs-lisp
   (use-package magit
-    :bind ("C-x g" . magit-status))
+    :bind ("C-x g" . magit-dispatch))
 #+END_SRC
 
 When programming, it is useful to see which lines have been changed when editing
