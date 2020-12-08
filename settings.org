@@ -242,7 +242,9 @@ vim bindings are available everywhere. ~evil-collection~ integrates evil with a
 lot of other packages, such as dired and magit.
 #+begin_src emacs-lisp
   (use-package evil
-    :custom (evil-want-keybinding nil)
+    :custom
+    (evil-want-keybinding nil)
+    (evil-undo-system 'undo-tree)
     :init (evil-mode 1))
   (use-package evil-collection
     :after evil
