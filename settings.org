@@ -242,41 +242,48 @@ vim bindings are available everywhere. ~evil-collection~ integrates evil with a
 lot of other packages, such as dired and magit.
 #+begin_src emacs-lisp
   (use-package evil
+    :custom (evil-want-keybinding nil)
     :init (evil-mode 1))
   (use-package evil-collection
     :after evil
-    :custom (evil-want-integration nil)
-    :config
-    (initialize-evil-collection))
+    :init
+    (evil-collection-init))
 #+end_src
 
 General allows very flexible key rebinding, and integrates with ~evil~. It also
 lets me set leader keys.
 #+begin_src emacs-lisp
-  (use-package general
-    :after (evil hydra)
-    :init
-    (defhydra hydra-leader (:exit t :hint nil)
-      "
-  ^Modes^                                                 ^Applications^ ^^^^^^^^--------------------------------------------------------------------------
-      _q_: activity _w_: line  _f_: word   _p_: char         _._: Eshell
-      _a_: window   _r_: file  _s_: buffer _t_: view         _u_: Undo tree
-      ^ ^           _x_: symex ^ ^         ^ ^               _m_: Magit
-      "
-      ("q" (eem-enter-mode "activity"))
-      ("w" (eem-enter-mode "line"))
-      ("f" (eem-enter-mode "word"))
-      ("p" (eem-enter-mode "char"))
-      ("a" (eem-enter-mode "window"))
-      ("r" (eem-enter-mode "file"))
-      ("s" (eem-enter-mode "buffer"))
-      ("t" (eem-enter-mode "view"))
-      ("x" (eem-enter-mode "symex"))
-      ("m" magit-status)
-      ("u" undo-tree)
-      ("." eshell))
-    (general-define-key
-      "M-SPC" 'hydra-leader/body))
+      (use-package general
+	:after (evil hydra)
+	:init
+	(defhydra hydra-leader (:exit t :hint nil)
+	  "
+  ^Modes^                                          ^Applications 
+  ^^^^^^^^---------------------------------------------------------------
+  _q_: activity _w_: line  _f_: word   _p_: char         _._: Eshell
+  _a_: window   _r_: file  _s_: buffer _t_: view         _u_: Undo tree
+  ^ ^           _x_: symex ^ ^         ^ ^               _m_: Magit
+  _Q_: towers   _W_: modes ^ ^         ^ ^               ^ ^
+  "
+	  ("q" (eem-enter-mode "activity"))
+	  ("w" (eem-enter-mode "line"))
+	  ("f" (eem-enter-mode "word"))
+	  ("p" (eem-enter-mode "char"))
+	  ("a" (eem-enter-mode "window"))
+	  ("r" (eem-enter-mode "file"))
+	  ("s" (eem-enter-mode "buffer"))
+	  ("t" (eem-enter-mode "view"))
+	  ("x" (eem-enter-mode "symex"))
+	  ("Q" my-enter-tower-mode)
+	  ("W" my-enter-mode-mode)
+	  ("m" magit-status)
+	  ("u" undo-tree)
+	  ("." eshell))
+	(general-define-key
+	 :states 'normal
+	 "SPC" 'hydra-leader/body)
+	(general-define-key
+	  "M-SPC" 'hydra-leader/body))
 
 #+end_src
 
@@ -315,7 +322,7 @@ It is very much in beta right now, so I'm expecting some rough edges.
 
   (setq epistemic-show-menus t)
   (use-package epistemic-mode
-    :after (ht parsec evil hydra)
+    :after (evil symex)
     :straight (epistemic-mode :type git :host github :repo "countvajhula/rigpa")
     :init
     (require 'evil-epistemic-mode)
@@ -929,7 +936,7 @@ Symex is specialized for use in Lisp modes and provides a nice modal and
 structured editing experience. Since this is Emacs, I enable it all over the place.
 #+begin_src emacs-lisp
   (use-package symex
-    :config
+    :init
     (symex-mode 1))
 #+end_src
 
