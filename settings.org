@@ -143,21 +143,6 @@ buffer.
   (setq initial-scratch-message ";; INITIALIZED...")
 #+end_src
 
-** Mac specifics
-
-On Mac, I like keeping the right alt modifier as-is, to be able to input special
-characters with ease.
-
-#+begin_src emacs-lisp
-  (setq ns-right-alternate-modifier nil)
-#+end_src
-
-A small aesthetic change is keeping the title bar and theme in the same color.
-
-#+begin_src emacs-lisp
-  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-#+end_src
-
 Highlight the current line.
 #+begin_src emacs-lisp
   (global-hl-line-mode 1)
@@ -180,6 +165,27 @@ key presses for no extra effort.
     :config
     (add-to-list 'super-save-triggers #'ace-window))
 #+end_src
+
+Electric-pair-mode is a built-in mode for automatically adding a closed pair.
+#+begin_src emacs-lisp
+(electric-pair-mode 1)
+#+end_src
+
+** Mac specifics
+
+On Mac, I like keeping the right alt modifier as-is, to be able to input special
+characters with ease.
+
+#+begin_src emacs-lisp
+  (setq ns-right-alternate-modifier nil)
+#+end_src
+
+A small aesthetic change is keeping the title bar and theme in the same color.
+
+#+begin_src emacs-lisp
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+#+end_src
+
 
 ** Dired
 
@@ -252,40 +258,52 @@ lot of other packages, such as dired and magit.
     (evil-collection-init))
 #+end_src
 
+Some additions to evil (many simulating tpope's excellent plugins).
+
+#+begin_src emacs-lisp
+  (use-package evil-surround
+    :after evil
+    :init (global-evil-surround-mode 1))
+#+end_src
+
 General allows very flexible key rebinding, and integrates with ~evil~. It also
 lets me set leader keys.
 #+begin_src emacs-lisp
-      (use-package general
-	:after (evil hydra)
-	:init
-	(defhydra hydra-leader (:exit t :hint nil)
-	  "
-  ^Modes^                                          ^Applications 
-  ^^^^^^^^---------------------------------------------------------------
-  _q_: activity _w_: line  _f_: word   _p_: char         _._: Eshell
-  _a_: window   _r_: file  _s_: buffer _t_: view         _u_: Undo tree
-  ^ ^           _x_: symex ^ ^         ^ ^               _m_: Magit
-  _Q_: towers   _W_: modes ^ ^         ^ ^               ^ ^
-  "
-	  ("q" (eem-enter-mode "activity"))
-	  ("w" (eem-enter-mode "line"))
-	  ("f" (eem-enter-mode "word"))
-	  ("p" (eem-enter-mode "char"))
-	  ("a" (eem-enter-mode "window"))
-	  ("r" (eem-enter-mode "file"))
-	  ("s" (eem-enter-mode "buffer"))
-	  ("t" (eem-enter-mode "view"))
-	  ("x" (eem-enter-mode "symex"))
-	  ("Q" my-enter-tower-mode)
-	  ("W" my-enter-mode-mode)
-	  ("m" magit-status)
-	  ("u" undo-tree)
-	  ("." eshell))
-	(general-define-key
-	 :states 'normal
-	 "SPC" 'hydra-leader/body)
-	(general-define-key
-	  "M-SPC" 'hydra-leader/body))
+	(use-package general
+	  :after (evil hydra)
+	  :init
+	  (defhydra hydra-leader (:exit t :hint nil)
+	    "
+    ^Modes^                                          ^Applications 
+    ^^^^^^^^---------------------------------------------------------------
+    _q_: activity _w_: line  _f_: word   _p_: char         _._: Eshell
+    _a_: window   _r_: file  _s_: buffer _t_: view         _u_: Undo tree
+    ^ ^           _x_: symex ^ ^         ^ ^               _m_: Magit
+    _Q_: towers   _W_: modes ^ ^         ^ ^               ^ ^
+    "
+	    ("q" (eem-enter-mode "activity"))
+	    ("w" (eem-enter-mode "line"))
+	    ("f" (eem-enter-mode "word"))
+	    ("p" (eem-enter-mode "char"))
+	    ("a" (eem-enter-mode "window"))
+	    ("r" (eem-enter-mode "file"))
+	    ("s" (eem-enter-mode "buffer"))
+	    ("t" (eem-enter-mode "view"))
+	    ("x" (eem-enter-mode "symex"))
+	    ("Q" my-enter-tower-mode)
+	    ("W" my-enter-mode-mode)
+	    ("m" magit-status)
+	    ("u" undo-tree)
+	    ("." eshell))
+
+	  (general-define-key
+	   :states 'normal
+	   "SPC" 'hydra-leader/body)
+	  (general-define-key
+	   "M-SPC" 'hydra-leader/body)
+	  (general-define-key
+	   :states 'insert
+	   "C-n" 'completion-at-point))
 
 #+end_src
 
@@ -357,10 +375,11 @@ for navigation.
 ** FFAP
 
 FFAP is great for navigating to imports of different file types, such as CSS
-files in HTML/Javascript.
+files in HTML/Javascript. It can be enabled by running ~ffap-bindings~, which
+replaces the default file bindings.
 
 #+begin_src emacs-lisp
-  (global-set-key (kbd "C-c f") 'ffap)
+  (ffap-bindings)
 #+end_src
 
 ** Avy
@@ -436,19 +455,32 @@ provides.
 #+end_src
 
 ~Consult~ adds some niceties on top of ~completing-read~, most importantly a
-buffer switching method that includes virtual buffers such as recent files, and
-an annotation mode that displays documentation and key bindings inline. Since it
-extends ~completing-read~, it works well with ~selectrum~.
+buffer switching method that includes virtual buffers such as recent files. Since it extends ~completing-read~, it works well with ~selectrum~.
 
 #+begin_src emacs-lisp
-    (use-package consult
-      :straight (consult :type git :host github :repo "minad/consult" :file "consult.el")
-      :bind (("M-g o" . consult-outline)
-	     ("M-g l" . consult-line)
-	     ("C-x b" . consult-buffer)
-	     ("C-x 4 b" . consult-buffer-other-window)
-	     ("C-x 5 b" . consult-buffer-other-frame)
-	     ("C-s" . consult-line)))
+  (use-package consult
+    :bind (("M-g o" . consult-outline)
+	   ("M-g l" . consult-line)
+	   ("C-x b" . consult-buffer)
+	   ("C-x 4 b" . consult-buffer-other-window)
+	   ("C-x 5 b" . consult-buffer-other-frame)
+	   ("C-s" . consult-line)))
+#+end_src
+
+Marginalia annotates ~completing-read~ buffers.
+
+#+begin_src emacs-lisp
+  (use-package marginalia
+    :straight (marginalia :type git :host github :repo "minad/marginalia" :branch "main")
+    :custom (marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light))
+    :init
+    (marginalia-mode))
+#+end_src
+
+~deadgrep~ is for searching with ripgrep.
+
+#+begin_src emacs-lisp
+(use-package deadgrep)
 #+end_src
 
 ** Imenu
@@ -511,9 +543,9 @@ The Crux package contains a bunch of useful shortcuts.
 Julia Mono has a lot of unicode symbols, perfect for e.g. Agda.
 
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :family "JuliaMono" :height 110)
-  (set-face-attribute 'fixed-pitch nil :family "JuliaMono" :height 110)
-  (set-face-attribute 'variable-pitch nil :family "JuliaMono" :height 110)
+  (set-face-attribute 'default nil :family "JuliaMono" :height 120)
+  (set-face-attribute 'fixed-pitch nil :family "JuliaMono" :height 120)
+  (set-face-attribute 'variable-pitch nil :family "JuliaMono" :height 120)
 #+END_SRC
 
 ** Modeline
