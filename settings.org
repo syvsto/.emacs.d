@@ -282,10 +282,10 @@ lets me set leader keys.
 	  "
   ^Modes^                                          ^Applications 
   ^^^^^^^^---------------------------------------------------------------
-  _q_: activity _w_: line  _f_: word   _p_: char         _._: Eshell
-  _a_: window   _r_: file  _s_: buffer _t_: view         _u_: Undo tree
-  ^ ^           _x_: symex ^ ^         ^ ^               _m_: Git
-  _Q_: towers   _W_: modes ^ ^         ^ ^               ^ ^
+  _q_: activity _w_: line  _f_: word   _p_: char         ^ ^      _u_: Undo tree  ^ ^    ^ ^ 
+  _a_: window   _r_: file  _s_: buffer _t_: view         ^ ^      ^ ^        ^ ^
+  ^ ^           _x_: symex ^ ^         ^ ^               _m_: Git _,_: Dired _._: Eshell ^ ^
+  _Q_: towers   _W_: modes ^ ^         ^ ^               ^ ^      ^ ^        ^ ^      ^ ^
   "
 	  ("q" (eem-enter-mode "activity"))
 	  ("w" (eem-enter-mode "line"))
@@ -299,6 +299,7 @@ lets me set leader keys.
 	  ("Q" my-enter-tower-mode)
 	  ("W" my-enter-mode-mode)
 	  ("m" hydra-git/body)
+	  ("," dired)
 	  ("u" undo-tree)
 	  ("." eshell))
 
