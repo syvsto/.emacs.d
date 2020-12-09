@@ -269,42 +269,47 @@ Some additions to evil (many simulating tpope's excellent plugins).
 General allows very flexible key rebinding, and integrates with ~evil~. It also
 lets me set leader keys.
 #+begin_src emacs-lisp
-	(use-package general
-	  :after (evil hydra)
-	  :init
-	  (defhydra hydra-leader (:exit t :hint nil)
-	    "
-    ^Modes^                                          ^Applications 
-    ^^^^^^^^---------------------------------------------------------------
-    _q_: activity _w_: line  _f_: word   _p_: char         _._: Eshell
-    _a_: window   _r_: file  _s_: buffer _t_: view         _u_: Undo tree
-    ^ ^           _x_: symex ^ ^         ^ ^               _m_: Magit
-    _Q_: towers   _W_: modes ^ ^         ^ ^               ^ ^
-    "
-	    ("q" (eem-enter-mode "activity"))
-	    ("w" (eem-enter-mode "line"))
-	    ("f" (eem-enter-mode "word"))
-	    ("p" (eem-enter-mode "char"))
-	    ("a" (eem-enter-mode "window"))
-	    ("r" (eem-enter-mode "file"))
-	    ("s" (eem-enter-mode "buffer"))
-	    ("t" (eem-enter-mode "view"))
-	    ("x" (eem-enter-mode "symex"))
-	    ("Q" my-enter-tower-mode)
-	    ("W" my-enter-mode-mode)
-	    ("m" magit-status)
-	    ("u" undo-tree)
-	    ("." eshell))
+      (use-package general
+	:after (evil hydra)
+	:init
 
-	  (general-define-key
-	   :states 'normal
-	   "SPC" 'hydra-leader/body)
-	  (general-define-key
-	   "M-SPC" 'hydra-leader/body)
-	  (general-define-key
-	   :states 'insert
-	   "C-n" 'completion-at-point))
+	(defhydra hydra-git (:exit t)
+	  "Git"
+	  ("m" magit-status "Magit")
+	  ("," git-timemachine "Timemachine"))
 
+	(defhydra hydra-leader (:exit t :hint nil)
+	  "
+  ^Modes^                                          ^Applications 
+  ^^^^^^^^---------------------------------------------------------------
+  _q_: activity _w_: line  _f_: word   _p_: char         _._: Eshell
+  _a_: window   _r_: file  _s_: buffer _t_: view         _u_: Undo tree
+  ^ ^           _x_: symex ^ ^         ^ ^               _m_: Git
+  _Q_: towers   _W_: modes ^ ^         ^ ^               ^ ^
+  "
+	  ("q" (eem-enter-mode "activity"))
+	  ("w" (eem-enter-mode "line"))
+	  ("f" (eem-enter-mode "word"))
+	  ("p" (eem-enter-mode "char"))
+	  ("a" (eem-enter-mode "window"))
+	  ("r" (eem-enter-mode "file"))
+	  ("s" (eem-enter-mode "buffer"))
+	  ("t" (eem-enter-mode "view"))
+	  ("x" (eem-enter-mode "symex"))
+	  ("Q" my-enter-tower-mode)
+	  ("W" my-enter-mode-mode)
+	  ("m" hydra-git/body)
+	  ("u" undo-tree)
+	  ("." eshell))
+
+	(general-define-key
+	 :states 'normal
+	 "SPC" 'hydra-leader/body)
+	(general-define-key
+	 "M-SPC" 'hydra-leader/body)
+	(general-define-key
+	 :states 'insert
+	 "C-n" 'completion-at-point))
 #+end_src
 
 ~Rigpa~ is a new and very interesting system for working with consistent key
@@ -1097,7 +1102,8 @@ Magit is the best git client ever.
 
 #+BEGIN_SRC emacs-lisp
   (use-package magit
-    :bind ("C-x g" . magit-dispatch))
+    :bind (("C-x m" . magit-status)
+	   ("C-x M-m" . magit-dispatch)))
 #+END_SRC
 
 When programming, it is useful to see which lines have been changed when editing
