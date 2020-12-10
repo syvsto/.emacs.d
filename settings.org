@@ -160,8 +160,8 @@ key presses for no extra effort.
     (super-save-auto-save-when-idle t)
     (auto-save-default nil)
     :init
-    (add-to-list 'super-save-triggers #'ace-window)
-    (super-save-mode +1))
+    (super-save-mode +1)
+    (add-to-list 'super-save-triggers #'ace-window))
 #+end_src
 
 ** Dired
