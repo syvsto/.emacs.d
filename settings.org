@@ -328,9 +328,15 @@ extends ~completing-read~, it works well with ~selectrum~.
 	   ("C-x 4 b" . consult-buffer-other-window)
 	   ("C-x 5 b" . consult-buffer-other-frame)
 	   (:map boon-command-map
-		 ("p" . consult-line)))
+		 ("p" . consult-line))))
+#+end_src
+
+~Marginalia~ for annotations for completing-read!
+#+begin_src emacs-lisp
+  (use-package marginalia
     :init
-    (consult-annotate-mode))
+    (marginalia-mode)
+    (setq marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light)))
 #+end_src
 
 ** Imenu
