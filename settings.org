@@ -225,7 +225,7 @@ Modal Emacs bindings for that sweet RSI relief.
 #+begin_src emacs-lisp
   (use-package boon
     :bind (:map boon-command-map
-		(":" . completion-at-point))
+		("N" . completion-at-point))
     :init
     (require 'boon-colemak)
     (boon-mode))
