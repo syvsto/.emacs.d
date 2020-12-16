@@ -453,28 +453,6 @@ hidden.
   (display-time-mode 1)
 #+end_src
 
-To make it clearer whether I'm in God mode or not, the mode line should change
-color when god mode is active. Additionally, the cursor should change into a
-line.
-#+begin_src emacs-lisp
-  (defun my-god-mode-update-cursor ()
-      (setq cursor-type (if (or god-local-mode buffer-read-only)
-			  'box
-			  'bar)))
-  (add-hook 'god-mode-enabled-hook #'my-god-mode-update-cursor)
-  (add-hook 'god-mode-disabled-hook #'my-god-mode-update-cursor)
-  (setq-default cursor-type 'bar)
-#+end_src
-
-** Rainbow delimiters
-
-Rainbow delimiters make it easier to spot nesting of parentheses etc.
-#+begin_src emacs-lisp
-  (use-package rainbow-delimiters
-    :hook (prog-mode . rainbow-delimiters-mode))
-#+end_src
-
-
 ** Icons
 
 Iconography allows quickly identifying information about an object. For
