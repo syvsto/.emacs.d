@@ -776,7 +776,8 @@ It is available under the ~<C-c i>~ prefix.
   (use-package lsp-mode
     :hook ((lsp-mode . lsp-enable-which-key-integration))
     :custom
-    (lsp-keymap-prefix "C-c i"))
+    (lsp-keymap-prefix "C-c i")
+    (lsp-eldoc-hook nil))
 #+end_src
 
 ~lsp-ui~ provides some nice additional features such as a peek mode for finding
