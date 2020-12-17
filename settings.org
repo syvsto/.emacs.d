@@ -224,8 +224,6 @@ Modal Emacs bindings for that sweet RSI relief.
 
 #+begin_src emacs-lisp
   (use-package boon
-    :bind (:map boon-command-map
-		("N" . completion-at-point))
     :init
     (require 'boon-colemak)
     (boon-mode))
@@ -337,6 +335,16 @@ extends ~completing-read~, it works well with ~selectrum~.
     :init
     (marginalia-mode)
     (setq marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light)))
+#+end_src
+
+** In-buffer completion
+
+Company is the de-facto standard for in-buffer completion in Emacs, and
+integrates with LSP.
+
+#+begin_src emacs-lisp
+  (use-package company
+    :hook (prog-mode . company-mode))
 #+end_src
 
 ** Imenu
