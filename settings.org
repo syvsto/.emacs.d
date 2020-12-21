@@ -375,11 +375,6 @@ with magit.
     :hook (after-init . bufler-mode))
 #+end_src
 
-The bufler buffer grouping/switching functionality is a bit buggy, and will
-either add buffer headers to the buffer list, or hide the buffer list
-entirely. I therefore rely on regular buffer switching, and only use bufler as
-an Ibuffer replacement.
-
 ** Crux
 
 The Crux package contains a bunch of useful shortcuts.
