@@ -171,6 +171,9 @@
 	;; Consult
 	`(consult-annotation ((,class :foreground ,bg-light)))
 	`(consult-file ((,class :foreground ,fg2)))
+
+        ;; Company
+        `(company-tooltip ((,class :background ,bg-light)))
 ))
 
 ;;;###autoload

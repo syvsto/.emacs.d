@@ -306,7 +306,16 @@
 	;; Consult
 	`(consult-annotation ((,class :foreground ,bg-light)))
 	`(consult-file ((,class :foreground ,fg2)))
-))
+
+        ;; Company
+        `(company-tooltip ((,class :background ,bg-light)))
+        `(company-tooltip-annotation ((,class :foreground ,fg2)))
+        `(company-tooltip-common ((,class :background ,blue :foreground ,fg)))
+        `(company-tooltip-common-selection ((,class :background ,blue :foreground ,fg :bold t)))
+        `(company-tooltip-selection ((,class :bold t)))
+        `(company-scrollbar-fg ((,class :background ,fg)))
+        `(company-scrollbar-bg ((,class :background ,bg-light)))
+	))
 
 ;;;###autoload
 (when load-file-name

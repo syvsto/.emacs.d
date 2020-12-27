@@ -220,6 +220,12 @@ features that make dired easier to use in certain cases.
 
 * Key bindings and navigation
 
+The default bindings for ~find-file~ and ~set-fill-column~ feel backwards.
+#+begin_src emacs-lisp
+  (bind-key "C-x f" 'find-file)
+  (bind-key "C-x C-f" 'set-fill-column)
+#+end_src
+
 Modal Emacs bindings for that sweet RSI relief.
 
 #+begin_src emacs-lisp
@@ -230,15 +236,6 @@ Modal Emacs bindings for that sweet RSI relief.
 
   (use-package multiple-cursors)
 #+END_src
-
-** FFAP
-
-FFAP is great for navigating to imports of different file types, such as CSS
-files in HTML/Javascript.
-
-#+begin_src emacs-lisp
-  (global-set-key (kbd "C-c f") 'ffap)
-#+end_src
 
 ** Avy
 
@@ -288,38 +285,28 @@ settled on something simpler. They both do a lot of things I don't
 need. Overall, I like Ivy slightly better, since Helm has a small but noticable
 delay when opening a buffer.
 
-Selectrum is a nice compromise between Emacs itself and the bigger frameworks like
-Ivy and Helm. It uses the built-in ~completing-read~ function instead of
-implementing it's own, and is therefore easier to hack on than the alternatives.
-
-~Prescient~ is a package for sorting completing-read results according to
-frecency, and importantly works across Emacs sessions. Every time I try a
-different completion package I miss the cross-session sorting this package
-provides.
+After using various completion mechanisms, I found ~Embark~, which lets me
+extend the default minibuffer completion. Combined with ~orderless~ for
+orderless candidate selection, we get a lightweight option for minibuffer
+completion that builds on the default in Emacs.
 
 #+begin_src emacs-lisp
-  (use-package prescient
-    :commands (prescient-persist-mode))
-  (use-package selectrum-prescient
-    :commands (selectrum-prescient-mode))
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package selectrum
-    :init
-    (selectrum-mode 1)
-    (selectrum-prescient-mode 1)
-    (prescient-persist-mode 1))
+  (use-package orderless
+    :custom (completion-styles '(orderless))
+    :bind (:map minibuffer-local-completion-map
+		("SPC" . nil)
+		("<tab>" . minibuffer-force-complete)))
 #+end_src
 
 ~Consult~ adds some niceties on top of ~completing-read~, most importantly a
 buffer switching method that includes virtual buffers such as recent files, and
-an annotation mode that displays documentation and key bindings inline. Since it
-extends ~completing-read~, it works well with ~selectrum~.
+a tool to search for lines in the buffer. Since it extends ~completing-read~, it
+works well with the default completion mechanism.
 
 #+begin_src emacs-lisp
   (use-package consult
-    :straight (consult :type git :host github :repo "minad/consult" :file "consult.el")
+    :demand t
+    :config (consult-preview-mode)
     :bind (("M-g o" . consult-outline)
 	   ("M-g l" . consult-line)
 	   ("C-x b" . consult-buffer)
@@ -337,6 +324,61 @@ extends ~completing-read~, it works well with ~selectrum~.
     (setq marginalia-annotators '(marginalia-annotators-heavy marginalia-annotators-light)))
 #+end_src
 
+~Embark~ provides a nice framework for actions on various elements, as well as a
+way to display completion candidates in an occur-like buffer.
+
+#+begin_src emacs-lisp
+  ;; Based on Prot's embark setup
+  (defun my/embark-live-occur-fit-window (&rest _)
+    "Fit Embark's live occur window to its buffer.
+  To be added to `embark-occur-post-revert-hook'."
+    (when (string-match-p "Live" (buffer-name))
+      (fit-window-to-buffer (get-buffer-window)
+			    (floor (frame-height) 2) 1)))
+
+  (defun my/embark-live-occur-toggle ()
+    "Toggle between showing and hiding the Embark live-occur buffer"
+    (interactive)
+    (if (embark-occur--linked-buffer-is-live-p)
+	(embark-occur--kill-live-occur-buffer)
+	(embark-live-occur)))
+
+  (use-package embark
+    :demand t
+    :custom
+    (embark-occur-minibuffer-completion t)
+    (embark-live-occur-update-delay 0.5)
+    (embark-live-occur-initial-delay 0.8)
+    (completion-show-help nil)
+    (completion-ignore-case t)
+    (completions-detailed t)
+    (completions-format 'one-column)
+    (completion-category-defaults nil)
+    :hook ((minibuffer-setup . embark-live-occur-after-input)
+	   (embark-occur-post-revert . my/embark-live-occur-fit-window))
+    :bind
+    ("C-," . embark-act)
+    (:map minibuffer-local-completion-map
+	  ("C-." . embark-act-noexit)
+	  ("M-q" . embark-occur-toggle-view)
+	  ("M-e" . embark-export)
+	  ("M-v" . embark-switch-to-live-occur)
+	  ("C-l" . my/embark-live-occur-toggle))
+    (:map embark-occur-mode-map
+	  ("," . embark-act)
+	  ("M-e" . embark-export)
+	  ("M-t" . toggle-truncate-lines)
+	  ("M-q" . embark-occur-toggle-view)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package avy-embark-occur
+    :straight (avy-embark-occur :type git :host github :repo "oantolin/embark" :file "avy-embark-occur.el")
+    :bind (:map minibuffer-local-completion-map
+		("C-'" . avy-embark-occur-choose)
+		("C-/" . avy-embark-occur-act)))
+#+end_src
+
 ** In-buffer completion
 
 Company is the de-facto standard for in-buffer completion in Emacs, and
@@ -344,7 +386,8 @@ integrates with LSP.
 
 #+begin_src emacs-lisp
   (use-package company
-    :hook (prog-mode . company-mode))
+    :hook ((prog-mode . company-mode)
+	   (sly-mrepl-mode . company-mode)))
 #+end_src
 
 ** Imenu
@@ -400,12 +443,12 @@ The Crux package contains a bunch of useful shortcuts.
   (load (concat user-emacs-directory "synthetiq-light-theme.el"))
 #+end_src
 
-Julia Mono has a lot of unicode symbols, perfect for e.g. Agda.
+Jetbrains Mono has a lot of unicode symbols, perfect for e.g. Agda.
 
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :family "JuliaMono" :height 130)
-  (set-face-attribute 'fixed-pitch nil :family "JuliaMono" :height 130)
-  (set-face-attribute 'variable-pitch nil :family "JuliaMono" :height 130)
+  (set-face-attribute 'default nil :family "Jetbrains Mono" :height 100)
+  (set-face-attribute 'fixed-pitch nil :family "Jetbrains Mono" :height 100)
+  (set-face-attribute 'variable-pitch nil :family "Jetbrains Mono" :height 100)
 #+END_SRC
 
 ** Modeline
@@ -811,8 +854,9 @@ display pairs.
     :init
     (sp-local-pair 'emacs-lisp-mode "`" "'")
     (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
+    (sp-local-pair 'lisp-mode "'" nil :actions nil)
     (smartparens-global-mode)
-    (sp-use-smartparens-bindings))
+    (sp-use-paredit-bindings))
 #+end_src
 
 ** Languages
@@ -930,6 +974,22 @@ suited for use with literate org files through ~ob-restclient~.
 
 #+begin_src emacs-lisp
   (use-package csv-mode)
+#+end_src
+
+*** Common Lisp
+
+Sly is a version of SLIME with some cleaned up features, such as bettter
+integration with Emacs through the comint interface.
+#+begin_src emacs-lisp
+  (use-package sly
+    :custom (inferior-lisp-program "ros -Q run"))
+#+end_src
+
+For project and package management, there are some contrib packages for Sly.
+#+begin_src emacs-lisp
+  (use-package sly-asdf)
+  (use-package sly-quicklisp)
+  (use-package sly-macrostep)
 #+end_src
 
 * Version control
