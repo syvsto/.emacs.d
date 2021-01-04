@@ -614,6 +614,33 @@ with olivetti, and makes vertical splits much more comfortable.
   (add-hook 'text-mode-hook 'auto-fill-mode)
 #+END_SRC
 
+** Utility functions for writing
+
+I often write in Norwegian. Since I switch between keyboards (including some
+small ones), I don't always have the letters /æ/, /ø/ and /å/
+available. With the following function, I can use the /ae/, /oe/ and /aa/
+spellings instead, which are converted to the correct letter.
+
+#+begin_src emacs-lisp
+  (defun my/norwegianize-letters ()
+    "Convert two-letter spellings of the last three letters in the Norwegian alphabet to their proper unicode representation.
+    If a region is selected, the changes are only changed in the region. Otherwise, they are applied to the entire buffer."
+    (interactive)
+    (let ((replacements '(("oe" . "ø")
+			  ("ae" . "æ")
+			  ("aa" . "å"))))
+      (cl-labels ((replace (from to bound)
+			   (while (re-search-forward from bound t)
+			     (replace-match to nil nil)))
+		  (replace-characters (&key (start 0) (end (buffer-size)))
+				      (dolist (v replacements)
+					(goto-char start)
+					(replace (car v) (cdr v) end))))
+	(if (region-active-p)
+	    (replace-characters :start (mark) :end (point))
+	  (replace-characters)))))
+#+end_src
+
 ** Org mode
 
 Instead of indenting all text to match the header, I like only indenting the
