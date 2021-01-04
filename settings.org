@@ -617,9 +617,10 @@ with olivetti, and makes vertical splits much more comfortable.
 ** Utility functions for writing
 
 I often write in Norwegian. Since I switch between keyboards (including some
-small ones), I don't always have the letters /æ/, /ø/ and /å/
-available. With the following function, I can use the /ae/, /oe/ and /aa/
-spellings instead, which are converted to the correct letter.
+small ones), I don't always have the letters /æ/, /ø/ and /å/ available, and
+always needing to ~insert-char~ gets tiresome. With the following function, I
+can use the /ae/, /oe/ and /aa/ spellings instead, which are converted to the
+correct letter.
 
 #+begin_src emacs-lisp
   (defun my/norwegianize-letters ()
@@ -799,18 +800,6 @@ Line numbers are useful for navigation when using prog-mode.
 
 #+begin_src emacs-lisp
   (add-hook 'prog-mode-hook 'display-line-numbers-mode)
-#+end_src
-
-** Indentation
-
-Aggressive-indent keeps a code buffer indented at all times. This is very nice
-for programming in languages that don't have standard code formatters, such as
-lisp.
-
-#+begin_src emacs-lisp
-  (use-package aggressive-indent
-    :hook ((lisp-mode . aggressive-indent-mode)
-	   (emacs-lisp-mode . aggressive-indent-mode)))
 #+end_src
 
 ** Snippets
