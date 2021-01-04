@@ -336,13 +336,6 @@ way to display completion candidates in an occur-like buffer.
       (fit-window-to-buffer (get-buffer-window)
 			    (floor (frame-height) 2) 1)))
 
-  (defun my/embark-live-occur-toggle ()
-    "Toggle between showing and hiding the Embark live-occur buffer"
-    (interactive)
-    (if (embark-occur--linked-buffer-is-live-p)
-	(embark-occur--kill-live-occur-buffer)
-	(embark-live-occur)))
-
   (use-package embark
     :demand t
     :custom
@@ -363,7 +356,7 @@ way to display completion candidates in an occur-like buffer.
 	  ("M-q" . embark-occur-toggle-view)
 	  ("M-e" . embark-export)
 	  ("M-v" . embark-switch-to-live-occur)
-	  ("C-l" . my/embark-live-occur-toggle))
+	  ("C-l" . embark-live-occur))
     (:map embark-occur-mode-map
 	  ("," . embark-act)
 	  ("M-e" . embark-export)
