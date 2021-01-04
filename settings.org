@@ -638,7 +638,10 @@ correct letter.
 					(goto-char start)
 					(replace (car v) (cdr v) end))))
 	(if (region-active-p)
-	    (replace-characters :start (mark) :end (point))
+	    (progn
+	      (when (> (mark) (point))
+		(exchange-point-and-mark))
+	      (replace-characters :start (mark) :end (point)))
 	  (replace-characters)))))
 #+end_src
 
