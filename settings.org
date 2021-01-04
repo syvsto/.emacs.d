@@ -774,6 +774,18 @@ Line numbers are useful for navigation when using prog-mode.
   (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 #+end_src
 
+** Indentation
+
+Aggressive-indent keeps a code buffer indented at all times. This is very nice
+for programming in languages that don't have standard code formatters, such as
+lisp.
+
+#+begin_src emacs-lisp
+  (use-package aggressive-indent
+    :hook ((lisp-mode . aggressive-indent-mode)
+	   (emacs-lisp-mode . aggressive-indent-mode)))
+#+end_src
+
 ** Snippets
 
 Yasnippet is used for snippet support.
