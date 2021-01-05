@@ -367,9 +367,12 @@ way to display completion candidates in an occur-like buffer.
 #+begin_src emacs-lisp
   (use-package avy-embark-occur
     :straight (avy-embark-occur :type git :host github :repo "oantolin/embark" :file "avy-embark-occur.el")
-    :bind (:map minibuffer-local-completion-map
-		("C-'" . avy-embark-occur-choose)
-		("C-/" . avy-embark-occur-act)))
+    :bind ((:map minibuffer-local-completion-map
+		 ("C-'" . avy-embark-occur-choose)
+		 ("C-/" . avy-embark-occur-act))
+	   (:map embark-occur-mode-map
+		 ("C-'" . avy-embark-occur-choose)
+		 ("C-/" . avy-embark-occur-act))))
 #+end_src
 
 ** In-buffer completion
