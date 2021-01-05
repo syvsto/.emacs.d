@@ -71,6 +71,8 @@
 	`(link ((,class (:foreground ,fg :underline t))))
 	`(org-code ((,class (:foreground ,fg2))))
 	`(org-hide ((,class (:foreground ,fg2))))
+        `(org-document-title ((,class (:bold t :height 1.3))))
+        `(org-document-info ((,class (:italic t))))
         `(org-level-1 ((,class (:bold t :height 1.1 :underline t))))
         `(org-level-2 ((,class (:bold t :underline t))))
         `(org-level-3 ((,class (:bold t :underline t))))
