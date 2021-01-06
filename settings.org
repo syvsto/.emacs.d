@@ -665,7 +665,7 @@ when they are closed.
 #+BEGIN_SRC emacs-lisp
   (setq org-cycle-separator-lines 1)
   (customize-set-variable 'org-blank-before-new-entry
-			  '((heading . nil)
+			  '((heading . t)
 			    (plain-list-item . nil)))
 #+END_SRC
 
@@ -872,18 +872,33 @@ display, as it is too noisy.
 
 ** Structured editing
 
+Gotta show them matching pairs.
+
+#+begin_src emacs-lisp
+  (show-paren-mode 1)
+#+end_src
+
 Smartparens enables features of structured editing into any language that can
 display pairs.
 
 #+begin_src emacs-lisp
   (use-package smartparens
     :commands (sp-local-pair smartparens-global-mode sp-use-paredit-bindings)
+    :hook ((rjsx-mode . smartparens-mode)
+	   (rust-mode . smartparens-mode)
+	   (haskell-mode . smartparens-mode)
+	   (agda2-mode . smartparens-mode)
+	   (python-mode . smartparens-mode))
     :init
-    (sp-local-pair 'emacs-lisp-mode "`" "'")
-    (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
-    (sp-local-pair 'lisp-mode "'" nil :actions nil)
-    (smartparens-global-mode)
     (sp-use-paredit-bindings))
+#+end_src
+
+However, for Lisp, Paredit correctly handles edge cases that Smartparens
+struggles with (e.g. character literals).
+
+#+begin_src emacs-lisp
+  (use-package paredit
+    :hook (lisp-mode . paredit-mode))
 #+end_src
 
 ** Languages
