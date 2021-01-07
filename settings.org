@@ -307,14 +307,19 @@ works well with the default completion mechanism.
 #+begin_src emacs-lisp
   (use-package consult
     :demand t
-    :config (consult-preview-mode)
+    :config
+    (consult-preview-mode)
+    :custom
+    (consult-narrow-key ">")
+    (consult-widen-key "<")
     :bind (("M-g o" . consult-outline)
 	   ("M-g l" . consult-line)
 	   ("C-x b" . consult-buffer)
 	   ("C-x 4 b" . consult-buffer-other-window)
 	   ("C-x 5 b" . consult-buffer-other-frame)
+	   ("M-i" . consult-imenu)
 	   (:map boon-command-map
-		 ("p" . consult-line))))
+		 ("p" . consult-ripgrep))))
 #+end_src
 
 ~Marginalia~ for annotations for completing-read!
@@ -390,22 +395,6 @@ integrates with LSP.
   (use-package company
     :hook ((prog-mode . company-mode)
 	   (sly-mrepl-mode . company-mode)))
-#+end_src
-
-** Imenu
-
-IMenu is a useful, built-in navigation tool for many modes, but is unbound. Bind to ~M-i~, since that's only used for indentation by default.
-#+begin_src emacs-lisp
-  (bind-key "M-i" 'imenu)
-#+end_src
-
-However, IMenu will often require navigating through multiple menus. Since I
-have fuzzy completion it's better if the list of IMenu entries can be searched
-in its entirety. The ~flimenu~ package flattens the ~imenu~ so this works.
-
-#+begin_src emacs-lisp
-  (use-package flimenu
-    :hook (after-init . flimenu-global-mode))
 #+end_src
 
 ** Bufler
