@@ -232,7 +232,8 @@ Modal Emacs bindings for that sweet RSI relief.
   (use-package boon
     :init
     (require 'boon-colemak)
-    (boon-mode))
+    (boon-mode)
+    (add-to-list 'boon-special-mode-list 'sly-db-mode))
 
    ;; Boon needs multiple-cursors for its replacement functionality
    (use-package multiple-cursors)
@@ -507,14 +508,6 @@ Integration with Dired, which displays file types as an icon.
 #+BEGIN_SRC emacs-lisp
   (use-package all-the-icons-dired
     :hook (dired-mode . all-the-icons-dired-mode))
-#+END_SRC
-
-IBuffer can also display file types of buffers using all-the-icons.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package all-the-icons-ibuffer
-    :init
-    (all-the-icons-ibuffer-mode 1))
 #+END_SRC
 
 *** Font caches
