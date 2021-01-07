@@ -1029,6 +1029,8 @@ Sly is a version of SLIME with some cleaned up features, such as bettter
 integration with Emacs through the comint interface.
 #+begin_src emacs-lisp
   (use-package sly
+    :bind (:map sly-mode-map
+		([remap xref-find-definitions] . sly-edit-definition))
     :custom (inferior-lisp-program "ros -Q run"))
 #+end_src
 
