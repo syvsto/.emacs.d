@@ -348,6 +348,11 @@ way to display completion candidates in an occur-like buffer.
     (completions-detailed t)
     (completions-format 'one-column)
     (completion-category-defaults nil)
+    (embark-action-indicator
+	(lambda (map)
+	  (which-key--show-keymap "Embark" map nil nil 'no-paging)
+	  #'which-key--hide-popup-ignore-command)
+	embark-become-indicator embark-action-indicator)
     :hook ((minibuffer-setup . embark-live-occur-after-input)
 	   (embark-occur-post-revert . my/embark-live-occur-fit-window))
     :bind
