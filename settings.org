@@ -887,27 +887,23 @@ Gotta show them matching pairs.
   (show-paren-mode 1)
 #+end_src
 
-Smartparens enables features of structured editing into any language that can
-display pairs.
-
-#+begin_src emacs-lisp
-  (use-package smartparens
-    :commands (sp-local-pair smartparens-global-mode sp-use-paredit-bindings)
-    :hook ((rjsx-mode . smartparens-mode)
-	   (rust-mode . smartparens-mode)
-	   (haskell-mode . smartparens-mode)
-	   (agda2-mode . smartparens-mode)
-	   (python-mode . smartparens-mode))
-    :init
-    (sp-use-paredit-bindings))
-#+end_src
-
-However, for Lisp, Paredit correctly handles edge cases that Smartparens
-struggles with (e.g. character literals).
+I initially used Smartparens for structured editing commands across different
+language families. However, for Lisp, Paredit correctly handles edge cases that
+Smartparens struggles with (e.g. character literals).
 
 #+begin_src emacs-lisp
   (use-package paredit
-    :hook (lisp-mode . paredit-mode))
+    :hook ((lisp-mode . paredit-mode)
+	   (emacs-lisp-mode . paredit-mode)))
+#+end_src
+
+In order to avoid inconsistensies in bindings between smartparens and paredit,
+I'm trying out ~paredit-everywhere~ to supply some paredit features outside of
+Lisp.
+
+#+begin_src emacs-lisp
+  (use-package paredit-everywhere
+    :hook (prog-mode . paredit-everywhere-mode))
 #+end_src
 
 ** Languages
