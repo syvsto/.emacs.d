@@ -234,7 +234,8 @@ Modal Emacs bindings for that sweet RSI relief.
     (require 'boon-colemak)
     (boon-mode))
 
-  (use-package multiple-cursors)
+   ;; Boon needs multiple-cursors for its replacement functionality
+   (use-package multiple-cursors)
 #+END_src
 
 ** Avy
