@@ -760,8 +760,6 @@ management. This binds a shortcut to my agenda view to ~<F1>~.
      '((restclient . t))))
 #+end_src
 
-
-
 ***** Refiling
 
 Org mode is better if you can move stuff around easily. This is called refiling.
