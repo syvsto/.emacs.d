@@ -787,7 +787,10 @@ Setup the actual org package.
 #+begin_src emacs-lisp
   (use-package org
     :bind (("C-c c" . org-capture)
-	   ("C-c l" . org-store-link))
+	   ("C-c l" . org-store-link)
+	   (:map org-mode-map
+		 ([remap xref-find-definitions] . org-open-at-point-global)
+		 ("C-," . embark-act)))
     :init
     (setq org-agenda-custom-commands (list my/org-agenda-todo-view)))
 #+end_src
