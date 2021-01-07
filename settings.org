@@ -348,7 +348,7 @@ way to display completion candidates in an occur-like buffer.
     (completions-detailed t)
     (completions-format 'one-column)
     (completion-category-defaults nil)
-    (embark-action-indicator
+    (embark-action-indicator		; Display which-key bindings when embark-acting
 	(lambda (map)
 	  (which-key--show-keymap "Embark" map nil nil 'no-paging)
 	  #'which-key--hide-popup-ignore-command)
