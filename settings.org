@@ -670,7 +670,7 @@ when they are closed.
 
 #+BEGIN_SRC emacs-lisp
   (setq org-cycle-separator-lines 1)
-  (customize-set-variable 'org-blank-before-new-entry
+  (setq org-blank-before-new-entry
 			  '((heading . t)
 			    (plain-list-item . nil)))
 #+END_SRC
