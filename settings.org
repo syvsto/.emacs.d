@@ -233,7 +233,8 @@ Modal Emacs bindings for that sweet RSI relief.
     :init
     (require 'boon-colemak)
     (boon-mode)
-    (add-to-list 'boon-special-mode-list 'sly-db-mode))
+      (add-to-list 'boon-special-mode-list 'sly-db-mode)
+      (add-to-list 'boon-special-mode-list 'embark-occur-mode))
 
    ;; Boon needs multiple-cursors for its replacement functionality
    (use-package multiple-cursors)
@@ -647,14 +648,11 @@ header, so that I have more horizontal characters for each line.
 #+END_SRC
 
 Org has a tendency to do weird stuff with whitespace when toggling
-headings. Disable this behavior. Also, display the spacing between headings even
-when they are closed.
+headings. Disable this behavior. 
 
 #+BEGIN_SRC emacs-lisp
   (setq org-cycle-separator-lines 1)
-  (setq org-blank-before-new-entry
-			  '((heading . t)
-			    (plain-list-item . nil)))
+  
 #+END_SRC
 
 *** The agenda
@@ -771,6 +769,9 @@ Setup the actual org package.
 	   (:map org-mode-map
 		 ([remap xref-find-definitions] . org-open-at-point-global)
 		 ("C-," . embark-act)))
+    :custom (org-blank-before-new-entry
+		  '((heading . t)
+		    (plain-list-item . nil)))
     :init
     (setq org-agenda-custom-commands (list my/org-agenda-todo-view)))
 #+end_src
