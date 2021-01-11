@@ -226,6 +226,12 @@ The default bindings for ~find-file~ and ~set-fill-column~ feel backwards.
   (bind-key "C-x C-f" 'set-fill-column)
 #+end_src
 
+The same goes for ~eval-last-sexp~ and ~kmacro-end-and-call-macro~.
+#+begin_src emacs-lisp emacs-lisp
+  (bind-key "C-x e" 'eval-last-sexp)
+  (bind-key "C-x C-e" 'kmacro-end-and-call-macro)
+#+end_src
+
 Modal Emacs bindings for that sweet RSI relief.
 
 #+begin_src emacs-lisp
@@ -234,6 +240,7 @@ Modal Emacs bindings for that sweet RSI relief.
     (require 'boon-colemak)
     (boon-mode)
       (add-to-list 'boon-special-mode-list 'sly-db-mode)
+      (add-to-list 'boon-special-mode-list 'sly-trace-dialog-mode)
       (add-to-list 'boon-special-mode-list 'embark-occur-mode))
 
    ;; Boon needs multiple-cursors for its replacement functionality
@@ -1011,7 +1018,8 @@ integration with Emacs through the comint interface.
 #+begin_src emacs-lisp
   (use-package sly
     :bind (:map sly-mode-map
-		([remap xref-find-definitions] . sly-edit-definition))
+		([remap xref-find-definitions] . sly-edit-definition)
+		([remap eval-last-sexp] . sly-eval-last-expression))
     :custom (inferior-lisp-program "ros -Q run"))
 #+end_src
 
