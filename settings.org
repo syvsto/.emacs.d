@@ -776,10 +776,10 @@ Setup the actual org package.
 	   (:map org-mode-map
 		 ([remap xref-find-definitions] . org-open-at-point-global)
 		 ("C-," . embark-act)))
-    :custom (org-blank-before-new-entry
+    :init
+    (setq org-blank-before-new-entry
 		  '((heading . t)
 		    (plain-list-item . nil)))
-    :init
     (setq org-agenda-custom-commands (list my/org-agenda-todo-view)))
 #+end_src
 
