@@ -316,8 +316,6 @@ works well with the default completion mechanism.
 #+begin_src emacs-lisp
   (use-package consult
     :demand t
-    :config
-    (consult-preview-mode)
     :custom
     (consult-narrow-key ">")
     (consult-widen-key "<")
@@ -328,7 +326,7 @@ works well with the default completion mechanism.
 	   ("C-x 5 b" . consult-buffer-other-frame)
 	   ("M-i" . consult-imenu)
 	   (:map boon-command-map
-		 ("p" . consult-ripgrep))))
+		 ("p" . consult-line))))
 #+end_src
 
 ~Marginalia~ for annotations for completing-read!
@@ -344,55 +342,87 @@ way to display completion candidates in an occur-like buffer.
 
 #+begin_src emacs-lisp
   ;; Based on Prot's embark setup
-  (defun my/embark-live-occur-fit-window (&rest _)
-    "Fit Embark's live occur window to its buffer.
-  To be added to `embark-occur-post-revert-hook'."
-    (when (string-match-p "Live" (buffer-name))
+
+  (defun my/embark--live-buffer-p ()
+    "Determine presence of a linked live occur buffer."
+    (let* ((buf-link embark-collect-linked-buffer)
+	   (buf-name (buffer-name buf-link)))
+      (when buf-name
+	(derived-mode-p 'embark-collect-mode))))
+
+  (defun my/embark-live-collect-fit-window (&rest _)
+    "Fit Embark's live collection window to its buffer contents.
+  To be added to `embark-collect-post-revert-hook'."
+    (when (derived-mode-p 'embark-collect-mode)
       (fit-window-to-buffer (get-buffer-window)
 			    (floor (frame-height) 2) 1)))
+
+  (defun my/embark-switch-to-live ()
+    "Subroutine for switching to the Embark completions buffer."
+    (unless (my/embark--live-buffer-p)
+      (embark-collect-completions))
+    (pop-to-buffer embark-collect-linked-buffer))
+
+  (defun my/embark-switch-to-completions-top ()
+    (interactive)
+    (my/embark-switch-to-live)
+    (goto-char (point-min)))
+
+  (defun my/embark-switch-to-completions-bottom ()
+    (interactive)
+    (my/embark-switch-to-live)
+    (goto-char (point-max)))
 
   (use-package embark
     :demand t
     :custom
-    (embark-occur-minibuffer-completion t)
-    (embark-live-occur-update-delay 0.5)
-    (embark-live-occur-initial-delay 0.8)
+    (embark-collect-minibuffer-completion t)
+    (embark-collect-live-update-delay 0.5)
+    (embark-collect-live-initial-delay 0.8)
     (completion-show-help nil)
     (completion-ignore-case t)
     (completions-detailed t)
     (completions-format 'one-column)
     (completion-category-defaults nil)
-    (embark-action-indicator		; Display which-key bindings when embark-acting
-	(lambda (map)
-	  (which-key--show-keymap "Embark" map nil nil 'no-paging)
-	  #'which-key--hide-popup-ignore-command)
-	embark-become-indicator embark-action-indicator)
-    :hook ((minibuffer-setup . embark-live-occur-after-input)
-	   (embark-occur-post-revert . my/embark-live-occur-fit-window))
+    (embark-action-indicator	 ; Display which-key bindings when embark-acting
+     (lambda (map)
+       (which-key--show-keymap "Embark" map nil nil 'no-paging)
+       #'which-key--hide-popup-ignore-command)
+     embark-become-indicator embark-action-indicator)
+    :hook ((minibuffer-setup . embark-collect-completions-after-input)
+	   (embark-collect-post-revert . my/embark-live-collect-fit-window))
     :bind
     ("C-," . embark-act)
     (:map minibuffer-local-completion-map
 	  ("C-." . embark-act-noexit)
-	  ("M-q" . embark-occur-toggle-view)
+	  ("M-q" . embark-collect-toggle-view)
 	  ("M-e" . embark-export)
-	  ("M-v" . embark-switch-to-live-occur)
-	  ("C-l" . embark-live-occur))
-    (:map embark-occur-mode-map
+	  ("C-n" . my/embark-switch-to-completions-top)
+	  ("C-p" . my/embark-switch-to-completions-bottom)
+	  ("C-l" . embark-collect-completions))
+    (:map embark-collect-mode-map
 	  ("," . embark-act)
 	  ("M-e" . embark-export)
 	  ("M-t" . toggle-truncate-lines)
-	  ("M-q" . embark-occur-toggle-view)))
+	  ("M-q" . embark-collect-toggle-view)))
 #+end_src
 
 #+begin_src emacs-lisp
-  (use-package avy-embark-occur
-    :straight (avy-embark-occur :type git :host github :repo "oantolin/embark" :file "avy-embark-occur.el")
+  (use-package avy-embark-collect
+    :straight (avy-embark-collect :type git :host github :repo "oantolin/embark" :file "avy-embark-collect.el")
     :bind ((:map minibuffer-local-completion-map
-		 ("C-'" . avy-embark-occur-choose)
-		 ("C-/" . avy-embark-occur-act))
-	   (:map embark-occur-mode-map
-		 ("C-'" . avy-embark-occur-choose)
-		 ("C-/" . avy-embark-occur-act))))
+		 ("C-'" . avy-embark-collect-choose)
+		 ("C-/" . avy-embark-collect-act))
+	   (:map embark-collect-mode-map
+		 ("C-'" . avy-embark-collect-choose)
+		 ("C-/" . avy-embark-collect-act))))
+#+end_src
+
+Integration with consult.
+#+begin_src emacs-lisp
+  (use-package embark-consult
+    :after (embark consult)
+    :hook (embark-collect-mode . embark-consult-preview-minor-mode))
 #+end_src
 
 ** In-buffer completion
@@ -446,9 +476,9 @@ The Crux package contains a bunch of useful shortcuts.
 Jetbrains Mono has a lot of unicode symbols, perfect for e.g. Agda.
 
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :family "Jetbrains Mono" :height 100)
-  (set-face-attribute 'fixed-pitch nil :family "Jetbrains Mono" :height 100)
-  (set-face-attribute 'variable-pitch nil :family "Jetbrains Mono" :height 100)
+  (set-face-attribute 'default nil :family "Jetbrains Mono" :height 120)
+  (set-face-attribute 'fixed-pitch nil :family "Jetbrains Mono" :height 120)
+  (set-face-attribute 'variable-pitch nil :family "Jetbrains Mono" :height 120)
 #+END_SRC
 
 ** Modeline
@@ -466,27 +496,21 @@ Push some elements to the right on the modeline, so it looks more balanced.
 		'display `((space :align-to (- (+ right right-fringe right-margin) ,reserve)))))
 #+end_src
 
-The minions package gathers minor modes together in a nice manner
 #+begin_src emacs-lisp
-  (use-package minions
-    :init
-    (minions-mode)
-    (setq-default mode-line-format (list
-				    "%e"
-				    mode-line-front-space
-				    mode-line-mule-info
-				    mode-line-client
-				    mode-line-modified
-				    mode-line-remote
-				    mode-line-frame-identification
-				    mode-line-buffer-identification
-				    "   "
-				    mode-line-position
-				    vc-mode
-				    minions-mode-line-modes
-				    '(:eval (mode-line-fill (+ (length (format-mode-line mode-line-misc-info)) 0)))
-				    mode-line-misc-info))
-    )
+  (setq-default mode-line-format (list
+				  "%e"
+				  mode-line-front-space
+				  mode-line-mule-info
+				  mode-line-client
+				  mode-line-modified
+				  mode-line-remote
+				  mode-line-frame-identification
+				  mode-line-buffer-identification
+				  "   "
+				  mode-line-position
+				  vc-mode
+				  '(:eval (mode-line-fill (+ (length (format-mode-line mode-line-misc-info)) 0)))
+				  mode-line-misc-info))
 #+end_src
 
 I like seeing the current time when I'm working, as I often run Emacs in
@@ -912,7 +936,8 @@ earlier modes, and supports JSX syntax well.
     :hook ((js2-mode rjsx-mode) . lsp-deferred)
     :bind (:map rjsx-mode-map
 		("M-." . lsp-ui-peek-find-definitions)
-		("M-?" . lsp-ui-peek-find-references)))
+		("M-?" . lsp-ui-peek-find-references)
+		("C-c C-c" . compile)))
 #+end_src
 
 I often use =prettier= as my formatter. The =prettier.el= package is good for
@@ -921,7 +946,12 @@ javascript, typescript etc.
 
 #+begin_src emacs-lisp
   (use-package prettier-js
-    :hook ((js-mode scss-mode css-mode json-mode) . prettier-js-mode))
+    :bind ((:map js-mode-map
+		 ("M-q" . prettier-js))
+	   (:map css-mode-map
+		 ("M-q" . prettier-js))
+	   (:map json-mode-map
+		 ("M-q" . prettier-js))))
 #+end_src
 
 *** JSON
