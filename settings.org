@@ -363,6 +363,10 @@ way to display completion candidates in an occur-like buffer.
       (embark-collect-completions))
     (pop-to-buffer embark-collect-linked-buffer))
 
+  (defun my/embark-switch-to-completions ()
+    (interactive)
+    (my/embark-switch-to-live))
+
   (defun my/embark-switch-to-completions-top ()
     (interactive)
     (my/embark-switch-to-live)
@@ -399,7 +403,8 @@ way to display completion candidates in an occur-like buffer.
 	  ("M-e" . embark-export)
 	  ("C-n" . my/embark-switch-to-completions-top)
 	  ("C-p" . my/embark-switch-to-completions-bottom)
-	  ("C-l" . embark-collect-completions))
+	  ("C-l" . embark-collect-completions)
+	  ("<tab>" . my/embark-switch-to-completions))
     (:map embark-collect-mode-map
 	  ("," . embark-act)
 	  ("M-e" . embark-export)
