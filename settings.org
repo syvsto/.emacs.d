@@ -437,6 +437,9 @@ integrates with LSP.
 
 #+begin_src emacs-lisp
   (use-package company
+    :custom
+    (company-tooltip-align-annotations t)
+    (company-show-numbers t)
     :hook ((prog-mode . company-mode)
 	   (sly-mrepl-mode . company-mode)))
 #+end_src
@@ -942,7 +945,7 @@ earlier modes, and supports JSX syntax well.
     :bind (:map rjsx-mode-map
 		("M-." . lsp-ui-peek-find-definitions)
 		("M-?" . lsp-ui-peek-find-references)
-		("C-c C-c" . compile)))
+		("M-q" . prettier-js)))
 #+end_src
 
 I often use =prettier= as my formatter. The =prettier.el= package is good for
@@ -951,12 +954,7 @@ javascript, typescript etc.
 
 #+begin_src emacs-lisp
   (use-package prettier-js
-    :bind ((:map js-mode-map
-		 ("M-q" . prettier-js))
-	   (:map css-mode-map
-		 ("M-q" . prettier-js))
-	   (:map json-mode-map
-		 ("M-q" . prettier-js))))
+    :commands prettier-js)
 #+end_src
 
 *** JSON
