@@ -36,7 +36,7 @@
       (blue "#42d9ff")       
       (warning "#e61c1c")
       (warning2 "#fcba03"))
-(custom-theme-set-faces
+      (custom-theme-set-faces
    'synthetiq
         `(default ((,class (:background ,bg :foreground ,fg))))
 	`(font-lock-comment-face ((,class (:foreground ,fg2))))
@@ -71,10 +71,12 @@
 	`(link ((,class (:foreground ,fg :underline t))))
 	`(org-code ((,class (:foreground ,fg2))))
 	`(org-hide ((,class (:foreground ,fg2))))
-        `(org-level-1 ((,class (:bold t :height 1.1))))
-        `(org-level-2 ((,class (:bold nil))))
-        `(org-level-3 ((,class (:bold t))))
-        `(org-level-4 ((,class (:bold nil))))
+        `(org-document-title ((,class (:bold t :height 1.3))))
+        `(org-document-info ((,class (:italic t))))
+        `(org-level-1 ((,class (:bold t :height 1.1 :underline t))))
+        `(org-level-2 ((,class (:bold t :underline t))))
+        `(org-level-3 ((,class (:bold t :underline t))))
+        `(org-level-4 ((,class (:bold t :underline t))))
         `(org-date ((,class (:underline t) )))
         `(org-footnote  ((,class (:underline t))))
         `(org-link ((,class (:underline t))))
@@ -172,9 +174,15 @@
 	`(consult-annotation ((,class :foreground ,bg-light)))
 	`(consult-file ((,class :foreground ,fg2)))
 
-        ;; Company
+                ;; Company
         `(company-tooltip ((,class :background ,bg-light)))
-))
+        `(company-tooltip-annotation ((,class :foreground ,fg2)))
+        `(company-tooltip-common ((,class :background ,blue :foreground ,fg)))
+        `(company-tooltip-common-selection ((,class :background ,blue :foreground ,fg :bold t)))
+        `(company-tooltip-selection ((,class :bold t)))
+        `(company-scrollbar-fg ((,class :background ,fg)))
+        `(company-scrollbar-bg ((,class :background ,bg-light)))
+	))
 
 ;;;###autoload
 (when load-file-name
