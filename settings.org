@@ -321,6 +321,7 @@ works well with the default completion mechanism.
     (consult-widen-key "<")
     :bind (("M-g o" . consult-outline)
 	   ("M-g l" . consult-line)
+	   ("M-g s" . consult-ripgrep)
 	   ("C-x b" . consult-buffer)
 	   ("C-x 4 b" . consult-buffer-other-window)
 	   ("C-x 5 b" . consult-buffer-other-frame)
@@ -890,9 +891,6 @@ display, as it is too noisy.
   (use-package lsp-ui
     :commands lsp-ui-mode
     :hook (lsp-mode . lsp-ui-mode)
-    :bind (:map lsp-ui-mode-map
-		([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
-		([remap xref-find-references] . lsp-ui-peek-find-references))
     :custom
     (lsp-ui-sideline-enable nil)
     (lsp-ui-doc-enable nil)
