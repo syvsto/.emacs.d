@@ -15,6 +15,8 @@
 
 (straight-use-package 'use-package)
 
+(use-package no-littering :straight t)
+
 (use-package objed :straight t
   :config (objed-mode 1))
 (use-package avy :straight t)
