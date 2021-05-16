@@ -99,8 +99,7 @@
 (use-package modus-operandi-theme :straight t
   :init
   (modus-themes-load-themes)
-  (modus-themes-load-operandi)
-  )
+  (modus-themes-load-operandi))
 
 (set-face-attribute 'default nil :font "JetBrains Mono" :height 100)
 
@@ -111,9 +110,6 @@
 
 (electric-pair-mode +1)
 (show-paren-mode +1)
-(use-package paredit :straight t
-  :hook ((lisp-mode . paredit-mode)
-	 (emacs-lisp-mode . paredit-mode)))
   
 (use-package magit :straight t)
 
@@ -124,4 +120,9 @@
 
 (use-package consult-lsp :straight t
   :bind (:map lsp-mode-map
-	 ([remap xref-find-apropos] . consult-lsp-symbols)))
+	      ([remap xref-find-apropos] . consult-lsp-symbols)))
+
+;; Custom modes etc.
+(push "~/.emacs.d/lisp" load-path)
+
+(require 'observable-dataflow-mode)
