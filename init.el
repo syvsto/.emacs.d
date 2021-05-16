@@ -102,7 +102,7 @@
   (modus-themes-load-operandi)
   )
 
-(set-face-attribute 'default t :font "Jetbrains Mono-9")
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 100)
 
 (use-package sly :straight t
   :config
@@ -110,13 +110,18 @@
 (use-package sly-quicklisp :straight t)
 
 (electric-pair-mode +1)
+(show-paren-mode +1)
 (use-package paredit :straight t
   :hook ((lisp-mode . paredit-mode)
 	 (emacs-lisp-mode . paredit-mode)))
   
 (use-package magit :straight t)
 
-(use-package lsp-mode :straight t)
+(use-package lsp-mode :straight t
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  :hook (lsp-mode . lsp-enable-which-key-integration))
+
 (use-package consult-lsp :straight t
   :bind (:map lsp-mode-map
 	 ([remap xref-find-apropos] . consult-lsp-symbols)))
