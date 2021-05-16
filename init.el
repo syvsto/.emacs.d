@@ -103,9 +103,12 @@
 
 (set-face-attribute 'default nil :font "JetBrains Mono" :height 100)
 
+(use-package eval-in-repl :straight t)
+
 (use-package sly :straight t
   :config
-  (setq inferior-lisp-program "sbcl"))
+  (setq inferior-lisp-program "sbcl")
+  (add-to-list 'objed--eir-alist '(lisp-mode . sly)))
 (use-package sly-quicklisp :straight t)
 
 (electric-pair-mode +1)
