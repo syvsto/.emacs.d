@@ -28,6 +28,7 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (setq ring-bell-function 'ignore)
+(recentf-mode +1)
 
 (use-package selectrum :straight t)
 (use-package selectrum-prescient :straight t)
@@ -128,6 +129,5 @@
 	      ([remap xref-find-apropos] . consult-lsp-symbols)))
 
 ;; Custom modes etc.
-(push "~/.emacs.d/lisp" load-path)
-
-(require 'observable-dataflow-mode)
+(use-package observable-dataflow-mode
+  :straight (:host github :repo "syvsto/observable-dataflow-mode"))
