@@ -20,9 +20,6 @@
 
 ;; Platform specifics
 
-(when (eq system-type 'windows-nt)
-  (w32-register-hot-key [M-tab]))
-
 (when (memq window-system '(mac ns x))
   (progn
     (use-package exec-path-from-shell :straight t
@@ -70,13 +67,15 @@
   (modus-themes-load-themes)
   (modus-themes-load-operandi))
 
-(set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 100)
 
 
 ;; Completion/selection
 
 (use-package selectrum :straight t)
 (use-package selectrum-prescient :straight t)
+
+(setq tab-always-indent 'complete)
 
 (selectrum-mode +1)
 (selectrum-prescient-mode +1)
@@ -151,11 +150,11 @@
 
 (defun my/slime-completion-in-region (_fn completions start end)
   (funcall completion-in-region-function start end completions nil))
-(use-package slime :straight t
+(use-package slime :straight (:host github :repo "nuddyco/slime" :branch "clime")
   :config
   (advice-add 'slime-display-or-scroll-completions :around #'my/slime-completion-in-region))
 (setq inferior-lisp-program "sbcl")
-(cl-pushnew 'slime-clime slime-contribs)
+;; (cl-pushnew 'slime-clime slime-contribs)
 (cl-pushnew 'slime-quicklisp slime-contribs)
 (slime-setup)
 
@@ -200,3 +199,10 @@
 
 ;; Git
 (use-package magit :straight t)
+
+(use-package ibuffer-vc :straight t
+  :bind ("C-x C-b" . ibuffer)
+  :hook (ibuffer-mode . (lambda ()
+			  (ibuffer-vc-set-filter-groups-by-vc-root)
+			  (unless (eq ibuffer-sorting-mode 'alphabetic)
+			    (ibuffer-do-sort-by-alphabetic))))))
