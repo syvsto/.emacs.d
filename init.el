@@ -205,4 +205,4 @@
   :hook (ibuffer-mode . (lambda ()
 			  (ibuffer-vc-set-filter-groups-by-vc-root)
 			  (unless (eq ibuffer-sorting-mode 'alphabetic)
-			    (ibuffer-do-sort-by-alphabetic))))))
+			    (ibuffer-do-sort-by-alphabetic)))))
