@@ -11,9 +11,11 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(w32-register-hot-key [M-tab])
+(when (eq system-type 'windows-nt)
+  (w32-register-hot-key [M-tab]))
 
 (straight-use-package 'use-package)
+(use-package diminish :straight t)
 
 (use-package no-littering :straight t)
 
@@ -22,11 +24,20 @@
 (use-package avy :straight t)
 (use-package multiple-cursors :straight t)
 (use-package which-key :straight t
+  :diminish which-key-mode
   :config (which-key-mode +1))
+
+(use-package eldoc :ensure nil
+  :diminish eldoc-mode
+  :config
+  (eldoc-mode +1))
+
+(diminish 'auto-revert-mode)
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
-(scroll-bar-mode -1)
+(when (display-graphic-p)
+  (scroll-bar-mode -1))
 (setq ring-bell-function 'ignore)
 (recentf-mode +1)
 
@@ -104,7 +115,7 @@
   (modus-themes-load-themes)
   (modus-themes-load-operandi))
 
-(set-face-attribute 'default nil :font "JetBrains Mono" :height 100)
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
 
 (use-package eval-in-repl :straight t)
 
@@ -116,17 +127,31 @@
 
 (electric-pair-mode +1)
 (show-paren-mode +1)
+(use-package paredit :straight t
+  :hook ((lisp-mode emacs-lisp-mode) . paredit-mode))
   
 (use-package magit :straight t)
 
 (use-package lsp-mode :straight t
   :init
   (setq lsp-keymap-prefix "C-c l")
-  :hook (lsp-mode . lsp-enable-which-key-integration))
+  :hook ((lsp-mode . lsp-enable-which-key-integration)
+	 ((js-mode python-mode) . lsp)))
+
+(use-package python-pytest :straight t
+  :bind (:map python-mode-map
+	      ("C-c M-t" . python-pytest-dispatch)))
 
 (use-package consult-lsp :straight t
   :bind (:map lsp-mode-map
 	      ([remap xref-find-apropos] . consult-lsp-symbols)))
+
+(use-package projectile :straight t
+  :config
+  (projectile-mode +1)
+  (define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map))
+
+(use-package pyvenv :straight t)
 
 ;; Custom modes etc.
 (use-package observable-dataflow-mode
