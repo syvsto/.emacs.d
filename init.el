@@ -12,16 +12,23 @@
   (load bootstrap-file nil 'nomessage))
 
 
+;; Setup use-package
+
+(straight-use-package 'use-package)
+(use-package diminish :straight t)
+
+
 ;; Platform specifics
 
 (when (eq system-type 'windows-nt)
   (w32-register-hot-key [M-tab]))
 
-
-;; Setup use-package
-
-(straight-use-package 'use-package)
-(use-package diminish :straight t)
+(when (memq window-system '(mac ns x))
+  (progn
+    (use-package exec-path-from-shell :straight t
+      :config
+      (exec-path-from-shell-initialize))
+    (setq-default mac-option-modifier 'meta)))
 
 
 ;; Some options that make Emacs less intrusive
@@ -142,14 +149,15 @@
 
 (use-package eval-in-repl :straight t)
 
-
-;; Lisp and parenthesis handling
-
-(use-package sly :straight t
+(defun my/slime-completion-in-region (_fn completions start end)
+  (funcall completion-in-region-function start end completions nil))
+(use-package slime :straight t
   :config
-  (setq inferior-lisp-program "sbcl")
-  (add-to-list 'objed--eir-alist '(lisp-mode . sly)))
-(use-package sly-quicklisp :straight t)
+  (advice-add 'slime-display-or-scroll-completions :around #'my/slime-completion-in-region))
+(setq inferior-lisp-program "sbcl")
+(cl-pushnew 'slime-clime slime-contribs)
+(cl-pushnew 'slime-quicklisp slime-contribs)
+(slime-setup)
 
 (electric-pair-mode +1)
 (show-paren-mode +1)
@@ -189,3 +197,6 @@
 ;; Custom modes etc.
 (use-package observable-dataflow-mode
   :straight (:host github :repo "syvsto/observable-dataflow-mode"))
+
+;; Git
+(use-package magit :straight t)
