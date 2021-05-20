@@ -11,13 +11,27 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+
+;; Platform specifics
+
 (when (eq system-type 'windows-nt)
   (w32-register-hot-key [M-tab]))
+
+
+;; Setup use-package
 
 (straight-use-package 'use-package)
 (use-package diminish :straight t)
 
+
+;; Some options that make Emacs less intrusive
+
 (use-package no-littering :straight t)
+(setq ring-bell-function 'ignore)
+(recentf-mode +1)
+
+
+;; Objed - modal editing
 
 (use-package objed :straight t
   :config (objed-mode 1))
@@ -27,6 +41,9 @@
   :diminish which-key-mode
   :config (which-key-mode +1))
 
+
+;; Diminish some commonly used modes where the lighter isn't very useful
+
 (use-package eldoc :ensure nil
   :diminish eldoc-mode
   :config
@@ -34,12 +51,22 @@
 
 (diminish 'auto-revert-mode)
 
+
+;; Looks
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (when (display-graphic-p)
   (scroll-bar-mode -1))
-(setq ring-bell-function 'ignore)
-(recentf-mode +1)
+
+(use-package modus-operandi-theme :straight t
+  :init
+  (modus-themes-load-themes)
+  (modus-themes-load-operandi))
+
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
+
+
+;; Completion/selection
 
 (use-package selectrum :straight t)
 (use-package selectrum-prescient :straight t)
@@ -110,14 +137,13 @@
 (use-package marginalia :straight t
   :init (marginalia-mode))
 
-(use-package modus-operandi-theme :straight t
-  :init
-  (modus-themes-load-themes)
-  (modus-themes-load-operandi))
 
-(set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
+;; Interactive evaluation for languages with REPL (integrates with Objed)
 
 (use-package eval-in-repl :straight t)
+
+
+;; Lisp and parenthesis handling
 
 (use-package sly :straight t
   :config
@@ -129,8 +155,9 @@
 (show-paren-mode +1)
 (use-package paredit :straight t
   :hook ((lisp-mode emacs-lisp-mode) . paredit-mode))
-  
-(use-package magit :straight t)
+
+
+;; LSP support 
 
 (use-package lsp-mode :straight t
   :init
@@ -138,20 +165,26 @@
   :hook ((lsp-mode . lsp-enable-which-key-integration)
 	 ((js-mode python-mode) . lsp)))
 
+(use-package consult-lsp :straight t
+  :bind (:map lsp-mode-map
+	      ([remap xref-find-apropos] . consult-lsp-symbols)))
+
+
+;; Language specifics
+
 (use-package python-pytest :straight t
   :bind (:map python-mode-map
 	      ("C-c M-t" . python-pytest-dispatch)))
 
-(use-package consult-lsp :straight t
-  :bind (:map lsp-mode-map
-	      ([remap xref-find-apropos] . consult-lsp-symbols)))
+(use-package pyvenv :straight t)
+
+
+;; Project handling
 
 (use-package projectile :straight t
   :config
   (projectile-mode +1)
   (define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map))
-
-(use-package pyvenv :straight t)
 
 ;; Custom modes etc.
 (use-package observable-dataflow-mode
