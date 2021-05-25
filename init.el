@@ -53,22 +53,27 @@
   :config
   (eldoc-mode +1))
 
-(diminish 'auto-revert-mode)
-
-
 ;; Looks
-(menu-bar-mode -1)
+
 (tool-bar-mode -1)
+(menu-bar-mode -1)
 (when (display-graphic-p)
   (scroll-bar-mode -1))
 
-(use-package modus-operandi-theme :straight t
-  :init
-  (modus-themes-load-themes)
-  (modus-themes-load-operandi))
-
-(set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
-(setq inhibit-startup-screen t)
+(use-package svg-tag-mode :straight (:host github :repo "rougier/svg-tag-mode"))
+(use-package mini-frame :straight t)
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/nano-emacs"))
+(require 'nano-layout)
+(require 'nano-base-colors)
+(require 'nano-faces)
+(nano-faces)
+(require 'nano-theme)
+(nano-theme)
+(require 'nano-defaults)
+(require 'nano-session)
+(require 'nano-modeline)
+(require 'nano-help)
+(require 'nano-splash)
 
 
 ;; Completion/selection
