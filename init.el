@@ -138,6 +138,8 @@
 
 (use-package slime :straight (:host github :repo "nuddyco/slime" :branch "clime")
   :defer nil
+  :bind ((:map lisp-mode-map
+	       ("C-c s" . slime-selector)))
   :config
   (advice-add 'slime-display-or-scroll-completions :around #'my/slime-completion-in-region))
 (setq inferior-lisp-program "sbcl")
@@ -214,6 +216,7 @@
 (require 'nano-faces)
 (nano-faces)
 (require 'nano-theme)
+(require 'nano-theme-light)
 (nano-theme)
 (require 'nano-session)
 (require 'nano-modeline)
