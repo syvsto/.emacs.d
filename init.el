@@ -67,7 +67,8 @@
   (modus-themes-load-themes)
   (modus-themes-load-operandi))
 
-(set-face-attribute 'default nil :font "JetBrains Mono" :height 100)
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
+(setq inhibit-startup-screen t)
 
 
 ;; Completion/selection
@@ -94,7 +95,7 @@
          ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
          ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
          ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
-         ;; Custom M-# bindings for fast register access
+         ;; Custom M-"/' bindings for fast register access
          ("M-\"" . consult-register-load)
          ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
          ("C-M-\"" . consult-register)
@@ -150,7 +151,9 @@
 
 (defun my/slime-completion-in-region (_fn completions start end)
   (funcall completion-in-region-function start end completions nil))
+
 (use-package slime :straight (:host github :repo "nuddyco/slime" :branch "clime")
+  :defer nil
   :config
   (advice-add 'slime-display-or-scroll-completions :around #'my/slime-completion-in-region))
 (setq inferior-lisp-program "sbcl")
@@ -191,6 +194,12 @@
 (use-package projectile :straight t
   :config
   (projectile-mode +1)
+  (defun my/objed-projectile (_a _b)
+    (projectile-commander))
+  (defun my/objed-magit (_a _b)
+    (magit-status))
+  (objed-define-op "x p" my/objed-projectile)
+  (objed-define-op "x g" my/objed-magit)
   (define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map))
 
 ;; Custom modes etc.
