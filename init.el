@@ -212,16 +212,22 @@
 (use-package mini-frame :straight t)
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/nano-emacs"))
 (require 'nano-layout)
-(require 'nano-base-colors)
+(require 'nano-theme-light)
+
 (require 'nano-faces)
 (nano-faces)
+
 (require 'nano-theme)
-(require 'nano-theme-light)
 (nano-theme)
+
 (require 'nano-session)
 (require 'nano-modeline)
 (require 'nano-help)
 (require 'nano-splash)
+
+(straight-use-package 'org-plus-contrib :includes 'org)
+
+(require 'nano-writer)
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
