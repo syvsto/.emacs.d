@@ -53,27 +53,6 @@
   :config
   (eldoc-mode +1))
 
-;; Looks
-
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(when (display-graphic-p)
-  (scroll-bar-mode -1))
-
-(use-package svg-tag-mode :straight (:host github :repo "rougier/svg-tag-mode"))
-(use-package mini-frame :straight t)
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/nano-emacs"))
-(require 'nano-layout)
-(require 'nano-base-colors)
-(require 'nano-faces)
-(nano-faces)
-(require 'nano-theme)
-(nano-theme)
-(require 'nano-defaults)
-(require 'nano-session)
-(require 'nano-modeline)
-(require 'nano-help)
-(require 'nano-splash)
 
 
 ;; Completion/selection
@@ -224,3 +203,25 @@
 			  (ibuffer-vc-set-filter-groups-by-vc-root)
 			  (unless (eq ibuffer-sorting-mode 'alphabetic)
 			    (ibuffer-do-sort-by-alphabetic)))))
+
+;; Looks
+
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(when (display-graphic-p)
+  (scroll-bar-mode -1))
+
+(use-package svg-tag-mode :straight (:host github :repo "rougier/svg-tag-mode"))
+(use-package mini-frame :straight t)
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/nano-emacs"))
+(require 'nano-layout)
+(require 'nano-base-colors)
+(require 'nano-faces)
+(nano-faces)
+(require 'nano-theme)
+(nano-theme)
+(require 'nano-session)
+(require 'nano-modeline)
+(require 'nano-help)
+(require 'nano-splash)
+
