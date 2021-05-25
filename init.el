@@ -206,11 +206,6 @@
 
 ;; Looks
 
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(when (display-graphic-p)
-  (scroll-bar-mode -1))
-
 (use-package svg-tag-mode :straight (:host github :repo "rougier/svg-tag-mode"))
 (use-package mini-frame :straight t)
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/nano-emacs"))
@@ -224,4 +219,11 @@
 (require 'nano-modeline)
 (require 'nano-help)
 (require 'nano-splash)
+
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(when (display-graphic-p)
+  (scroll-bar-mode -1))
+
+
 
