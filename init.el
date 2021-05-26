@@ -219,3 +219,10 @@
 			  (ibuffer-vc-set-filter-groups-by-vc-root)
 			  (unless (eq ibuffer-sorting-mode 'alphabetic)
 			    (ibuffer-do-sort-by-alphabetic)))))
+
+;; Searching
+
+(use-package anzu :straight t
+  :diminish anzu-mode
+  :config
+  (global-anzu-mode +1))
