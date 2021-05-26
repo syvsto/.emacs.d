@@ -38,7 +38,7 @@
 ;; Objed - modal editing
 
 (use-package objed :straight t
-  :config (objed-mode 1))
+  :config (objed-mode +1))
 (use-package avy :straight t)
 (use-package multiple-cursors :straight t)
 (use-package which-key :straight t
@@ -58,15 +58,6 @@
 (use-package selectrum :straight t)
 (use-package selectrum-prescient :straight t)
 (use-package orderless :straight t)
-
-(use-package mini-frame :straight t
-  :config
-  (mini-frame-mode +1)
-  (custom-set-variables
-   '(mini-frame-show-parameters
-     '((top . 10)
-       (width . 0.8)
-       (left . 0.5)))))
 
 (setq tab-always-indent 'complete)
 
