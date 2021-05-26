@@ -46,8 +46,6 @@
   :config (which-key-mode +1))
 
 
-;; Diminish some commonly used modes where the lighter isn't very useful
-
 (use-package eldoc :ensure nil
   :diminish eldoc-mode
   :config
@@ -59,9 +57,21 @@
 
 (use-package selectrum :straight t)
 (use-package selectrum-prescient :straight t)
+(use-package orderless :straight t)
+
+(use-package mini-frame :straight t
+  :config
+  (mini-frame-mode +1)
+  (custom-set-variables
+   '(mini-frame-show-parameters
+     '((top . 10)
+       (width . 0.8)
+       (left . 0.5)))))
 
 (setq tab-always-indent 'complete)
 
+(setq completion-styles '(orderless))
+(setq selectrum-prescient-enable-filtering nil)
 (selectrum-mode +1)
 (selectrum-prescient-mode +1)
 (prescient-persist-mode +1)
@@ -157,6 +167,7 @@
 
 (use-package lsp-mode :straight t
   :init
+  (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-keymap-prefix "C-c l")
   :hook ((lsp-mode . lsp-enable-which-key-integration)
 	 ((js-mode python-mode) . lsp)))
@@ -234,7 +245,6 @@
 (require 'nano-splash)
 
 (straight-use-package 'org-plus-contrib :includes 'org)
-
 (require 'nano-writer)
 
 (menu-bar-mode -1)
