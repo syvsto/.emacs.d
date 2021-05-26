@@ -53,22 +53,6 @@
   :config
   (eldoc-mode +1))
 
-(diminish 'auto-revert-mode)
-
-
-;; Looks
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(when (display-graphic-p)
-  (scroll-bar-mode -1))
-
-(use-package modus-operandi-theme :straight t
-  :init
-  (modus-themes-load-themes)
-  (modus-themes-load-operandi))
-
-(set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
-(setq inhibit-startup-screen t)
 
 
 ;; Completion/selection
@@ -154,6 +138,8 @@
 
 (use-package slime :straight (:host github :repo "nuddyco/slime" :branch "clime")
   :defer nil
+  :bind ((:map lisp-mode-map
+	       ("C-c s" . slime-selector)))
   :config
   (advice-add 'slime-display-or-scroll-completions :around #'my/slime-completion-in-region))
 (setq inferior-lisp-program "sbcl")
@@ -226,3 +212,35 @@
   :diminish anzu-mode
   :config
   (global-anzu-mode +1))
+
+
+;; Looks
+
+(use-package svg-tag-mode :straight (:host github :repo "rougier/svg-tag-mode"))
+(use-package mini-frame :straight t)
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/nano-emacs"))
+(require 'nano-layout)
+(require 'nano-theme-light)
+
+(require 'nano-faces)
+(nano-faces)
+
+(require 'nano-theme)
+(nano-theme)
+
+(require 'nano-session)
+(require 'nano-modeline)
+(require 'nano-help)
+(require 'nano-splash)
+
+(straight-use-package 'org-plus-contrib :includes 'org)
+
+(require 'nano-writer)
+
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(when (display-graphic-p)
+  (scroll-bar-mode -1))
+
+
+
