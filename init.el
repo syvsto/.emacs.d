@@ -38,6 +38,7 @@
 ;; Objed - modal editing
 
 (use-package objed :straight t
+  :defer nil
   :config (objed-mode +1))
 (use-package avy :straight t)
 (use-package multiple-cursors :straight t)
@@ -57,12 +58,9 @@
 
 (use-package selectrum :straight t)
 (use-package selectrum-prescient :straight t)
-(use-package orderless :straight t)
 
 (setq tab-always-indent 'complete)
 
-(setq completion-styles '(orderless))
-(setq selectrum-prescient-enable-filtering nil)
 (selectrum-mode +1)
 (selectrum-prescient-mode +1)
 (prescient-persist-mode +1)
@@ -136,6 +134,7 @@
 
 (defun my/slime-completion-in-region (_fn completions start end)
   (funcall completion-in-region-function start end completions nil))
+
 
 (use-package slime :straight (:host github :repo "nuddyco/slime" :branch "clime")
   :defer nil
