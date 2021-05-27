@@ -20,6 +20,8 @@
 
 ;; Platform specifics
 
+()
+
 (when (memq window-system '(mac ns x))
   (progn
     (use-package exec-path-from-shell :straight t
@@ -35,24 +37,33 @@
 (recentf-mode +1)
 
 
-;; Objed - modal editing
+;; Modal editing
 
-(use-package objed :straight t
+(use-package smart-god-mode
+  :straight (:host github :repo "syvsto/smart-god-mode")
   :defer nil
-  :config (objed-mode +1))
-(use-package avy :straight t)
-(use-package multiple-cursors :straight t)
+  :config
+  (setq smart-god-mod-alist '((nil . "C-")
+                              ("m" . "M-")
+                              ("u" . "C-M-")))
+  (dolist (key '("q"))
+    (define-key smart-god-local-mode-map (kbd key) 'smart-god-local-mode))
+  (smart-god-mode-set-exit-and-do-keys
+   '("'" "," ":" "/" "-" "SPC" "*" "@" "_" "+" "=" "!" "#" "$"
+     "%" "^" "&" "." "`" "~" "<left>"))
+  (setq smart-god-mode-do-and-enter-keys '("<up>" "<down>" "<right>" ")" "]" "}")
+        smart-god-mode-auto-enter-on-ctrl-keys t
+        smart-god-mode-auto-enter-on-ctrl-exempt-keys '("C-g" "C-o"))
+  (smart-god-mode-all))
+
 (use-package which-key :straight t
   :diminish which-key-mode
   :config (which-key-mode +1))
-
 
 (use-package eldoc :ensure nil
   :diminish eldoc-mode
   :config
   (eldoc-mode +1))
-
-
 
 ;; Completion/selection
 
@@ -78,10 +89,10 @@
          ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
          ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
          ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
-         ;; Custom M-"/' bindings for fast register access
-         ("M-\"" . consult-register-load)
+         ;; Custom M-#' bindings for fast register access
+         ("M-#" . consult-register-load)
          ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
-         ("C-M-\"" . consult-register)
+         ("C-M-#" . consult-register)
          ;; Other custom bindings
          ("M-y" . consult-yank-pop)                ;; orig. yank-pop
          ("<help> a" . consult-apropos)            ;; orig. apropos-command
@@ -139,7 +150,7 @@
 (use-package slime :straight (:host github :repo "nuddyco/slime" :branch "clime")
   :defer nil
   :bind ((:map lisp-mode-map
-	       ("C-c s" . slime-selector)))
+               ("C-c s" . slime-selector)))
   :config
   (advice-add 'slime-display-or-scroll-completions :around #'my/slime-completion-in-region))
 (setq inferior-lisp-program "sbcl")
@@ -147,11 +158,11 @@
 (cl-pushnew 'slime-quicklisp slime-contribs)
 (slime-setup)
 
-(electric-pair-mode +1)
-(show-paren-mode +1)
-(use-package paredit :straight t
-  :hook ((lisp-mode emacs-lisp-mode) . paredit-mode))
-
+(use-package parinfer-rust-mode :straight t
+  :hook ((emacs-lisp-mode lisp-mode) . parinfer-rust-mode)
+  :config
+  (setq-default indent-tabs-mode nil)
+  (setq parinfer-rust-auto-download t))
 
 ;; LSP support 
 
@@ -160,18 +171,18 @@
   (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-keymap-prefix "C-c l")
   :hook ((lsp-mode . lsp-enable-which-key-integration)
-	 ((js-mode python-mode) . lsp)))
+         ((js-mode python-mode) . lsp)))
 
 (use-package consult-lsp :straight t
   :bind (:map lsp-mode-map
-	      ([remap xref-find-apropos] . consult-lsp-symbols)))
+              ([remap xref-find-apropos] . consult-lsp-symbols)))
 
 
 ;; Language specifics
 
 (use-package python-pytest :straight t
   :bind (:map python-mode-map
-	      ("C-c M-t" . python-pytest-dispatch)))
+              ("C-c M-t" . python-pytest-dispatch)))
 
 (use-package pyvenv :straight t)
 
@@ -181,16 +192,6 @@
 (use-package projectile :straight t
   :config
   (projectile-mode +1)
-  (defun my/objed-projectile (_a _b)
-    (objed--reset--objed-buffer)
-    (projectile-commander)
-    (objed--init (or objed--object 'char)))
-  (defun my/objed-magit (_a _b)
-    (objed--reset--objed-buffer)
-    (magit-status)
-    (objed--exit-objed))
-  (objed-define-op "x p" my/objed-projectile)
-  (objed-define-op "x g" my/objed-magit)
   (define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map))
 
 ;; Custom modes etc.
@@ -203,9 +204,9 @@
 (use-package ibuffer-vc :straight t
   :bind ("C-x C-b" . ibuffer)
   :hook (ibuffer-mode . (lambda ()
-			  (ibuffer-vc-set-filter-groups-by-vc-root)
-			  (unless (eq ibuffer-sorting-mode 'alphabetic)
-			    (ibuffer-do-sort-by-alphabetic)))))
+                          (ibuffer-vc-set-filter-groups-by-vc-root)
+                          (unless (eq ibuffer-sorting-mode 'alphabetic)
+                            (ibuffer-do-sort-by-alphabetic)))))
 
 ;; Searching
 
