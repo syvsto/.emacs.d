@@ -56,10 +56,11 @@
         smart-god-mode-auto-enter-on-ctrl-keys t
         smart-god-mode-auto-enter-on-ctrl-exempt-keys '("C-g" "C-o"))
   (defun my/god-mode-update-cursor ()
-    (setq cursor-type (if (or smart-god-local-mode buffer-read-only)
-                        'box
-                        'bar)))
-  (add-hook 'post-command-hook #'my/god-mode-update-cursor)
+    (setq cursor-type (if smart-god-local-mode
+                    'box
+                    'bar)))
+  (add-hook 'smart-god-mode-disabled-hook #'my/god-mode-update-cursor)
+  (add-hook 'smart-god-mode-enabled-hook #'my/god-mode-update-cursor)
  (smart-god-mode-all))
 
 (use-package which-key :straight t
