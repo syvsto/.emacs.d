@@ -20,8 +20,6 @@
 
 ;; Platform specifics
 
-()
-
 (when (memq window-system '(mac ns x))
   (progn
     (use-package exec-path-from-shell :straight t
@@ -57,8 +55,8 @@
         smart-god-mode-auto-enter-on-ctrl-exempt-keys '("C-g" "C-o"))
   (defun my/god-mode-update-cursor ()
     (setq cursor-type (if smart-god-local-mode
-                    'box
-                    'bar)))
+                       'box
+                       'bar)))
   (add-hook 'smart-god-mode-disabled-hook #'my/god-mode-update-cursor)
   (add-hook 'smart-god-mode-enabled-hook #'my/god-mode-update-cursor)
  (smart-god-mode-all))
