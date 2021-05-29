@@ -181,6 +181,7 @@
   :config
   (setq-default indent-tabs-mode nil)
   (setq parinfer-rust-auto-download t))
+(show-paren-mode +1)
 
 ;; LSP support 
 
