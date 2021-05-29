@@ -42,19 +42,25 @@
 (use-package smart-god-mode
   :straight (:host github :repo "syvsto/smart-god-mode")
   :defer nil
+  :commands (smart-god-local-mode smart-god-mode-all smart-god-mode-set-exit-and-do-keys)
+  :bind (:map smart-god-local-mode-map
+              ("q" . smart-god-local-mode))
   :config
   (setq smart-god-mod-alist '((nil . "C-")
                               ("m" . "M-")
                               ("u" . "C-M-")))
-  (dolist (key '("q"))
-    (define-key smart-god-local-mode-map (kbd key) 'smart-god-local-mode))
   (smart-god-mode-set-exit-and-do-keys
    '("'" "," ":" "/" "-" "SPC" "*" "@" "_" "+" "=" "!" "#" "$"
      "%" "^" "&" "." "`" "~" "<left>"))
   (setq smart-god-mode-do-and-enter-keys '("<up>" "<down>" "<right>" ")" "]" "}")
         smart-god-mode-auto-enter-on-ctrl-keys t
         smart-god-mode-auto-enter-on-ctrl-exempt-keys '("C-g" "C-o"))
-  (smart-god-mode-all))
+  (defun my/god-mode-update-cursor ()
+    (setq cursor-type (if (or smart-god-local-mode buffer-read-only)
+                        'box
+                        'bar)))
+  (add-hook 'post-command-hook #'my/god-mode-update-cursor)
+ (smart-god-mode-all))
 
 (use-package which-key :straight t
   :diminish which-key-mode
