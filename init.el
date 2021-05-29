@@ -41,8 +41,12 @@
   :straight (:host github :repo "syvsto/smart-god-mode")
   :defer nil
   :commands (smart-god-local-mode smart-god-mode-all smart-god-mode-set-exit-and-do-keys)
-  :bind (:map smart-god-local-mode-map
-              ("q" . smart-god-local-mode))
+  :bind (("C-x C-1" . delete-other-windows)
+         ("C-x C-2" . split-window-below)
+         ("C-x C-3" . split-window-right)
+         ("C-x C-0" . delete-window)
+         (:map smart-god-local-mode-map
+               ("q" . smart-god-local-mode)))
   :config
   (setq smart-god-mod-alist '((nil . "C-")
                               ("m" . "M-")
@@ -70,6 +74,12 @@
   :diminish eldoc-mode
   :config
   (eldoc-mode +1))
+
+
+;; Navigation
+
+(use-package ace-window :straight t
+  :bind ("M-o" . ace-window))
 
 ;; Completion/selection
 
@@ -103,31 +113,31 @@
          ("M-y" . consult-yank-pop)                ;; orig. yank-pop
          ("<help> a" . consult-apropos)            ;; orig. apropos-command
          ;; M-g bindings (goto-map)
-         ("M-g e" . consult-compile-error)
-         ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
-         ("M-g g" . consult-goto-line)             ;; orig. goto-line
+         ("M-g C-e" . consult-compile-error)
+         ("M-g C-f" . consult-flymake)               ;; Alternative: consult-flycheck
+         ("M-g C-g" . consult-goto-line)             ;; orig. goto-line
          ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
-         ("M-g o" . consult-outline)
-         ("M-g m" . consult-mark)
-         ("M-g k" . consult-global-mark)
-         ("M-g i" . consult-imenu)
-         ("M-g I" . consult-project-imenu)
+         ("M-g C-o" . consult-outline)
+         ("M-g C-m" . consult-mark)
+         ("M-g C-k" . consult-global-mark)
+         ("M-g C-i" . consult-imenu)
+         ("M-g C-I" . consult-project-imenu)
          ;; M-s bindings (search-map)
-         ("M-s f" . consult-find)
-         ("M-s L" . consult-locate)
-         ("M-s g" . consult-grep)
-         ("M-s G" . consult-git-grep)
-         ("M-s r" . consult-ripgrep)
-         ("M-s l" . consult-line)
-         ("M-s m" . consult-multi-occur)
-         ("M-s k" . consult-keep-lines)
-         ("M-s u" . consult-focus-lines)
+         ("M-s C-f" . consult-find)
+         ("M-s C-L" . consult-locate)
+         ("M-s C-g" . consult-grep)
+         ("M-s C-G" . consult-git-grep)
+         ("M-s C-r" . consult-ripgrep)
+         ("M-s C-l" . consult-line)
+         ("M-s C-m" . consult-multi-occur)
+         ("M-s C-k" . consult-keep-lines)
+         ("M-s C-u" . consult-focus-lines)
          ;; Isearch integration
          ("M-s e" . consult-isearch)
          :map isearch-mode-map
          ("M-e" . consult-isearch)                 ;; orig. isearch-edit-string
-         ("M-s e" . consult-isearch)               ;; orig. isearch-edit-string
-         ("M-s l" . consult-line))                 ;; required by consult-line to detect isearch
+         ("M-s C-e" . consult-isearch)               ;; orig. isearch-edit-string
+         ("M-s C-l" . consult-line))                 ;; required by consult-line to detect isearch
   :init
   (setq register-preview-delay 0
         register-preview-function #'consult-register-format)
