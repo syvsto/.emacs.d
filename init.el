@@ -205,6 +205,7 @@
 
 (use-package pyvenv :straight t)
 
+(use-package ein :straight t)
 
 ;; Project handling
 
@@ -213,11 +214,15 @@
   (projectile-mode +1)
   (define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map))
 
+
 ;; Custom modes etc.
+
 (use-package observable-dataflow-mode
   :straight (:host github :repo "syvsto/observable-dataflow-mode"))
 
+
 ;; Git
+
 (use-package magit :straight t)
 
 (use-package ibuffer-vc :straight t
@@ -261,6 +266,3 @@
 (tool-bar-mode -1)
 (when (display-graphic-p)
   (scroll-bar-mode -1))
-
-
-
