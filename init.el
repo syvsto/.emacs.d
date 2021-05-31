@@ -84,15 +84,39 @@
   :bind ("M-o" . ace-window))
 
 ;; Completion/selection
+(use-package vertico :straight t
+  :init (vertico-mode))
 
-(use-package selectrum :straight t)
-(use-package selectrum-prescient :straight t)
+(use-package corfu :straight t
+  :init (corfu-global-mode))
+
+(use-package dabbrev
+  :demand nil
+  :bind (("M-/" . dabbrev-completion)
+         ("C-M-/" . dabbrev-expand)))
 
 (setq tab-always-indent 'complete)
+(setq completion-cycle-threshold 3)
+ 
+(use-package orderless :straight t
+  :init
+  (setq completion-styles '(orderless)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles . (partial-completion))))))
 
-(selectrum-mode +1)
-(selectrum-prescient-mode +1)
-(prescient-persist-mode +1)
+(use-package savehist
+  :demand nil
+  :init (savehist-mode))
+
+(defun crm-indicator (args)
+  (cons (concat "[CRM] " (car args)) (cdr args)))
+(advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+(setq enable-recursive-minibuffers t)
+
+(setq minibuffer-prompt-properties
+      '(read-only t cursor-intangible t face minibuffer-prompt))
+ 
 
 (use-package consult
   :straight t
