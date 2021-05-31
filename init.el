@@ -44,6 +44,8 @@
          ("C-x C-2" . split-window-below)
          ("C-x C-3" . split-window-right)
          ("C-x C-0" . delete-window)
+         ("C-z" . repeat)
+         ("C-S-z" . repeat-complex-command)
          (:map smart-god-local-mode-map
                ("q" . smart-god-local-mode)))
   :config
