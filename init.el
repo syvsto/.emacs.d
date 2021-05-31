@@ -32,6 +32,7 @@
 
 (use-package no-littering :straight t)
 (setq ring-bell-function 'ignore)
+(defalias 'yes-or-no-p 'y-or-n-p)
 (recentf-mode +1)
 
 
@@ -46,6 +47,7 @@
          ("C-x C-0" . delete-window)
          ("C-z" . repeat)
          ("C-S-z" . repeat-complex-command)
+         ("M-z" . zap-up-to-char)
          (:map smart-god-local-mode-map
                ("q" . smart-god-local-mode)))
   :config
