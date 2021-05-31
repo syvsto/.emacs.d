@@ -90,7 +90,9 @@
   :bind (:map corfu-map
               ("TAB" . corfu-next)
               ("S-TAB" . corfu-previous))
-  :init (corfu-global-mode))
+  :init
+  (set-face-background 'corfu-background "#fafafa")
+  (corfu-global-mode))
 
 (use-package dabbrev
   :demand nil
