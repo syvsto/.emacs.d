@@ -36,7 +36,6 @@
 
 
 ;; Modal editing
-
 (use-package smart-god-mode
   :straight (:host github :repo "syvsto/smart-god-mode")
   :defer nil
@@ -88,6 +87,9 @@
   :init (vertico-mode))
 
 (use-package corfu :straight t
+  :bind (:map corfu-map
+              ("TAB" . corfu-next)
+              ("S-TAB" . corfu-previous))
   :init (corfu-global-mode))
 
 (use-package dabbrev
