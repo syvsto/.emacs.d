@@ -89,11 +89,12 @@
 (use-package corfu :straight t
   :bind (:map corfu-map
               ("TAB" . corfu-next)
-              ("S-TAB" . corfu-previous))
+              ("<backtab>" . corfu-previous))
   :init
-  (set-face-background 'corfu-background "#fafafa")
-  (corfu-global-mode))
-
+  (corfu-global-mode)
+  :config
+  (set-face-background 'corfu-background "#fafafa"))
+ 
 (use-package dabbrev
   :demand nil
   :bind (("M-/" . dabbrev-completion)
@@ -151,12 +152,11 @@
          ("M-g C-m" . consult-mark)
          ("M-g C-k" . consult-global-mark)
          ("M-g C-i" . consult-imenu)
-         ("M-g C-I" . consult-project-imenu)
+         ("M-g C-S-i" . consult-project-imenu)
          ;; M-s bindings (search-map)
          ("M-s C-f" . consult-find)
-         ("M-s C-L" . consult-locate)
-         ("M-s C-g" . consult-grep)
-         ("M-s C-G" . consult-git-grep)
+         ("M-s C-S-l" . consult-locate)
+         ("M-s C-g" . consult-git-grep)
          ("M-s C-r" . consult-ripgrep)
          ("M-s C-l" . consult-line)
          ("M-s C-m" . consult-multi-occur)
@@ -185,13 +185,8 @@
   :init (marginalia-mode))
 
 
-;; Interactive evaluation for languages with REPL (integrates with Objed)
-
-(use-package eval-in-repl :straight t)
-
 (defun my/slime-completion-in-region (_fn completions start end)
   (funcall completion-in-region-function start end completions nil))
-
 
 (use-package slime :straight (:host github :repo "nuddyco/slime" :branch "clime")
   :defer nil
