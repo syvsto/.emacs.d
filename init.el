@@ -234,7 +234,6 @@
 
 (use-package pyvenv :straight t)
 
-(use-package ein :straight t)
 
 ;; Project handling
 
