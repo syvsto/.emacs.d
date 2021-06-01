@@ -34,6 +34,7 @@
 (setq ring-bell-function 'ignore)
 (defalias 'yes-or-no-p 'y-or-n-p)
 (recentf-mode +1)
+(delete-selection-mode +1)
 
 
 ;; Modal editing
@@ -49,13 +50,14 @@
          ("C-S-z" . repeat-complex-command)
          ("M-z" . zap-up-to-char)
          (:map smart-god-local-mode-map
-               ("q" . smart-god-local-mode)))
+               ("q" . smart-god-local-mode)
+               ("m" . my/ctrl-m-map)))
   :config
   (setq smart-god-mod-alist '((nil . "C-")
-                              ("m" . "M-")
+                              ("g" . "M-")
                               ("u" . "C-M-")))
   (smart-god-mode-set-exit-and-do-keys
-   '("'" "," ":" "/" "-" "SPC" "*" "@" "_" "+" "=" "!" "#" "$"
+   '("'" "," ":" "/" "SPC" "*" "@" "_" "+" "!" "#" "$"
      "%" "^" "&" "." "`" "~" "<left>"))
   (setq smart-god-mode-do-and-enter-keys '("<up>" "<down>" "<right>" ")" "]" "}")
         smart-god-mode-auto-enter-on-ctrl-keys t
@@ -267,6 +269,59 @@
   (global-anzu-mode +1))
 
 
+;; Additional editing commands
+(define-key input-decode-map [?\C-m] [C-m])
+
+(eval-and-compile
+  (define-prefix-command 'my/ctrl-m-map)
+  (bind-key "<C-m>" 'my/ctrl-m-map))
+
+(use-package expand-region :straight t
+  :bind ("C-=" . er/expand-region))
+
+(use-package multiple-cursors :straight t
+  ;; - Sometimes you end up with cursors outside of your view. You can scroll
+  ;;   the screen to center on each cursor with `C-v` and `M-v`.
+  ;;
+  ;; - If you get out of multiple-cursors-mode and yank - it will yank only
+  ;;   from the kill-ring of main cursor. To yank from the kill-rings of every
+  ;;   cursor use yank-rectangle, normally found at C-x r y.
+
+  :bind (("<C-m> ^"     . mc/edit-beginnings-of-lines)
+         ("<C-m> `"     . mc/edit-beginnings-of-lines)
+         ("<C-m> $"     . mc/edit-ends-of-lines)
+         ("<C-m> '"     . mc/edit-ends-of-lines)
+         ("<C-m> R"     . mc/reverse-regions)
+         ("<C-m> S"     . mc/sort-regions)
+         ("<C-m> W"     . mc/mark-all-words-like-this)
+         ("<C-m> Y"     . mc/mark-all-symbols-like-this)
+         ("<C-m> a"     . mc/mark-all-like-this-dwim)
+         ("<C-m> c"     . mc/mark-all-dwim)
+         ("<C-m> l"     . mc/insert-letters)
+         ("<C-m> n"     . mc/insert-numbers)
+         ("<C-m> r"     . mc/mark-all-in-region)
+         ("<C-m> s"     . set-rectangular-region-anchor)
+         ("<C-m> %"     . mc/mark-all-in-region-regexp)
+         ("<C-m> t"     . mc/mark-sgml-tag-pair)
+         ("<C-m> w"     . mc/mark-next-like-this-word)
+         ("<C-m> x"     . mc/mark-more-like-this-extended)
+         ("<C-m> y"     . mc/mark-next-like-this-symbol)
+         ("<C-m> C-x"   . reactivate-mark)
+         ("<C-m> C-SPC" . mc/mark-pop)
+         ("<C-m> ("     . mc/mark-all-symbols-like-this-in-defun)
+         ("<C-m> C-("   . mc/mark-all-words-like-this-in-defun)
+         ("<C-m> M-("   . mc/mark-all-like-this-in-defun)
+         ("<C-m> ["     . mc/vertical-align-with-space)
+         ("<C-m> {"     . mc/vertical-align)
+
+         ("S-<down-mouse-1>")
+         ("S-<mouse-1>" . mc/add-cursor-on-click))
+  :preface
+  (defun reactivate-mark ()
+    (interactive)
+    (activate-mark)))
+
+
 ;; Looks
 
 (use-package svg-tag-mode :straight (:host github :repo "rougier/svg-tag-mode"))
@@ -293,3 +348,4 @@
 (tool-bar-mode -1)
 (when (display-graphic-p)
   (scroll-bar-mode -1))
+
