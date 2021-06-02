@@ -212,18 +212,29 @@
   (setq parinfer-rust-auto-download t))
 (show-paren-mode +1)
 
-;; LSP support 
+;; LSP support
 
 (use-package lsp-mode :straight t
   :init
   (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-keymap-prefix "C-c l")
   :hook ((lsp-mode . lsp-enable-which-key-integration)
-         ((js-mode python-mode) . lsp)))
+         ((js-mode . (lambda ()
+                       (require 'lsp-sonarlint)
+                       (require 'lsp-sonarlint-javascript)
+                       (setq lsp-sonarlint-javascript-enabled t)
+                       (lsp)))
+          (python-mode . (lambda ()
+                          (require 'lsp-sonarlint)
+                          (require 'lsp-sonarlint-python)
+                          (setq lsp-sonarlint-python-enabled t)
+                          (lsp))))))
 
 (use-package consult-lsp :straight t
   :bind (:map lsp-mode-map
               ([remap xref-find-apropos] . consult-lsp-symbols)))
+
+(use-package lsp-sonarlint :straight t)
 
 
 ;; Language specifics
@@ -233,6 +244,7 @@
               ("C-c M-t" . python-pytest-dispatch)))
 
 (use-package pyvenv :straight t)
+
 
 
 ;; Project handling
