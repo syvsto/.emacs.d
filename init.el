@@ -152,8 +152,6 @@
          ;; M-g bindings (goto-map)
          ("M-g C-e" . consult-compile-error)
          ("M-g C-f" . consult-flymake)               ;; Alternative: consult-flycheck
-         ("M-g C-g" . consult-goto-line)             ;; orig. goto-line
-         ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
          ("M-g C-o" . consult-outline)
          ("M-g C-m" . consult-mark)
          ("M-g C-k" . consult-global-mark)
@@ -164,7 +162,7 @@
          ("M-s C-S-l" . consult-locate)
          ("M-s C-g" . consult-git-grep)
          ("M-s C-r" . consult-ripgrep)
-         ("M-s C-l" . consult-line)
+         ("C-s" . consult-line)
          ("M-s C-m" . consult-multi-occur)
          ("M-s C-k" . consult-keep-lines)
          ("M-s C-u" . consult-focus-lines)
@@ -336,6 +334,9 @@
   :config
   (global-undo-tree-mode +1))
 
+(use-package avy
+  :bind (("M-g M-g" . avy-goto-line)
+         ("C-r" . avy-goto-char-2)))
 
 ;; Looks
 
@@ -356,7 +357,6 @@
 (require 'nano-help)
 (require 'nano-splash)
 
-(straight-use-package 'org-plus-contrib :includes 'org)
 (require 'nano-writer)
 
 (menu-bar-mode -1)
@@ -364,3 +364,10 @@
 (when (display-graphic-p)
   (scroll-bar-mode -1))
 
+;; Org mode
+(straight-use-package 'org-plus-contrib :includes 'org)
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((sqlite . t)
+   (python . t)
+   (emacs-lisp)))
