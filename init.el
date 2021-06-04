@@ -56,9 +56,8 @@
   (setq smart-god-mod-alist '((nil . "C-")
                               ("g" . "M-")
                               ("u" . "C-M-")))
-  (smart-god-mode-set-exit-and-do-keys
-   '("'" "," ":" "/" "SPC" "*" "@" "_" "+" "!" "#" "$"
-     "%" "^" "&" "." "`" "~" "<left>"))
+  (smart-god-mode-set-exit-and-do-keys 
+   '(":" "SPC" "RET" ";" "(" "{" "[" "<left>"))
   (setq smart-god-mode-do-and-enter-keys '("<up>" "<down>" "<right>" ")" "]" "}")
         smart-god-mode-auto-enter-on-ctrl-keys t
         smart-god-mode-auto-enter-on-ctrl-exempt-keys '("C-g" "C-o"))
