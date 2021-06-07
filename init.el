@@ -335,6 +335,7 @@
 
 (use-package avy
   :bind (("M-g M-g" . avy-goto-line)
+         ("M-r" . avy-goto-line)
          ("C-r" . avy-goto-char-2)))
 
 ;; Looks
@@ -363,10 +364,21 @@
 (when (display-graphic-p)
   (scroll-bar-mode -1))
 
+;; Jupyter
+(use-package jupyter :straight t
+  :demand t)
+
 ;; Org mode
 (straight-use-package 'org-plus-contrib :includes 'org)
+(setq org-babel-python-command "/usr/local/bin/python3")
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((sqlite . t)
    (python . t)
-   (emacs-lisp)))
+   (emacs-lisp . t)
+   (jupyter . t)
+   (shell . t)))
+(setq org-babel-default-header-args:jupyter-python '((:async . "yes")
+                                                     (:session . "ipy")
+                                                     (:kernel . "python3")))
+   
