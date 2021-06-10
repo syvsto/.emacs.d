@@ -87,6 +87,8 @@
 (use-package ace-window :straight t
   :bind ("M-o" . ace-window))
 
+(winner-mode +1)
+
 ;; Completion/selection
 (use-package vertico :straight t
   :init (vertico-mode))
