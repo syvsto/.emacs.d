@@ -85,7 +85,8 @@
 ;; Navigation
 
 (use-package ace-window :straight t
-  :bind ("M-o" . ace-window))
+  :bind (("M-o" . ace-window)
+         ("C-x o" . ace-window)))
 
 (winner-mode +1)
 
@@ -221,11 +222,13 @@
          ((js-mode . (lambda ()
                        (require 'lsp-sonarlint)
                        (require 'lsp-sonarlint-javascript)
+                       (electric-pair-local-mode +1)
                        (setq lsp-sonarlint-javascript-enabled t)
                        (lsp)))
           (python-mode . (lambda ()
                           (require 'lsp-sonarlint)
                           (require 'lsp-sonarlint-python)
+                          (electric-pair-local-mode +1)
                           (setq lsp-sonarlint-python-enabled t)
                           (lsp))))))
 
@@ -342,24 +345,16 @@
 
 ;; Looks
 
-(use-package svg-tag-mode :straight (:host github :repo "rougier/svg-tag-mode"))
-(use-package mini-frame :straight t)
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/nano-emacs"))
-(require 'nano-layout)
-(require 'nano-theme-light)
+(use-package modus-themes :straight t
+  :config
+  (modus-themes-load-themes)
+  (modus-themes-load-operandi))
 
-(require 'nano-faces)
-(nano-faces)
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 130)
 
-(require 'nano-theme)
-(nano-theme)
-
-(require 'nano-session)
-(require 'nano-modeline)
-(require 'nano-help)
-(require 'nano-splash)
-
-(require 'nano-writer)
+(use-package feebleline :straight t
+  :config
+  (feebleline-mode +1))
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
