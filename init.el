@@ -99,10 +99,8 @@
               ("TAB" . corfu-next)
               ("<backtab>" . corfu-previous))
   :init
-  (corfu-global-mode)
-  :config
-  (set-face-background 'corfu-background "#fafafa"))
- 
+  (corfu-global-mode))
+   
 (use-package dabbrev
   :demand nil
   :bind (("M-/" . dabbrev-completion)
