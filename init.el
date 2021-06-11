@@ -152,7 +152,6 @@
          ("<help> a" . consult-apropos)            ;; orig. apropos-command
          ;; M-g bindings (goto-map)
          ("M-g C-e" . consult-compile-error)
-         ("M-g C-f" . consult-flymake)               ;; Alternative: consult-flycheck
          ("M-g C-o" . consult-outline)
          ("M-g C-m" . consult-mark)
          ("M-g C-k" . consult-global-mark)
@@ -385,3 +384,4 @@
                                                      (:kernel . "python3")))
 (setq org-src-fontify-natively t
       org-fontify-quote-and-verse-blocks t)
+(put 'narrow-to-region 'disabled nil)
