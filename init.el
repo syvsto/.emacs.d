@@ -1,3 +1,4 @@
+(setq straight-repository-branch "develop")
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -162,7 +163,7 @@
          ("M-s C-S-l" . consult-locate)
          ("M-s C-S-g" . consult-git-grep)
          ("M-s C-r" . consult-ripgrep)
-         ("C-s" . consult-line)
+         ("M-s C-l" . consult-line)
          ("M-s C-m" . consult-multi-occur)
          ("M-s C-k" . consult-keep-lines)
          ("M-s C-S-u" . consult-focus-lines)
@@ -342,12 +343,15 @@
 (use-package avy
   :bind (("M-g M-g" . avy-goto-line)
          ("M-r" . avy-goto-line)
-         ("C-r" . avy-goto-char-2)))
+         (:map isearch-mode-map
+               ("C-'" . avy-isearch))))
 
 ;; Looks
 
 (use-package modus-themes :straight t
-  :config
+  :init
+  (setq modus-themes-org-blocks 'gray-background
+        modus-themes-completions 'opinionated)
   (modus-themes-load-themes)
   (modus-themes-load-operandi))
 
@@ -367,18 +371,17 @@
   :demand t)
 
 ;; Org mode
-(use-package org
-  :straight org-contrib
-  :config
-  (setq org-babel-python-command "/usr/local/bin/python3")
-  (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((sqlite . t)
-       (python . t)
-       (emacs-lisp . t)
-       (jupyter . t)
-       (shell . t)))
-  (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
-                                                       (:session . "ipy")
-                                                       (:kernel . "python3"))))
-    
+(straight-use-package '(org-contrib :includes org))
+(setq org-babel-python-command "/usr/local/bin/python3")
+(org-babel-do-load-languages
+   'org-babel-load-languages
+   '((sqlite . t)
+     (python . t)
+     (emacs-lisp . t)
+     (jupyter . t)
+     (shell . t)))
+(setq org-babel-default-header-args:jupyter-python '((:async . "yes")
+                                                     (:session . "ipy")
+                                                     (:kernel . "python3")))
+(setq org-src-fontify-natively t
+      org-fontify-quote-and-verse-blocks t)
