@@ -204,11 +204,13 @@
 (slime-setup)
 
 (use-package parinfer-rust-mode :straight t
-  :hook ((emacs-lisp-mode lisp-mode) . parinfer-rust-mode)
+  :hook (((emacs-lisp-mode lisp-mode) . parinfer-rust-mode))
   :config
   (setq-default indent-tabs-mode nil)
   (setq parinfer-rust-auto-download t))
+
 (show-paren-mode +1)
+(add-hook 'text-mode-hook #'electric-pair-local-mode)
 
 ;; LSP support
 (use-package flycheck :straight t)
@@ -217,16 +219,15 @@
   (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-keymap-prefix "C-c l")
   :hook ((lsp-mode . lsp-enable-which-key-integration)
+         (lsp-mode . electric-pair-local-mode)
          ((js-mode . (lambda ()
                        (require 'lsp-sonarlint)
                        (require 'lsp-sonarlint-javascript)
-                       (electric-pair-local-mode +1)
                        (setq lsp-sonarlint-javascript-enabled t)
                        (lsp)))
           (python-mode . (lambda ()
                           (require 'lsp-sonarlint)
                           (require 'lsp-sonarlint-python)
-                          (electric-pair-local-mode +1)
                           (setq lsp-sonarlint-python-enabled t)
                           (lsp))))))
 
@@ -249,6 +250,11 @@
 (use-package pyvenv :straight t)
 
 (use-package rustic :straight t)
+
+(use-package haskell-mode :straight t)
+(use-package lsp-haskell :straight t
+  :hook ((haskell-mode haskell-literate-mode) . lsp))
+
 
 ;; Project handling
 
@@ -354,7 +360,7 @@
   (modus-themes-load-themes)
   (modus-themes-load-operandi))
 
-(set-face-attribute 'default nil :font "JetBrains Mono" :height 130)
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 90)
 
 (use-package feebleline :straight t
   :config
