@@ -251,7 +251,8 @@
 
 (use-package rustic :straight t)
 
-(use-package haskell-mode :straight t)
+(use-package haskell-mode :straight t
+  :hook (haskell-mode . electric-pair-local-mode))
 (use-package lsp-haskell :straight t
   :hook ((haskell-mode haskell-literate-mode) . lsp))
 
