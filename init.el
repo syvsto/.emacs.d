@@ -229,6 +229,15 @@
                           (electric-pair-local-mode +1)
                           (setq lsp-sonarlint-python-enabled t)
                           (lsp))))))
+(use-package lsp-ui :straight t
+  :bind (:map lsp-ui-mode-map
+         ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+         ([remap xref-find-references] . lsp-ui-peek-find-references))
+  :config
+  (setq lsp-ui-sideline-enable nil
+        lsp-ui-doc-enable nil))
+        
+  
 
 (use-package consult-lsp :straight t
   :bind (:map lsp-mode-map
