@@ -65,8 +65,24 @@
 
 (winner-mode +1)
 
-(use-package dumb-jump :straight t)
+(use-package xref :straight t)
 
+(use-package dumb-jump :straight t
+ :config
+ (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
+
+(use-package dired
+ :hook (dired-mode . dired-hide-details-mode)
+ :config
+ (use-package diredfl
+  :straight t
+  :config
+  (diredfl-global-mode 1)))
+
+(use-package dired-git-info :straight t
+ :bind (:map dired-mode-map
+        (")" . dired-git-info-mode)))
+ 
 
 ;; Completion/selection
 
@@ -245,7 +261,8 @@
 (use-package lsp-haskell :straight t
   :hook ((haskell-mode haskell-literate-mode) . lsp))
 
-(use-package zig-mode :straight t)
+(use-package zig-mode :straight t
+  :hook (zig-mode . electric-pair-local-mode))
 
 ;; Custom modes etc.
 
