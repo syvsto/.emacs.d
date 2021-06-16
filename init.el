@@ -40,6 +40,9 @@
 
 ;; Modal editing
 (use-package boon :straight t
+  :defer nil
+  :bind (:map boon-command-map
+         ("p" . consult-line))
   :config
   (require 'boon-colemak)
   (boon-mode))
@@ -62,7 +65,11 @@
 
 (winner-mode +1)
 
+(use-package dumb-jump :straight t)
+
+
 ;; Completion/selection
+
 (use-package vertico :straight t
   :init (vertico-mode))
 
@@ -238,6 +245,7 @@
 (use-package lsp-haskell :straight t
   :hook ((haskell-mode haskell-literate-mode) . lsp))
 
+(use-package zig-mode :straight t)
 
 ;; Custom modes etc.
 
@@ -263,59 +271,10 @@
   :config
   (global-anzu-mode +1))
 
+(use-package expand-region :straight t)
 
-;; Additional editing commands
-(define-key input-decode-map [?\C-m] [C-m])
-
-(eval-and-compile
-  (define-prefix-command 'my/ctrl-m-map)
-  (bind-key "<C-m>" 'my/ctrl-m-map))
-
-(use-package expand-region :straight t
-  :bind ("C-=" . er/expand-region))
-
-(use-package multiple-cursors :straight t
-  ;; - Sometimes you end up with cursors outside of your view. You can scroll
-  ;;   the screen to center on each cursor with `C-v` and `M-v`.
-  ;;
-  ;; - If you get out of multiple-cursors-mode and yank - it will yank only
-  ;;   from the kill-ring of main cursor. To yank from the kill-rings of every
-  ;;   cursor use yank-rectangle, normally found at C-x r y.
-
-  :bind (("<C-m> ^"     . mc/edit-beginnings-of-lines)
-         ("<C-m> `"     . mc/edit-beginnings-of-lines)
-         ("<C-m> $"     . mc/edit-ends-of-lines)
-         ("<C-m> '"     . mc/edit-ends-of-lines)
-         ("<C-m> R"     . mc/reverse-regions)
-         ("<C-m> S"     . mc/sort-regions)
-         ("<C-m> W"     . mc/mark-all-words-like-this)
-         ("<C-m> Y"     . mc/mark-all-symbols-like-this)
-         ("<C-m> a"     . mc/mark-all-like-this-dwim)
-         ("<C-m> c"     . mc/mark-all-dwim)
-         ("<C-m> l"     . mc/insert-letters)
-         ("<C-m> n"     . mc/insert-numbers)
-         ("<C-m> r"     . mc/mark-all-in-region)
-         ("<C-m> s"     . set-rectangular-region-anchor)
-         ("<C-m> %"     . mc/mark-all-in-region-regexp)
-         ("<C-m> t"     . mc/mark-sgml-tag-pair)
-         ("<C-m> w"     . mc/mark-next-like-this-word)
-         ("<C-m> x"     . mc/mark-more-like-this-extended)
-         ("<C-m> y"     . mc/mark-next-like-this-symbol)
-         ("<C-m> C-x"   . reactivate-mark)
-         ("<C-m> C-SPC" . mc/mark-pop)
-         ("<C-m> ("     . mc/mark-all-symbols-like-this-in-defun)
-         ("<C-m> C-("   . mc/mark-all-words-like-this-in-defun)
-         ("<C-m> M-("   . mc/mark-all-like-this-in-defun)
-         ("<C-m> ["     . mc/vertical-align-with-space)
-         ("<C-m> {"     . mc/vertical-align)
-
-         ("S-<down-mouse-1>")
-         ("S-<mouse-1>" . mc/add-cursor-on-click))
-  :preface
-  (defun reactivate-mark ()
-    (interactive)
-    (activate-mark)))
-
+(use-package multiple-cursors :straight t)
+  
 (use-package undo-tree :straight t
   :config
   (global-undo-tree-mode +1))
@@ -326,6 +285,8 @@
          (:map isearch-mode-map
                ("C-'" . avy-isearch))))
 
+(use-package iy-go-to-char :straight t)
+
 ;; Looks
 
 (use-package modus-themes :straight t
@@ -335,7 +296,7 @@
   (modus-themes-load-themes)
   (modus-themes-load-operandi))
 
-(set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 90)
 
 (use-package feebleline :straight t
   :config
