@@ -39,39 +39,10 @@
 
 
 ;; Modal editing
-(use-package smart-god-mode
-  :straight (:host github :repo "syvsto/smart-god-mode")
-  :defer nil
-  :commands (smart-god-local-mode smart-god-mode-all smart-god-mode-set-exit-and-do-keys)
-  :bind (("C-x C-1" . delete-other-windows)
-         ("C-x C-2" . split-window-below)
-         ("C-x C-3" . split-window-right)
-         ("C-x C-0" . delete-window)
-         ("C-z" . repeat)
-         ("C-S-z" . repeat-complex-command)
-         ("M-z" . zap-up-to-char)
-         (:map smart-god-local-mode-map
-               ("q" . smart-god-local-mode)
-               ("m" . my/ctrl-m-map)))
+(use-package boon :straight t
   :config
-  (setq smart-god-mod-alist '((nil . "C-")
-                              ("g" . "M-")
-                              ("u" . "C-M-")))
-  (smart-god-mode-set-exit-and-do-keys 
-   '(":" "SPC" "RET" ";" "(" "{" "[" "<left>"))
-  (setq smart-god-mode-do-and-enter-keys '("<up>" "<down>" "<right>" ")" "]" "}")
-        smart-god-mode-auto-enter-on-ctrl-keys t
-        smart-god-mode-auto-enter-on-ctrl-exempt-keys '("C-g" "C-o"))
-  
-  (defun my/update-cursor ()
-    (setq cursor-type (cond (smart-god-local-mode 'box)
-                            (buffer-read-only 'hbar)
-                            (t 'bar))))
-  (add-hook 'post-command-hook #'my/update-cursor)
-  (add-hook 'smart-god-mode-disabled-hook #'my/update-cursor)
-  (add-hook 'smart-god-mode-enabled-hook #'my/update-cursor)
-  
-  (smart-god-mode-all))
+  (require 'boon-colemak)
+  (boon-mode))
 
 (use-package which-key :straight t
   :diminish which-key-mode
@@ -220,11 +191,11 @@
   (setq lsp-keymap-prefix "C-c l")
   :hook ((lsp-mode . lsp-enable-which-key-integration)
          (lsp-mode . electric-pair-local-mode)
-         ((js-mode . (lambda ()
-                       (require 'lsp-sonarlint)
-                       (require 'lsp-sonarlint-javascript)
-                       (setq lsp-sonarlint-javascript-enabled t)
-                       (lsp)))
+         ((rjsx-mode . (lambda ()
+                         (require 'lsp-sonarlint)
+                         (require 'lsp-sonarlint-javascript)
+                         (setq lsp-sonarlint-javascript-enabled t)
+                         (lsp)))
           (python-mode . (lambda ()
                           (require 'lsp-sonarlint)
                           (require 'lsp-sonarlint-python)
@@ -249,6 +220,8 @@
 
 ;; Language specifics
 
+(use-package rjsx-mode :straight t)
+
 (use-package prettier :straight t
   :hook (after-init . global-prettier-mode))
 
@@ -264,14 +237,6 @@
   :hook (haskell-mode . electric-pair-local-mode))
 (use-package lsp-haskell :straight t
   :hook ((haskell-mode haskell-literate-mode) . lsp))
-
-
-;; Project handling
-
-(use-package projectile :straight t
-  :config
-  (projectile-mode +1)
-  (define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map))
 
 
 ;; Custom modes etc.
@@ -370,7 +335,7 @@
   (modus-themes-load-themes)
   (modus-themes-load-operandi))
 
-(set-face-attribute 'default nil :font "JetBrains Mono" :height 90)
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
 
 (use-package feebleline :straight t
   :config
