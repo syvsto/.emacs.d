@@ -265,7 +265,8 @@
   :hook ((haskell-mode haskell-literate-mode) . lsp))
 
 (use-package zig-mode :straight t
-  :hook (zig-mode . electric-pair-local-mode))
+  :hook ((zig-mode . electric-pair-local-mode)
+         (zig-mode . lsp)))
 
 ;; Custom modes etc.
 
