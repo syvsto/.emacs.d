@@ -41,8 +41,10 @@
 ;; Modal editing
 (use-package boon :straight t
   :defer nil
-  :bind (:map boon-command-map
-         ("p" . consult-line))
+  :bind (("C-x s" . save-buffer)
+         ("C-x C-s" . save-some-buffers)
+         (:map boon-command-map
+          ("p" . consult-line)))
   :config
   (require 'boon-colemak)
   (boon-mode))
@@ -314,6 +316,7 @@
   (modus-themes-load-operandi))
 
 (set-face-attribute 'default nil :font "JetBrains Mono" :height 90)
+(global-hl-line-mode +1)
 
 (use-package feebleline :straight t
   :config
