@@ -41,7 +41,8 @@
 ;; Modal editing
 (use-package boon :straight t
   :defer nil
-  :bind (("C-x s" . save-buffer)
+  :bind (("C-x f" . find-file)
+         ("C-x s" . save-buffer)
          ("C-x C-s" . save-some-buffers)
          (:map boon-command-map
           ("p" . consult-line)))
