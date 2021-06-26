@@ -148,27 +148,27 @@
          ("M-y" . consult-yank-pop)                ;; orig. yank-pop
          ("<help> a" . consult-apropos)            ;; orig. apropos-command
          ;; M-g bindings (goto-map)
-         ("M-g C-e" . consult-compile-error)
-         ("M-g C-o" . consult-outline)
-         ("M-g C-m" . consult-mark)
-         ("M-g C-k" . consult-global-mark)
-         ("M-g C-i" . consult-imenu)
-         ("M-g C-S-i" . consult-project-imenu)
+         ("M-g e" . consult-compile-error)
+         ("M-g o" . consult-outline)
+         ("M-g m" . consult-mark)
+         ("M-g k" . consult-global-mark)
+         ("M-g i" . consult-imenu)
+         ("M-g I" . consult-project-imenu)
          ;; M-s bindings (search-map)
-         ("M-s C-f" . consult-find)
-         ("M-s C-S-l" . consult-locate)
-         ("M-s C-S-g" . consult-git-grep)
-         ("M-s C-r" . consult-ripgrep)
-         ("M-s C-l" . consult-line)
-         ("M-s C-m" . consult-multi-occur)
-         ("M-s C-k" . consult-keep-lines)
-         ("M-s C-S-u" . consult-focus-lines)
+         ("M-s f" . consult-find)
+         ("M-s L" . consult-locate)
+         ("M-s G" . consult-git-grep)
+         ("M-s r" . consult-ripgrep)
+         ("M-s l" . consult-line)
+         ("M-s m" . consult-multi-occur)
+         ("M-s k" . consult-keep-lines)
+         ("M-s U" . consult-focus-lines)
          ;; Isearch integration
          ("M-s e" . consult-isearch)
          :map isearch-mode-map
          ("M-e" . consult-isearch)                 ;; orig. isearch-edit-string
-         ("M-s C-e" . consult-isearch)               ;; orig. isearch-edit-string
-         ("M-s C-l" . consult-line))                 ;; required by consult-line to detect isearch
+         ("M-s e" . consult-isearch)               ;; orig. isearch-edit-string
+         ("M-s l" . consult-line))                 ;; required by consult-line to detect isearch
   :init
   (setq register-preview-delay 0
         register-preview-function #'consult-register-format)
@@ -265,6 +265,7 @@
   :hook ((haskell-mode haskell-literate-mode) . lsp))
 
 (use-package zig-mode :straight t
+  :config (setq zig-format-on-save nil)
   :hook ((zig-mode . electric-pair-local-mode)
          (zig-mode . lsp)))
 
