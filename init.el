@@ -32,6 +32,13 @@
 ;; Some options that make Emacs less intrusive
 
 (use-package no-littering :straight t)
+;; store all backup and autosave files in the tmp dir
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+(setq create-lockfiles nil) ;; Allow other processes (such as Storybook) to access files at the same time as Emacs
+
 (setq ring-bell-function 'ignore)
 (defalias 'yes-or-no-p 'y-or-n-p)
 (recentf-mode +1)
@@ -67,12 +74,6 @@
          ("C-x o" . ace-window)))
 
 (winner-mode +1)
-
-(use-package xref :straight t)
-
-(use-package dumb-jump :straight t
- :config
- (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 
 (use-package dired
  :hook (dired-mode . dired-hide-details-mode)
@@ -227,6 +228,7 @@
                           (require 'lsp-sonarlint-python)
                           (setq lsp-sonarlint-python-enabled t)
                           (lsp))))))
+                          
 (use-package lsp-ui :straight t
   :bind (:map lsp-ui-mode-map
          ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
@@ -248,6 +250,17 @@
 
 (use-package rjsx-mode :straight t)
 
+(use-package typescript-mode :straight t
+ :mode (rx ".ts" string-end)
+ :init (define-derived-mode typescript-tsx-mode typescript-mode "typescript-tsx")
+       (add-to-list 'auto-mode-alist (cons (rx ".tsx" string-end) #'typescript-tsx-mode)))
+(use-package tree-sitter-langs :straight t)
+ 
+(use-package tree-sitter :straight t
+ :hook (typescript-mode . tree-sitter-hl-mode)
+ :config
+ (setf (alist-get 'typescript-tsx-mode tree-sitter-major-mode-language-alist) 'tsx))
+
 (use-package prettier :straight t
   :hook (after-init . global-prettier-mode))
 
@@ -265,8 +278,8 @@
   :hook ((haskell-mode haskell-literate-mode) . lsp))
 
 (use-package zig-mode :straight t
-  :hook ((zig-mode . electric-pair-local-mode)
-         (zig-mode . lsp)))
+  :hook ((zig-mode . electric-pair-local-mode)))
+         ;; (zig-mode . lsp)))
 
 ;; Custom modes etc.
 
@@ -277,6 +290,7 @@
 ;; Git
 
 (use-package magit :straight t)
+(use-package git-timemachine :straight t)
 
 (use-package ibuffer-vc :straight t
   :bind ("C-x C-b" . ibuffer)
@@ -317,7 +331,7 @@
   (modus-themes-load-themes)
   (modus-themes-load-operandi))
 
-(set-face-attribute 'default nil :font "JetBrains Mono" :height 90)
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
 (global-hl-line-mode +1)
 
 (use-package feebleline :straight t
