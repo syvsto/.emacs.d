@@ -200,7 +200,8 @@
          ("n" . next-line)
          ("p" . previous-line)
          ("F" . consult-focus-lines)
-         ("s" . isearch-forward))))
+         ("s" . isearch-forward)))
+ :hook (completion-list-mode . (lambda () (interactive) (setq truncate-lines t))))
 
 (use-package embark :straight t
  :bind (("C-." . embark-act)
@@ -213,7 +214,6 @@
                 nil
                 (window-parameters (mode-line-format . none))))
  :init
- (setq completion-cycle-threshold 5)
  (setq prefix-help-command #'embark-prefix-help-command))
 
 (use-package embark-consult :straight t
