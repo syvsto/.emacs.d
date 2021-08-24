@@ -26,7 +26,8 @@
     (use-package exec-path-from-shell :straight t
       :config
       (exec-path-from-shell-initialize))
-    (setq-default mac-option-modifier 'meta)))
+    (setq-default mac-option-modifier 'meta)
+    (setq ns-right-option-modifier nil)))
 
 
 ;; Some options that make Emacs less intrusive
@@ -66,7 +67,6 @@
   :config
   (eldoc-mode +1))
 
-
 ;; Navigation
 
 (use-package ace-window :straight t
@@ -87,11 +87,15 @@
  :bind (:map dired-mode-map
         (")" . dired-git-info-mode)))
  
-
+(use-package transpose-frame :straight t
+   :bind (("C-x 4 t t" . transpose-frame)
+          ("C-x 4 t f" . flip-frame)
+          ("C-x 4 t F" . flop-frame)
+          ("C-x 4 t r" . rotate-frame)
+          ("C-x 4 t <" . rotate-frame-anticlockwise)
+          ("C-x 4 t >" . rotate-frame-clockwise)))
+          
 ;; Completion/selection
-
-(use-package vertico :straight t
-  :init (vertico-mode))
 
 (use-package corfu :straight t
   :bind (:map corfu-map
@@ -186,6 +190,38 @@
 (use-package marginalia :straight t
   :init (marginalia-mode))
 
+(use-package embark :straight t
+ :bind (("C-." . embark-act)
+        ("C-;" . embark-dwim)
+        ("C-," . embark-collect-live)
+        ("C-h B" . embark-bindings)
+        (:map minibuffer-mode-map
+              ("SPC" . nil)
+              ("C-j" . minibuffer-force-complete-and-exit)))
+ :config
+ (add-to-list 'display-buffer-alist
+              '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                nil
+                (window-parameters (mode-line-format . none))))
+ :init
+ (setq completion-cycle-threshold t)
+ (setq prefix-help-command #'embark-prefix-help-command))
+
+(use-package live-completions :straight t
+ :config
+ (setq live-completions-columns 'single)
+ (live-completions-mode 1))
+ 
+(use-package embark-consult :straight t
+ :after (embark consult)
+ :hook
+ (embark-collect-mode . consult-preview-at-point-mode))
+
+(use-package avy-embark-collect :straight t
+ :bind ((:map embark-collect-mode-map
+         ("C-'" . avy-embark-collect-choose))
+        (:map minibuffer-mode-map
+         ("C-'" . avy-embark-collect-choose))))
 
 (defun my/slime-completion-in-region (_fn completions start end)
   (funcall completion-in-region-function start end completions nil))
@@ -287,6 +323,10 @@
   :hook ((zig-mode . electric-pair-local-mode)
          (zig-mode . lsp)))
 
+;; Terminal
+
+(use-package vterm :straight t)
+
 ;; Custom modes etc.
 
 (use-package observable-dataflow-mode
@@ -322,6 +362,7 @@
 
 (use-package avy
   :bind (("M-g M-g" . avy-goto-line)
+         ("M-g g" . avy-goto-line)
          ("M-r" . avy-goto-line)
          (:map isearch-mode-map
                ("C-'" . avy-isearch))))
@@ -354,6 +395,9 @@
 (tool-bar-mode -1)
 (when (display-graphic-p)
   (scroll-bar-mode -1))
+
+(use-package all-the-icons-dired :straight t
+ :hook (dired-mode . all-the-icons-dired-mode))
 
 ;; Jupyter
 (use-package jupyter :straight t
