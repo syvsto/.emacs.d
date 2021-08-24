@@ -53,7 +53,8 @@
          ("C-x s" . save-buffer)
          ("C-x C-s" . save-some-buffers)
          (:map boon-command-map
-          ("p" . consult-line)))
+          ("p" . pop-to-mark-command)
+          ("%" . anzu-query-replace)))
   :config
   (require 'boon-colemak)
   (boon-mode))
@@ -122,16 +123,6 @@
   :demand nil
   :init (savehist-mode))
 
-(defun crm-indicator (args)
-  (cons (concat "[CRM] " (car args)) (cdr args)))
-(advice-add #'completing-read-multiple :filter-args #'crm-indicator)
-
-(setq enable-recursive-minibuffers t)
-
-(setq minibuffer-prompt-properties
-      '(read-only t cursor-intangible t face minibuffer-prompt))
- 
-
 (use-package consult
   :straight t
   ;; Replace bindings. Lazily loaded due by `use-package'.
@@ -190,28 +181,41 @@
 (use-package marginalia :straight t
   :init (marginalia-mode))
 
+(use-package minibuffer :demand nil
+ :custom
+ (completion-show-help nil)
+ (enable-recursive-minibuffers t)
+ (completion-ignore-case t)
+ (minibuffer-eldef-shorten-default t)
+ (resize-mini-windows t)
+ :init
+ (minibuffer-depth-indicate-mode)
+ (minibuffer-electric-default-mode)
+ :bind ((:map minibuffer-local-map
+         ("M-RET" . exit-minibuffer))
+        (:map minibuffer-local-completion-map
+         ("SPC"))
+        (:map completion-list-mode-map
+         ("C-g" . abort-recursive-edit)
+         ("n" . next-line)
+         ("p" . previous-line)
+         ("F" . consult-focus-lines)
+         ("s" . isearch-forward))))
+
 (use-package embark :straight t
  :bind (("C-." . embark-act)
         ("C-;" . embark-dwim)
         ("C-," . embark-collect-live)
-        ("C-h B" . embark-bindings)
-        (:map minibuffer-mode-map
-              ("SPC" . nil)
-              ("C-j" . minibuffer-force-complete-and-exit)))
+        ("C-h B" . embark-bindings))        
  :config
  (add-to-list 'display-buffer-alist
               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                 nil
                 (window-parameters (mode-line-format . none))))
  :init
- (setq completion-cycle-threshold t)
+ (setq completion-cycle-threshold 5)
  (setq prefix-help-command #'embark-prefix-help-command))
 
-(use-package live-completions :straight t
- :config
- (setq live-completions-columns 'single)
- (live-completions-mode 1))
- 
 (use-package embark-consult :straight t
  :after (embark consult)
  :hook
@@ -378,7 +382,7 @@
   (modus-themes-load-themes)
   (modus-themes-load-operandi))
 
-(set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 100)
 (global-hl-line-mode +1)
 
 (use-package feebleline :straight t
