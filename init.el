@@ -332,7 +332,31 @@
  :config
  (yas-global-mode 1))
 
-(use-package yasnippet-snippets :straight t) 
+(use-package yasnippet-snippets :straight t)
+
+(use-package project :demand nil
+ :bind (:map project-prefix-map
+        ("t" . project-vterm)
+        ("m" . magit-status))
+ :config
+ (defun project-vterm ()
+   "Start VTerm in the current project's root directory.
+If a buffer already exists for running Vterm in the project's root,
+switch to it.  Otherwise, create a new Vterm buffer.
+With \\[universal-argument] prefix arg, create a new Vterm buffer even
+if one already exists."
+   (interactive)
+   (defvar vterm-buffer-name)
+   (let* ((default-directory (project-root (project-current t)))
+          (vterm-buffer-name (project-prefixed-buffer-name "vterm"))
+          (vterm-buffer (get-buffer vterm-buffer-name)))
+     (if (and vterm-buffer (not current-prefix-arg))
+         (pop-to-buffer-same-window vterm-buffer)
+       (vterm t))))
+
+ (nconc project-switch-commands '((magit-status "Magit") (project-vterm "Vterm"))))
+
+
 ;; Language specifics
 
 (use-package rjsx-mode :straight t)
