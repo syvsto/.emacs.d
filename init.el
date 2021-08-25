@@ -54,10 +54,13 @@
          ("C-x C-s" . save-some-buffers)
          (:map boon-command-map
           ("p" . pop-to-mark-command)
-          ("%" . anzu-query-replace)))
+          ("%" . anzu-query-replace)
+          ("=" . er/expand-region)))
   :config
   (require 'boon-colemak)
   (boon-mode))
+
+(use-package expand-region :straight t)
 
 (use-package which-key :straight t
   :diminish which-key-mode
@@ -181,6 +184,28 @@
 (use-package marginalia :straight t
   :init (marginalia-mode))
 
+(defun up-directory (arg)
+   "Move up a directory (delete backwards to /)."
+   (interactive "p")
+   (if (string-match-p "/." (minibuffer-contents))
+       (zap-up-to-char (- arg) ?/)
+     (delete-minibuffer-contents)))
+
+(defun exit-with-top-completion ()
+  "Exit minibuffer with top completion candidate."
+  (interactive)
+  (let ((content (minibuffer-contents-no-properties)))
+    (unless (test-completion content
+                             minibuffer-completion-table
+                             minibuffer-completion-predicate)
+      (when-let ((completions (completion-all-sorted-completions)))
+        (delete-minibuffer-contents)
+        (insert
+         (concat
+          (substring content 0 (or (cdr (last completions)) 0))
+          (car completions)))))
+    (exit-minibuffer)))
+
 (use-package minibuffer :demand nil
  :custom
  (completion-show-help nil)
@@ -194,19 +219,25 @@
  :bind ((:map minibuffer-local-map
          ("M-RET" . exit-minibuffer))
         (:map minibuffer-local-completion-map
+         ("RET" . exit-with-top-completion)
          ("SPC"))
+        (:map minibuffer-local-must-match-map
+         ("RET" . exit-with-top-completion))
         (:map completion-list-mode-map
          ("C-g" . abort-recursive-edit)
          ("n" . next-line)
          ("p" . previous-line)
          ("F" . consult-focus-lines)
-         ("s" . isearch-forward)))
+         ("s" . isearch-forward))
+        (:map minibuffer-local-filename-completion-map
+         ("<C-backspace>" . up-directory)))
  :hook (completion-list-mode . (lambda () (interactive) (setq truncate-lines t))))
 
 (use-package embark :straight t
  :bind (("C-." . embark-act)
-        ("C-;" . embark-dwim)
-        ("C-," . embark-collect-live)
+        ("M-." . embark-dwim)
+        (:map minibuffer-local-map
+         ("C-," . embark-collect-live))
         ("C-h B" . embark-bindings))        
  :config
  (add-to-list 'display-buffer-alist
@@ -221,11 +252,23 @@
  :hook
  (embark-collect-mode . consult-preview-at-point-mode))
 
-(use-package avy-embark-collect :straight t
- :bind ((:map embark-collect-mode-map
-         ("C-'" . avy-embark-collect-choose))
-        (:map minibuffer-mode-map
-         ("C-'" . avy-embark-collect-choose))))
+(use-package link-hint
+  :straight t
+  :bind
+  ("C-'" . link-hint-open-link)
+  :init
+  (cl-loop
+   for (mode map) in '((minibuffer minibuffer-local-completion-map)
+                       (embark embark-collect-mode-map)
+                       (help help-mode-map)
+                       (info Info-mode-map)
+                       (apropos apropos-mode-map)
+                       (man Man-mode-map)
+                       (woman woman-mode-map)
+                       (package package-menu-mode-map)
+                       (eww eww-mode-map)
+                       (dired dired-mode-map))
+   do (eval-after-load mode `(define-key ,map "'" #'link-hint-open-link))))
 
 (defun my/slime-completion-in-region (_fn completions start end)
   (funcall completion-in-region-function start end completions nil))
@@ -382,7 +425,7 @@
   (modus-themes-load-themes)
   (modus-themes-load-operandi))
 
-(set-face-attribute 'default nil :font "JetBrains Mono" :height 100)
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
 (global-hl-line-mode +1)
 
 (use-package feebleline :straight t
