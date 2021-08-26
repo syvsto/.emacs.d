@@ -119,8 +119,8 @@
 (use-package orderless :straight t
   :init
   (setq completion-styles '(orderless)
-        completion-category-defaults nil
-        completion-category-overrides '((file (styles . (partial-completion))))))
+       completion-category-defaults nil
+       completion-category-overrides '((file (styles . (partial-completion))))))
 
 (use-package savehist
   :demand nil
@@ -324,7 +324,9 @@
 
 (use-package consult-lsp :straight t
   :bind (:map lsp-mode-map
-              ([remap xref-find-apropos] . consult-lsp-symbols)))
+              ([remap xref-find-apropos] . consult-lsp-symbols)
+              ("C-c l d d" . consult-lsp-diagnostics)
+              ("C-c l d s" . consult-lsp-symbols)))
 
 (use-package lsp-sonarlint :straight t)
 
@@ -360,6 +362,7 @@ if one already exists."
 ;; Language specifics
 
 (use-package rjsx-mode :straight t)
+(use-package json-mode :straight t)
 
 (use-package typescript-mode :straight t
  :mode (rx ".ts" string-end)
@@ -406,7 +409,8 @@ if one already exists."
 
 ;; Git
 
-(use-package magit :straight t)
+(use-package magit :straight t
+ :bind ("C-x g" . magit-status))
 (use-package git-timemachine :straight t)
 
 (use-package ibuffer-vc :straight t
@@ -452,15 +456,8 @@ if one already exists."
 (set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
 (global-hl-line-mode +1)
 
-(use-package feebleline :straight t
-  :config
-  (setq feebleline-msg-functions '((feebleline-line-number         :post "" :fmt "%5s")
-                                   (feebleline-column-number       :pre ":" :fmt "%-2s")
-                                   (feebleline-file-directory      :face feebleline-dir-face :post "")
-                                   (feebleline-file-or-buffer-name :face font-lock-keyword-face :post "")
-                                   (feebleline-file-modified-star  :face font-lock-warning-face :post "")
-                                   (feebleline-project-name        :align right)))
-  (feebleline-mode +1))
+(use-package mood-line :straight t
+  :config (mood-line-mode))
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
