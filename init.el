@@ -45,21 +45,6 @@
 (recentf-mode +1)
 (delete-selection-mode +1)
 
-
-;; Modal editing
-;; (use-package boon :straight t
-;;   :defer nil
-;;   :bind (("C-x f" . find-file)
-;;          ("C-x s" . save-buffer)
-;;          ("C-x C-s" . save-some-buffers)
-;;          (:map boon-command-map
-;;           ("p" . pop-to-mark-command)
-;;           ("%" . anzu-query-replace)
-;;           ("=" . er/expand-region)))
-;;   :config
-;;   (require 'boon-colemak)
-;;   (boon-mode))
-
 (use-package objed :straight t
   :config
   (objed-mode +1))
@@ -445,8 +430,6 @@ if one already exists."
          ("M-r" . avy-goto-line)
          (:map isearch-mode-map
                ("C-'" . avy-isearch))))
-
-(use-package iy-go-to-char :straight t)
 
 ;; Looks
 
