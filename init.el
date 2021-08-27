@@ -60,7 +60,8 @@
 ;;   (require 'boon-colemak)
 ;;   (boon-mode))
 
-(use-package 'objed :straight t
+(use-package objed :straight t
+  :config
   (objed-mode +1))
 
 (use-package which-key :straight t
@@ -427,7 +428,9 @@ if one already exists."
 (use-package anzu :straight t
   :diminish anzu-mode
   :config
-  (global-anzu-mode +1))
+  (global-anzu-mode +1)
+  ;; Mood-line displays anzu output, so no need for anzu to display it as well
+  (setq anzu-cons-mode-line-p nil))
 
 (use-package expand-region :straight t)
 (use-package multiple-cursors :straight t)
