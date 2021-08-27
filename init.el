@@ -47,20 +47,21 @@
 
 
 ;; Modal editing
-(use-package boon :straight t
-  :defer nil
-  :bind (("C-x f" . find-file)
-         ("C-x s" . save-buffer)
-         ("C-x C-s" . save-some-buffers)
-         (:map boon-command-map
-          ("p" . pop-to-mark-command)
-          ("%" . anzu-query-replace)
-          ("=" . er/expand-region)))
-  :config
-  (require 'boon-colemak)
-  (boon-mode))
+;; (use-package boon :straight t
+;;   :defer nil
+;;   :bind (("C-x f" . find-file)
+;;          ("C-x s" . save-buffer)
+;;          ("C-x C-s" . save-some-buffers)
+;;          (:map boon-command-map
+;;           ("p" . pop-to-mark-command)
+;;           ("%" . anzu-query-replace)
+;;           ("=" . er/expand-region)))
+;;   :config
+;;   (require 'boon-colemak)
+;;   (boon-mode))
 
-(use-package expand-region :straight t)
+(use-package 'objed :straight t
+  (objed-mode +1))
 
 (use-package which-key :straight t
   :diminish which-key-mode
@@ -152,6 +153,7 @@
          ("M-g m" . consult-mark)
          ("M-g k" . consult-global-mark)
          ("M-g i" . consult-imenu)
+         ([remap imenu] . consult-imenu)
          ("M-g I" . consult-project-imenu)
          ;; M-s bindings (search-map)
          ("M-s f" . consult-find)
@@ -234,7 +236,7 @@
  :hook (completion-list-mode . (lambda () (interactive) (setq truncate-lines t))))
 
 (use-package embark :straight t
- :bind (("C-." . embark-act)
+ :bind (("C-z" . embark-act)
         ("M-." . embark-dwim)
         (:map minibuffer-local-map
          ("C-," . embark-collect-live))
@@ -297,7 +299,7 @@
 (use-package flycheck :straight t)
 (use-package lsp-mode :straight t
   :init
-  (setq lsp-headerline-breadcrumb-enable nil)
+  (setq lsp-headerline-breadcrumb-enable t)
   (setq lsp-keymap-prefix "C-c l")
   :hook ((lsp-mode . lsp-enable-which-key-integration)
          (lsp-mode . electric-pair-local-mode)
@@ -428,7 +430,6 @@ if one already exists."
   (global-anzu-mode +1))
 
 (use-package expand-region :straight t)
-
 (use-package multiple-cursors :straight t)
   
 (use-package undo-tree :straight t
@@ -457,7 +458,9 @@ if one already exists."
 (global-hl-line-mode +1)
 
 (use-package mood-line :straight t
-  :config (mood-line-mode))
+  :config (mood-line-mode)
+  (set-face-attribute 'mode-line nil :box '(:line-width 4 :color "#dddddd"))
+  (set-face-attribute 'mode-line-inactive nil :box '(:line-width 4 :color "#eeeeee")))
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
