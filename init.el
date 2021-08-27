@@ -318,6 +318,22 @@
 
 (use-package lsp-sonarlint :straight t)
 
+
+;; Other programming niceties
+
+(use-package devdocs :straight t
+  :init
+  (defun embark-devdocs-lookup (ident)
+    "Lookup identifier using devdocs."
+    (interactive "DevDocs: ")
+    (devdocs-lookup nil ident))
+  :bind ((:map typescript-mode-map
+               ("C-c d" . devdocs-lookup))
+         (:map embark-identifier-map
+               ("D" . embark-devdocs-lookup))) 
+  :hook (typescript-mode . (lambda () (setq-local devdocs-current-docs '("typescript")))))
+ 
+
 (use-package yasnippet :straight t
  :config
  (yas-global-mode 1))
