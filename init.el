@@ -88,12 +88,8 @@
           
 ;; Completion/selection
 
-(use-package corfu :straight t
-  :bind (:map corfu-map
-              ("TAB" . corfu-next)
-              ("<backtab>" . corfu-previous))
-  :init
-  (corfu-global-mode))
+(use-package company :straight t
+  :hook (prog-mode . company-mode))
    
 (use-package dabbrev
   :demand nil
@@ -222,18 +218,23 @@
  :hook (completion-list-mode . (lambda () (interactive) (setq truncate-lines t))))
 
 (use-package embark :straight t
- :bind (("C-z" . embark-act)
-        ("M-." . embark-dwim)
-        (:map minibuffer-local-map
-         ("C-," . embark-collect-live))
-        ("C-h B" . embark-bindings))        
+  :init
+  (defun embark-devdocs-lookup (ident)
+    "Lookup identifier using devdocs."
+    (interactive "DevDocs: ")
+    (devdocs-lookup nil ident))
+  (setq prefix-help-command #'embark-prefix-help-command)
+  :bind (("C-z" . embark-act)
+         (:map minibuffer-mode-map
+               ("C-l" . embark-collect-live))
+         (:map embark-identifier-map
+               ("D" . embark-devdocs-lookup)))
  :config
  (add-to-list 'display-buffer-alist
               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                 nil
-                (window-parameters (mode-line-format . none))))
- :init
- (setq prefix-help-command #'embark-prefix-help-command))
+                (window-parameters (mode-line-format . none)))))
+ 
 
 (use-package embark-consult :straight t
  :after (embark consult)
@@ -323,16 +324,11 @@
 
 (use-package devdocs :straight t
   :init
-  (defun embark-devdocs-lookup (ident)
-    "Lookup identifier using devdocs."
-    (interactive "DevDocs: ")
-    (devdocs-lookup nil ident))
+  
   :bind ((:map typescript-mode-map
-               ("C-c d" . devdocs-lookup))
-         (:map embark-identifier-map
-               ("D" . embark-devdocs-lookup))) 
-  :hook (typescript-mode . (lambda () (setq-local devdocs-current-docs '("typescript")))))
- 
+               ("C-c d" . devdocs-lookup)))
+  :hook (typescript-mode . (lambda ()
+                             (setq-local devdocs-current-docs '("typescript")))))
 
 (use-package yasnippet :straight t
  :config
@@ -392,9 +388,42 @@ if one already exists."
 (use-package rustic :straight t)
 
 (use-package haskell-mode :straight t
-  :hook (haskell-mode . electric-pair-local-mode))
-(use-package lsp-haskell :straight t
-  :hook ((haskell-mode haskell-literate-mode) . lsp))
+  :bind ((:map haskell-mode-map
+               ("<f8>" . haskell-navigate-imports)
+               ("C-c C-," . haskell-mode-format-imports)
+               ("C-c C-." . (lambda ()  (interactive) (progn
+                                                        (haskell-sort-imports)
+                                                        (haskell-align-imports))))
+               ("C-c C-S-c" . haskell-compile)
+               ("C-c C-l" . haskell-process-or-load)
+               ("C-`" . haskell-interactive-bring)
+               ("C-c C-t" . haskell-process-do-type)
+               ("C-c C-i" . haskell-process-do-info)
+               ("C-c C-c" . haskell-process-cabal-build)
+               ("C-c C-k" . haskell-process-interactive-mode-clear)
+               ("C-c c" . haskell-process-cabal)
+               ("M-." . haskell-mode-jump-to-def-or-tag))
+         (:map haskell-cabal-mode-map
+               ("C-`" . haskell-interactive-bring)
+               ("C-c C-c" . haskell-process-cabal-build)
+               ("C-c C-k" . haskell-process-interactive-mode-clear)
+               ("C-c c" . haskell-process-cabal)
+               ("C-c C-c" . haskell-compile)))
+         ;; (:map interactive-haskell-mode-map
+         ;;       ("M-." . haskell-mode-goto-loc)
+  ;;       ("C-c C-t" . haskell-mode-show-type-at))
+  
+  :hook ((haskell-mode . electric-pair-local-mode)
+         (haskell-mode . interactive-haskell-mode)
+         (haskell-mode . haskell-auto-insert-module-template)
+         (haskell-mode . haskell-decl-scan-mode))
+  :init
+  (require 'haskell-interactive-mode)
+  (require 'haskell-process)
+  :config
+  (setq haskell-process-suggest-remove-import-lines t)
+  (setq haskell-process-auto-import-loaded-modules t)
+  (setq haskell-process-log t))
 
 (use-package zig-mode :straight t
   :config (setq zig-format-on-save nil)
@@ -456,7 +485,7 @@ if one already exists."
   (modus-themes-load-themes)
   (modus-themes-load-operandi))
 
-(set-face-attribute 'default nil :font "JetBrains Mono" :height 120)
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 140)
 (global-hl-line-mode +1)
 
 (use-package mood-line :straight t
