@@ -229,11 +229,17 @@
                ("C-l" . embark-collect-live))
          (:map embark-identifier-map
                ("D" . embark-devdocs-lookup)))
+  :hook (minibuffer-setup . embark-collect-completions-after-delay)
  :config
  (add-to-list 'display-buffer-alist
               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                 nil
-                (window-parameters (mode-line-format . none)))))
+                (window-parameters (mode-line-format . none))))
+ (add-hook 'embark-collect-post-revert-hook
+          (defun resize-embark-collect-window (&rest _)
+            (when (memq embark-collect--kind '(:live :completions))
+              (fit-window-to-buffer (get-buffer-window)
+                                    (max (floor (frame-height) 4) 10) 1)))))
  
 
 (use-package embark-consult :straight t
@@ -288,6 +294,9 @@
   :init
   (setq lsp-headerline-breadcrumb-enable t)
   (setq lsp-keymap-prefix "C-c l")
+  :bind (:map lsp-mode-map
+              ("M-p" . flycheck-previous-error)
+              ("M-n" . flycheck-next-error))
   :hook ((lsp-mode . lsp-enable-which-key-integration)
          (lsp-mode . electric-pair-local-mode)
          ((rjsx-mode . (lambda ()
