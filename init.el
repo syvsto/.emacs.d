@@ -168,6 +168,9 @@
 (use-package marginalia :straight t
   :init (marginalia-mode))
 
+(use-package all-the-icons-completion :straight t
+  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup))
+
 (defun up-directory (arg)
    "Move up a directory (delete backwards to /)."
    (interactive "p")
@@ -433,6 +436,9 @@ if one already exists."
   (setq haskell-process-suggest-remove-import-lines t)
   (setq haskell-process-auto-import-loaded-modules t)
   (setq haskell-process-log t))
+
+(use-package lsp-haskell :straight t
+  :hook (haskell-mode . lsp))
 
 (use-package zig-mode :straight t
   :config (setq zig-format-on-save nil)
