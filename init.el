@@ -45,9 +45,18 @@
 (recentf-mode +1)
 (delete-selection-mode +1)
 
-(use-package objed :straight t
-  :config
-  (objed-mode +1))
+(use-package boon :straight t
+  :defer nil
+  :bind (("C-x f" . find-file)
+         ("C-x s" . save-buffer)
+         ("C-x C-s" . save-some-buffers)
+         (:map boon-command-map
+               ("%" . anzu-query-replace)
+               ("&" . async-shell-command)
+               ("p" . consult-line)))
+  :init
+  (require 'boon-colemak)
+  (boon-mode))
 
 (use-package which-key :straight t
   :diminish which-key-mode
@@ -472,6 +481,7 @@ if one already exists."
 
 (use-package anzu :straight t
   :diminish anzu-mode
+  :bind ([remap query-replace] . anzu-query-replace)
   :config
   (global-anzu-mode +1)
   ;; Mood-line displays anzu output, so no need for anzu to display it as well
@@ -500,7 +510,7 @@ if one already exists."
   (modus-themes-load-themes)
   (modus-themes-load-operandi))
 
-(set-face-attribute 'default nil :font "JetBrains Mono" :height 140)
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 100)
 (global-hl-line-mode +1)
 
 (use-package mood-line :straight t
