@@ -178,6 +178,7 @@
   :init (marginalia-mode))
 
 (use-package all-the-icons-completion :straight t
+  :init (all-the-icons-completion-mode)
   :hook (marginalia-mode . all-the-icons-completion-marginalia-setup))
 
 (defun up-directory (arg)
@@ -241,8 +242,7 @@
                ("C-l" . embark-collect-live))
          (:map embark-identifier-map
                ("D" . embark-devdocs-lookup)))
-  :hook (minibuffer-setup . embark-collect-completions-after-delay)
- :config
+   :config
  (add-to-list 'display-buffer-alist
               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                 nil
@@ -252,7 +252,11 @@
             (when (memq embark-collect--kind '(:live :completions))
               (fit-window-to-buffer (get-buffer-window)
                                     (max (floor (frame-height) 4) 10) 1)))))
- 
+
+(use-package vertico :straight t
+  :init
+  (vertico-mode)
+  (setq vertico-resize nil))
 
 (use-package embark-consult :straight t
  :after (embark consult)
@@ -335,11 +339,9 @@
 (use-package consult-lsp :straight t
   :bind (:map lsp-mode-map
               ([remap xref-find-apropos] . consult-lsp-symbols)
-              ("C-c l d d" . consult-lsp-diagnostics)
-              ("C-c l d s" . consult-lsp-symbols)))
+              ("C-c l d d" . consult-lsp-diagnostics)))
 
 (use-package lsp-sonarlint :straight t)
-
 
 ;; Other programming niceties
 
