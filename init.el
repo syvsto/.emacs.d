@@ -50,6 +50,8 @@
   :bind (("C-x f" . find-file)
          ("C-x s" . save-buffer)
          ("C-x C-s" . save-some-buffers)
+         ("C-x C-e" . kmacro-end-and-call-macro)
+         ("C-x e" . eval-last-sexp)
          (:map boon-command-map
                ("%" . anzu-query-replace)
                ("&" . async-shell-command)
@@ -432,10 +434,6 @@ if one already exists."
                ("C-c C-k" . haskell-process-interactive-mode-clear)
                ("C-c c" . haskell-process-cabal)
                ("C-c C-c" . haskell-compile)))
-         ;; (:map interactive-haskell-mode-map
-         ;;       ("M-." . haskell-mode-goto-loc)
-  ;;       ("C-c C-t" . haskell-mode-show-type-at))
-  
   :hook ((haskell-mode . electric-pair-local-mode)
          (haskell-mode . interactive-haskell-mode)
          (haskell-mode . haskell-auto-insert-module-template)
@@ -446,10 +444,18 @@ if one already exists."
   :config
   (setq haskell-process-suggest-remove-import-lines t)
   (setq haskell-process-auto-import-loaded-modules t)
-  (setq haskell-process-log t))
+  (setq haskell-process-log t)
+  (cons "-fno-ghci-sandbox" haskell-process-args-cabal-repl))
 
-(use-package lsp-haskell :straight t
-  :hook (haskell-mode . lsp))
+(use-package dante :straight t
+ :after haskell-mode
+ :commands dante-mode
+ :hook ((haskell-mode . flycheck-mode)
+        (haskell-mode . dante-mode))
+ :config
+ (flycheck-add-next-checker 'haskell-dante '(info . haskell-hlint)))
+(use-package attrap :straight t
+ :bind (("C-x /" . attrap-attrap)))
 
 (use-package zig-mode :straight t
   :config (setq zig-format-on-save nil)
@@ -516,9 +522,7 @@ if one already exists."
 (global-hl-line-mode +1)
 
 (use-package mood-line :straight t
-  :config (mood-line-mode)
-  (set-face-attribute 'mode-line nil :box '(:line-width 4 :color "#dddddd"))
-  (set-face-attribute 'mode-line-inactive nil :box '(:line-width 4 :color "#eeeeee")))
+  :config (mood-line-mode))
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
