@@ -45,6 +45,12 @@
 (recentf-mode +1)
 (delete-selection-mode +1)
 
+(defun my/query-replace-symbol-at-point ()
+ "Get symbol under the cursor and replace it with another string"
+ (interactive)
+ (isearch-forward-symbol-at-point)
+ (anzu-isearch-query-replace nil))
+
 (use-package boon :straight t
   :defer nil
   :bind (("C-x f" . find-file)
@@ -54,6 +60,7 @@
          ("C-x e" . eval-last-sexp)
          (:map boon-command-map
                ("%" . anzu-query-replace)
+               ("\\" . my/query-replace-symbol-at-point)
                ("&" . async-shell-command)
                ("p" . consult-line)))
   :init
@@ -189,48 +196,6 @@
    (if (string-match-p "/." (minibuffer-contents))
        (zap-up-to-char (- arg) ?/)
      (delete-minibuffer-contents)))
-
-(defun exit-with-top-completion ()
-  "Exit minibuffer with top completion candidate."
-  (interactive)
-  (let ((content (minibuffer-contents-no-properties)))
-    (unless (test-completion content
-                             minibuffer-completion-table
-                             minibuffer-completion-predicate)
-      (when-let ((completions (completion-all-sorted-completions)))
-        (delete-minibuffer-contents)
-        (insert
-         (concat
-          (substring content 0 (or (cdr (last completions)) 0))
-          (car completions)))))
-    (exit-minibuffer)))
-
-(use-package minibuffer :demand nil
- :custom
- (completion-show-help nil)
- (enable-recursive-minibuffers t)
- (completion-ignore-case t)
- (minibuffer-eldef-shorten-default t)
- (resize-mini-windows t)
- :init
- (minibuffer-depth-indicate-mode)
- (minibuffer-electric-default-mode)
- :bind ((:map minibuffer-local-map
-         ("M-RET" . exit-minibuffer))
-        (:map minibuffer-local-completion-map
-         ("RET" . exit-with-top-completion)
-         ("SPC"))
-        (:map minibuffer-local-must-match-map
-         ("RET" . exit-with-top-completion))
-        (:map completion-list-mode-map
-         ("C-g" . abort-recursive-edit)
-         ("n" . next-line)
-         ("p" . previous-line)
-         ("F" . consult-focus-lines)
-         ("s" . isearch-forward))
-        (:map minibuffer-local-filename-completion-map
-         ("<C-backspace>" . up-directory)))
- :hook (completion-list-mode . (lambda () (interactive) (setq truncate-lines t))))
 
 (use-package embark :straight t
   :init
@@ -427,7 +392,8 @@ if one already exists."
                ("C-c C-c" . haskell-process-cabal-build)
                ("C-c C-k" . haskell-process-interactive-mode-clear)
                ("C-c c" . haskell-process-cabal)
-               ("M-." . haskell-mode-jump-to-def-or-tag))
+               ("M-." . haskell-mode-jump-to-def-or-tag)
+               ("C-c ?" . hoogle))
          (:map haskell-cabal-mode-map
                ("C-`" . haskell-interactive-bring)
                ("C-c C-c" . haskell-process-cabal-build)
