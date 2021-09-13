@@ -55,6 +55,8 @@
   :defer nil
   :bind (("C-x f" . find-file)
          ("C-x s" . save-buffer)
+         ("C-x C-e" . kmacro-end-and-call-macro)
+         ("C-x e" . eval-last-sexp)
          ("C-x C-s" . save-some-buffers)
          ("C-x C-e" . kmacro-end-and-call-macro)
          ("C-x e" . eval-last-sexp)
@@ -107,6 +109,8 @@
 ;; Completion/selection
 
 (use-package company :straight t
+  :bind (:map prog-mode-map
+         ("M-SPC" . company-complete))
   :hook (prog-mode . company-mode))
    
 (use-package dabbrev
@@ -114,8 +118,7 @@
   :bind (("M-/" . dabbrev-completion)
          ("C-M-/" . dabbrev-expand)))
 
-(setq tab-always-indent 'complete)
-(setq completion-cycle-threshold 3)
+(setq tab-always-indent t)
  
 (use-package orderless :straight t
   :init
@@ -204,7 +207,7 @@
     (interactive "DevDocs: ")
     (devdocs-lookup nil ident))
   (setq prefix-help-command #'embark-prefix-help-command)
-  :bind (("C-z" . embark-act)
+  :bind (("C-." . embark-act)
          (:map minibuffer-mode-map
                ("C-l" . embark-collect-live))
          (:map embark-identifier-map
@@ -277,9 +280,6 @@
   :init
   (setq lsp-headerline-breadcrumb-enable t)
   (setq lsp-keymap-prefix "C-c l")
-  :bind (:map lsp-mode-map
-              ("M-p" . flycheck-previous-error)
-              ("M-n" . flycheck-next-error))
   :hook ((lsp-mode . lsp-enable-which-key-integration)
          (lsp-mode . electric-pair-local-mode)
          ((rjsx-mode . (lambda ()
@@ -306,7 +306,7 @@
 (use-package consult-lsp :straight t
   :bind (:map lsp-mode-map
               ([remap xref-find-apropos] . consult-lsp-symbols)
-              ("C-c l d d" . consult-lsp-diagnostics)))
+              ("C-c e" . consult-lsp-diagnostics)))
 
 (use-package lsp-sonarlint :straight t)
 
