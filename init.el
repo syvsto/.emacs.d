@@ -32,6 +32,8 @@
 
 ;; Some options that make Emacs less intrusive
 
+(setq frame-resize-pixelwise t)
+
 (use-package no-littering :straight t)
 ;; store all backup and autosave files in the tmp dir
 (setq backup-directory-alist
@@ -44,30 +46,6 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 (recentf-mode +1)
 (delete-selection-mode +1)
-
-(defun my/query-replace-symbol-at-point ()
- "Get symbol under the cursor and replace it with another string"
- (interactive)
- (isearch-forward-symbol-at-point)
- (anzu-isearch-query-replace nil))
-
-(use-package boon :straight t
-  :defer nil
-  :bind (("C-x f" . find-file)
-         ("C-x s" . save-buffer)
-         ("C-x C-e" . kmacro-end-and-call-macro)
-         ("C-x e" . eval-last-sexp)
-         ("C-x C-s" . save-some-buffers)
-         ("C-x C-e" . kmacro-end-and-call-macro)
-         ("C-x e" . eval-last-sexp)
-         (:map boon-command-map
-               ("%" . anzu-query-replace)
-               ("\\" . my/query-replace-symbol-at-point)
-               ("&" . async-shell-command)
-               ("p" . consult-line)))
-  :init
-  (require 'boon-colemak)
-  (boon-mode))
 
 (use-package which-key :straight t
   :diminish which-key-mode
@@ -201,6 +179,7 @@
      (delete-minibuffer-contents)))
 
 (use-package embark :straight t
+  :demand t
   :init
   (defun embark-devdocs-lookup (ident)
     "Lookup identifier using devdocs."
@@ -230,6 +209,7 @@
 
 (use-package embark-consult :straight t
  :after (embark consult)
+ :demand t
  :hook
  (embark-collect-mode . consult-preview-at-point-mode))
 
@@ -304,7 +284,12 @@
   
 
 (use-package consult-lsp :straight t
-  :bind (:map lsp-mode-map
+  :after (consult lsp)
+  :demand t
+  :bind (:map typescript-mode-map
+              ([remap xref-find-apropos] . consult-lsp-symbols)
+              ("C-c e" . consult-lsp-diagnostics))
+        (:map python-mode-map
               ([remap xref-find-apropos] . consult-lsp-symbols)
               ("C-c e" . consult-lsp-diagnostics)))
 
@@ -484,7 +469,7 @@ if one already exists."
   (modus-themes-load-themes)
   (modus-themes-load-operandi))
 
-(set-face-attribute 'default nil :font "JetBrains Mono" :height 100)
+(set-face-attribute 'default nil :font "JetBrains Mono" :height 140)
 (global-hl-line-mode +1)
 
 (use-package mood-line :straight t
@@ -518,3 +503,7 @@ if one already exists."
 (setq org-src-fontify-natively t
       org-fontify-quote-and-verse-blocks t)
 (put 'narrow-to-region 'disabled nil)
+
+;; Custom packages
+(add-to-list 'load-path "~/.emacs.d/site-lisp/")
+(require 'tracer)
