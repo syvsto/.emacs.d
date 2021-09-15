@@ -479,7 +479,7 @@ if one already exists."
 
 ;; Custom packages
 (use-package tracer
-  :load-path "~/.emacs.d/site-lisp/tracer.el"
+  :load-path "site-lisp/"
   :hook ((typescript-mode typescript-tsx-mode js-mode haskell-mode rustic-mode) . tracer-mode))
 
 (use-package observable-dataflow-mode
