@@ -28,6 +28,19 @@
   (backward-sexp)
   (kill-sexp)
   (insert (concat "(trace (show $ " symbol ") " symbol ") ")))
+
+(defun trace-rust (symbol)
+  (end-of-line)
+  (newline)
+  (insert (concat "println!(\"" symbol " = {:?}\", &" symbol ");"))
+  (newline))
+
+(define-minor-mode tracer-mode
+  "Mode that sets up keybindings for tracer. Enable the minor mode in supported modes"
+  :lighter "Tracer"
+  :keymap (let ((map (make-sparse-keymap)))
+            (define-key map (kbd "C-c .") 'tracer-trace)
+            map))
    
 (provide 'tracer)
 ;;; tracer.el ends here

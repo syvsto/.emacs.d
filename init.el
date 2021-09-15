@@ -91,11 +91,6 @@
          ("M-SPC" . company-complete))
   :hook (prog-mode . company-mode))
    
-(use-package dabbrev
-  :demand nil
-  :bind (("M-/" . dabbrev-completion)
-         ("C-M-/" . dabbrev-expand)))
-
 (setq tab-always-indent t)
  
 (use-package orderless :straight t
@@ -171,13 +166,6 @@
   :init (all-the-icons-completion-mode)
   :hook (marginalia-mode . all-the-icons-completion-marginalia-setup))
 
-(defun up-directory (arg)
-   "Move up a directory (delete backwards to /)."
-   (interactive "p")
-   (if (string-match-p "/." (minibuffer-contents))
-       (zap-up-to-char (- arg) ?/)
-     (delete-minibuffer-contents)))
-
 (use-package embark :straight t
   :demand t
   :init
@@ -215,8 +203,6 @@
 
 (use-package link-hint
   :straight t
-  :bind
-  ("C-'" . link-hint-open-link)
   :init
   (cl-loop
    for (mode map) in '((minibuffer minibuffer-local-completion-map)
@@ -398,15 +384,7 @@ if one already exists."
   (setq haskell-process-log t)
   (cons "-fno-ghci-sandbox" haskell-process-args-cabal-repl))
 
-(use-package dante :straight t
- :after haskell-mode
- :commands dante-mode
- :hook ((haskell-mode . flycheck-mode)
-        (haskell-mode . dante-mode))
- :config
- (flycheck-add-next-checker 'haskell-dante '(info . haskell-hlint)))
-(use-package attrap :straight t
- :bind (("C-x /" . attrap-attrap)))
+(use-package lsp-haskell :straight t)
 
 (use-package zig-mode :straight t
   :config (setq zig-format-on-save nil)
@@ -416,12 +394,6 @@ if one already exists."
 ;; Terminal
 
 (use-package vterm :straight t)
-
-;; Custom modes etc.
-
-(use-package observable-dataflow-mode
-  :straight (:host github :repo "syvsto/observable-dataflow-mode"))
-
 
 ;; Git
 
@@ -446,7 +418,8 @@ if one already exists."
   ;; Mood-line displays anzu output, so no need for anzu to display it as well
   (setq anzu-cons-mode-line-p nil))
 
-(use-package expand-region :straight t)
+(use-package expand-region :straight t
+  :bind ("C-=" . er/expand-region))
 (use-package multiple-cursors :straight t)
   
 (use-package undo-tree :straight t
@@ -456,7 +429,7 @@ if one already exists."
 (use-package avy
   :bind (("M-g M-g" . avy-goto-line)
          ("M-g g" . avy-goto-line)
-         ("M-r" . avy-goto-line)
+         ("M-r" . avy-goto-word-1)
          (:map isearch-mode-map
                ("C-'" . avy-isearch))))
 
@@ -505,5 +478,9 @@ if one already exists."
 (put 'narrow-to-region 'disabled nil)
 
 ;; Custom packages
-(add-to-list 'load-path "~/.emacs.d/site-lisp/")
-(require 'tracer)
+(use-package tracer
+  :load-path "~/.emacs.d/site-lisp/tracer.el"
+  :hook ((typescript-mode typescript-tsx-mode js-mode haskell-mode rustic-mode) . tracer-mode))
+
+(use-package observable-dataflow-mode
+  :straight (:host github :repo "syvsto/observable-dataflow-mode"))
