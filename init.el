@@ -227,7 +227,10 @@
   :config
   (advice-add 'slime-display-or-scroll-completions :around #'my/slime-completion-in-region))
 
-(use-package slime-company :straight t)
+(use-package slime-company :straight t
+  :after (slime company)
+  :hook (slime-editing-mode . (lambda () (set (make-local-variable 'company-backends)
+					      '((company-slime company-dabbrev-code company-semantic))))))
 
 (setq inferior-lisp-program "ros -Q run")
 ;; (cl-pushnew 'slime-clime slime-contribs)
@@ -426,8 +429,7 @@ if one already exists."
 
 (use-package expand-region :straight t
   :bind ("C-=" . er/expand-region))
-(use-package multiple-cursors :straight t)
-  
+
 (use-package undo-tree :straight t
   :config
   (global-undo-tree-mode +1))
