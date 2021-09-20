@@ -66,7 +66,7 @@
          ("C-a" . crux-move-beginning-of-line)))
 
 (use-package ace-window :straight t
-  :bind (("M-o" . ace-window)
+  :bind (("C-M-o" . ace-window)
          ("C-x o" . ace-window)))
 
 (winner-mode +1)
@@ -233,11 +233,8 @@
 ;; (cl-pushnew 'slime-clime slime-contribs)
 (slime-setup '(slime-fancy slime-company slime-quicklisp))
 
-(use-package parinfer-rust-mode :straight t
-  :hook (((emacs-lisp-mode lisp-mode) . parinfer-rust-mode))
-  :config
-  (setq-default indent-tabs-mode nil)
-  (setq parinfer-rust-auto-download t))
+(use-package lispy :straight t
+  :hook ((emacs-lisp-mode lisp-mode) . lispy-mode))
 
 (show-paren-mode +1)
 (add-hook 'text-mode-hook #'electric-pair-local-mode)
@@ -330,8 +327,8 @@ if one already exists."
  :hook ((typescript-mode typescript-tsx-mode) . lsp)
  :init (define-derived-mode typescript-tsx-mode typescript-mode "typescript-tsx")
        (add-to-list 'auto-mode-alist (cons (rx ".tsx" string-end) #'typescript-tsx-mode)))
+
 (use-package tree-sitter-langs :straight t)
- 
 (use-package tree-sitter :straight t
  :hook (typescript-mode . tree-sitter-hl-mode)
  :config
