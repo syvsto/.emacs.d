@@ -233,8 +233,9 @@
 ;; (cl-pushnew 'slime-clime slime-contribs)
 (slime-setup '(slime-fancy slime-company slime-quicklisp))
 
-(use-package lispy :straight t
-  :hook ((emacs-lisp-mode lisp-mode) . lispy-mode))
+(use-package lispy :straight t)
+(use-package lispy-mnemonic :straight t
+  :hook ((emacs-lisp-mode lisp-mode) . lispy-mnemonic-mode))
 
 (show-paren-mode +1)
 (add-hook 'text-mode-hook #'electric-pair-local-mode)
