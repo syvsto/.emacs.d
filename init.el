@@ -442,6 +442,11 @@ if one already exists."
 
 ;; Looks
 
+(use-package helpful :straight t
+  :bind (("C-h f" . helpful-callable)
+	 ("C-h v" . helpful-variable)
+	 ("C-h k" . helpful-key)))
+
 (use-package modus-themes :straight t
   :init
   (setq modus-themes-org-blocks 'gray-background
