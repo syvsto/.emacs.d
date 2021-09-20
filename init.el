@@ -72,12 +72,12 @@
 (winner-mode +1)
 
 (use-package dired
- :hook (dired-mode . dired-hide-details-mode)
- :config
- (use-package diredfl
+  :hook (dired-mode . dired-hide-details-mode))
+
+(use-package diredfl
   :straight t
   :config
-  (diredfl-global-mode 1)))
+  (diredfl-global-mode 1))
 
 (use-package dired-git-info :straight t
  :bind (:map dired-mode-map
@@ -107,6 +107,7 @@
   ;; Replace bindings. Lazily loaded due by `use-package'.
   :bind (;; C-c bindings (mode-specific-map)
          ("C-c h" . consult-history)
+	 ("C-c r" . consult-recent-file)
          ("C-c m" . consult-mode-command)
          ("C-c b" . consult-bookmark)
          ("C-c k" . consult-kmacro)
@@ -225,10 +226,12 @@
                ("C-c s" . slime-selector)))
   :config
   (advice-add 'slime-display-or-scroll-completions :around #'my/slime-completion-in-region))
-(setq inferior-lisp-program "sbcl")
+
+(use-package slime-company :straight t)
+
+(setq inferior-lisp-program "ros -Q run")
 ;; (cl-pushnew 'slime-clime slime-contribs)
-(cl-pushnew 'slime-quicklisp slime-contribs)
-(slime-setup)
+(slime-setup '(slime-fancy slime-company slime-quicklisp))
 
 (use-package parinfer-rust-mode :straight t
   :hook (((emacs-lisp-mode lisp-mode) . parinfer-rust-mode))
@@ -265,18 +268,16 @@
   :config
   (setq lsp-ui-sideline-enable nil
         lsp-ui-doc-enable nil))
-        
-  
 
 (use-package consult-lsp :straight t
   :after (consult lsp)
   :demand t
-  :bind (:map typescript-mode-map
-              ([remap xref-find-apropos] . consult-lsp-symbols)
-              ("C-c e" . consult-lsp-diagnostics))
-        (:map python-mode-map
-              ([remap xref-find-apropos] . consult-lsp-symbols)
-              ("C-c e" . consult-lsp-diagnostics)))
+  :bind ((:map typescript-mode-map
+               ([remap xref-find-apropos] . consult-lsp-symbols)
+               ("C-c e" . consult-lsp-diagnostics))
+         (:map python-mode-map
+               ([remap xref-find-apropos] . consult-lsp-symbols)
+               ("C-c e" . consult-lsp-diagnostics))))
 
 (use-package lsp-sonarlint :straight t)
 
