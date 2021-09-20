@@ -58,6 +58,13 @@
 
 ;; Navigation
 
+(use-package crux :straight t
+  :bind (("C-x 4 t" . crux-transpose-windows)
+         ("C-x M-e" . crux-eval-and-replace)
+         ("C-^" . crux-top-join-line)
+         ("C-k" . crux-smart-kill-line)
+         ("C-a" . crux-move-beginning-of-line)))
+
 (use-package ace-window :straight t
   :bind (("M-o" . ace-window)
          ("C-x o" . ace-window)))
@@ -76,14 +83,6 @@
  :bind (:map dired-mode-map
         (")" . dired-git-info-mode)))
  
-(use-package transpose-frame :straight t
-   :bind (("C-x 4 t t" . transpose-frame)
-          ("C-x 4 t f" . flip-frame)
-          ("C-x 4 t F" . flop-frame)
-          ("C-x 4 t r" . rotate-frame)
-          ("C-x 4 t <" . rotate-frame-anticlockwise)
-          ("C-x 4 t >" . rotate-frame-clockwise)))
-          
 ;; Completion/selection
 
 (use-package company :straight t
@@ -398,7 +397,15 @@ if one already exists."
 ;; Git
 
 (use-package magit :straight t
- :bind ("C-x g" . magit-status))
+  :bind ("C-x g" . magit-status))
+
+(use-package forge :straight t
+  :after magit)
+
+(use-package magit-todos :straight t
+  :after magit)
+  
+
 (use-package git-timemachine :straight t)
 
 (use-package ibuffer-vc :straight t
@@ -429,7 +436,6 @@ if one already exists."
 (use-package avy
   :bind (("M-g M-g" . avy-goto-line)
          ("M-g g" . avy-goto-line)
-         ("M-r" . avy-goto-word-1)
          (:map isearch-mode-map
                ("C-'" . avy-isearch))))
 
@@ -442,7 +448,7 @@ if one already exists."
   (modus-themes-load-themes)
   (modus-themes-load-operandi))
 
-(set-face-attribute 'default nil :font "JetBrains Mono" :height 140)
+(set-face-attribute 'default nil :font "Iosevka" :height 130)
 (global-hl-line-mode +1)
 
 (use-package mood-line :straight t
@@ -480,7 +486,7 @@ if one already exists."
 ;; Custom packages
 (use-package tracer
   :load-path "site-lisp/"
-  :hook ((typescript-mode typescript-tsx-mode js-mode haskell-mode rustic-mode) . tracer-mode))
+  :hook ((typescript-mode typescript-tsx-mode js-mode haskell-mode rustic-mode python-mode) . tracer-mode))
 
 (use-package observable-dataflow-mode
   :straight (:host github :repo "syvsto/observable-dataflow-mode"))
