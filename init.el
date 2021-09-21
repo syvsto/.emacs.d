@@ -87,7 +87,10 @@
 
 (use-package company :straight t
   :bind (:map prog-mode-map
-         ("M-SPC" . company-complete))
+              ("M-SPC" . company-complete))
+  :custom
+  (company-idle-delay 0.0)
+  (company-minimum-prefix-length 1)
   :hook (prog-mode . company-mode))
    
 (setq tab-always-indent t)
