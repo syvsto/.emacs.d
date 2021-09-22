@@ -192,16 +192,42 @@
               (fit-window-to-buffer (get-buffer-window)
                                     (max (floor (frame-height) 4) 10) 1)))))
 
-(use-package vertico :straight t
-  :init
-  (vertico-mode)
-  (setq vertico-resize nil))
-
 (use-package embark-consult :straight t
  :after (embark consult)
  :demand t
  :hook
  (embark-collect-mode . consult-preview-at-point-mode))
+
+
+;; Fido mode, a builtin minibuffer completion mechanism
+(fido-mode 1)
+(setq completion-show-help nil)
+
+(defun up-directory (arg)
+  "Move up a directory (delete backwards to /)."
+  (interactive "p")
+  (if (string-match-p "/." (minibuffer-contents))
+      (zap-up-to-char (- arg) ?/)
+    (delete-minibuffer-contents)))
+
+(defun exit-with-top-completion ()
+  "Exit minibuffer with top completion candidate."
+  (interactive)
+  (let ((content (minibuffer-contents-no-properties)))
+    (unless (let (completion-ignore-case)
+              (test-completion content
+                               minibuffer-completion-table
+                               minibuffer-completion-predicate))
+      (when-let ((completions (completion-all-sorted-completions)))
+        (delete-minibuffer-contents)
+        (insert
+         (concat
+          (substring content 0 (or (cdr (last completions)) 0))
+          (car completions)))))
+    (exit-minibuffer)))
+
+(bind-key "RET" #'exit-with-top-completion icomplete-fido-mode-map)
+(bind-key "C-<backspace>" #'up-directory minibuffer-local-filename-completion-map)
 
 (use-package link-hint
   :straight t
@@ -219,19 +245,11 @@
                        (dired dired-mode-map))
    do (eval-after-load mode `(define-key ,map "'" #'link-hint-open-link))))
 
-(defun my/slime-completion-in-region (_fn completions start end)
-  (funcall completion-in-region-function start end completions nil))
 
-(use-package slime :straight (:host github :repo "nuddyco/slime" :branch "clime")
-  :defer nil
-  :bind ((:map lisp-mode-map
-               ("C-c s" . slime-selector)))
-  :config
-  (advice-add 'slime-display-or-scroll-completions :around #'my/slime-completion-in-region))
 
 (setq inferior-lisp-program "ros -Q run")
-;; (cl-pushnew 'slime-clime slime-contribs)
-(slime-setup '(slime-fancy slime-quicklisp))
+(use-package sly :straight t)
+(use-package sly-quicklisp :straight t)
 
 (use-package smartparens :straight t
   :hook (((js-mode python-mode typescript-mode typescript-tsx-mode rustic-mode haskell-mode) . turn-on-smartparens-mode)
@@ -449,9 +467,9 @@ if one already exists."
   (setq modus-themes-org-blocks 'gray-background
         modus-themes-completions 'opinionated)
   (modus-themes-load-themes)
-  (modus-themes-load-operandi))
+  (modus-themes-load-vivendi))
 
-(set-face-attribute 'default nil :font "Iosevka" :height 130)
+(set-face-attribute 'default nil :font "Iosevka" :height 110)
 (global-hl-line-mode +1)
 
 (use-package mood-line :straight t
