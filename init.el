@@ -12,7 +12,6 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-
 ;; Setup use-package
 
 (straight-use-package 'use-package)
@@ -56,17 +55,18 @@
   :config
   (eldoc-mode +1))
 
+(global-so-long-mode 1)
+
 ;; Navigation
 
 (use-package crux :straight t
   :bind (("C-x 4 t" . crux-transpose-windows)
          ("C-x M-e" . crux-eval-and-replace)
          ("C-^" . crux-top-join-line)
-         ("C-k" . crux-smart-kill-line)
          ("C-a" . crux-move-beginning-of-line)))
 
 (use-package ace-window :straight t
-  :bind (("C-M-o" . ace-window)
+  :bind (("M-o" . ace-window)
          ("C-x o" . ace-window)))
 
 (winner-mode +1)
@@ -89,8 +89,7 @@
   :bind (:map prog-mode-map
               ("M-SPC" . company-complete))
   :custom
-  (company-idle-delay 0.0)
-  (company-minimum-prefix-length 1)
+  (company-idle-delay 1.0)
   :hook (prog-mode . company-mode))
    
 (setq tab-always-indent t)
@@ -110,22 +109,22 @@
   ;; Replace bindings. Lazily loaded due by `use-package'.
   :bind (;; C-c bindings (mode-specific-map)
          ("C-c h" . consult-history)
-	 ("C-c r" . consult-recent-file)
+         ("C-c r" . consult-recent-file)
          ("C-c m" . consult-mode-command)
          ("C-c b" . consult-bookmark)
          ("C-c k" . consult-kmacro)
          ;; C-x bindings (ctl-x-map)
-         ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
-         ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+         ("C-x M-:" . consult-complex-command) ;; orig. repeat-complex-command
+         ("C-x b" . consult-buffer) ;; orig. switch-to-buffer
          ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
-         ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+         ("C-x 5 b" . consult-buffer-other-frame) ;; orig. switch-to-buffer-other-frame
          ;; Custom M-#' bindings for fast register access
          ("M-#" . consult-register-load)
-         ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+         ("M-'" . consult-register-store) ;; orig. abbrev-prefix-mark (unrelated)
          ("C-M-#" . consult-register)
          ;; Other custom bindings
-         ("M-y" . consult-yank-pop)                ;; orig. yank-pop
-         ("<help> a" . consult-apropos)            ;; orig. apropos-command
+         ("M-y" . consult-yank-pop)	;; orig. yank-pop
+         ("<help> a" . consult-apropos)	;; orig. apropos-command
          ;; M-g bindings (goto-map)
          ("M-g e" . consult-compile-error)
          ("M-g o" . consult-outline)
@@ -145,10 +144,10 @@
          ("M-s U" . consult-focus-lines)
          ;; Isearch integration
          ("M-s e" . consult-isearch)
-         :map isearch-mode-map
-         ("M-e" . consult-isearch)                 ;; orig. isearch-edit-string
-         ("M-s e" . consult-isearch)               ;; orig. isearch-edit-string
-         ("M-s l" . consult-line))                 ;; required by consult-line to detect isearch
+         (:map isearch-mode-map
+               ("M-e" . consult-isearch) ;; orig. isearch-edit-string
+               ("M-s e" . consult-isearch) ;; orig. isearch-edit-string
+               ("M-s l" . consult-line))) ;; required by consult-line to detect isearch
   :init
   (setq register-preview-delay 0
         register-preview-function #'consult-register-format)
@@ -159,8 +158,8 @@
   (setq consult-narrow-key "<") ;; (kbd "C-+")
   (setq consult-project-root-function
         (lambda ()
-          (when-let (project (project-current))
-            (car (project-roots project))))))
+	  (when-let (project (project-current))
+	    (car (project-roots project))))))
 
 (use-package marginalia :straight t
   :init (marginalia-mode))
@@ -232,18 +231,21 @@
 
 (use-package slime-company :straight t
   :after (slime company)
-  :hook (slime-editing-mode . (lambda () (set (make-local-variable 'company-backends)
-					      '((company-slime company-dabbrev-code company-semantic))))))
+  :hook (slime-editing-mode . (lambda () (set (make-local-variable 'company-backends))
+                '((company-slime company-dabbrev-code company-semantic)))))
 
 (setq inferior-lisp-program "ros -Q run")
 ;; (cl-pushnew 'slime-clime slime-contribs)
 (slime-setup '(slime-fancy slime-company slime-quicklisp))
 
-(use-package lispy :straight t)
-(use-package lispy-mnemonic :straight t
-  :hook ((emacs-lisp-mode lisp-mode) . lispy-mnemonic-mode))
+(use-package smartparens :straight t
+  :hook (((js-mode python-mode typescript-mode typescript-tsx-mode rustic-mode haskell-mode) . turn-on-smartparens-mode)
+         ((emacs-lisp-mode lisp-mode) . turn-on-smartparens-strict-mode))
+  :init
+  (require 'smartparens-config)
+  (sp-use-smartparens-bindings)
+  (show-smartparens-global-mode t))
 
-(show-paren-mode +1)
 (add-hook 'text-mode-hook #'electric-pair-local-mode)
 
 ;; LSP support
@@ -288,8 +290,6 @@
 ;; Other programming niceties
 
 (use-package devdocs :straight t
-  :init
-  
   :bind ((:map typescript-mode-map
                ("C-c d" . devdocs-lookup)))
   :hook (typescript-mode . (lambda ()
@@ -332,6 +332,8 @@ if one already exists."
 (use-package typescript-mode :straight t
  :mode (rx ".ts" string-end)
  :hook ((typescript-mode typescript-tsx-mode) . lsp)
+ :custom
+ (typescript-indent-level 4)
  :init (define-derived-mode typescript-tsx-mode typescript-mode "typescript-tsx")
        (add-to-list 'auto-mode-alist (cons (rx ".tsx" string-end) #'typescript-tsx-mode)))
 
@@ -446,9 +448,9 @@ if one already exists."
 ;; Looks
 
 (use-package helpful :straight t
-  :bind (("C-h f" . helpful-callable)
-	 ("C-h v" . helpful-variable)
-	 ("C-h k" . helpful-key)))
+  :bind (("C-h f" . helpful-callable))
+   ("C-h v" . helpful-variable)
+   ("C-h k" . helpful-key))
 
 (use-package modus-themes :straight t
   :init

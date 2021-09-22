@@ -4,3 +4,5 @@ server
 transient
 parinfer-rust
 elpa
+etc
+.DS_Store
