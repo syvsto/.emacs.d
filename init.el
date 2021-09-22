@@ -85,15 +85,15 @@
  
 ;; Completion/selection
 
-(use-package company :straight t
-  :bind (:map prog-mode-map
-              ("M-SPC" . company-complete))
+(use-package corfu :straight t
   :custom
-  (company-idle-delay 1.0)
-  :hook (prog-mode . company-mode))
+  (corfu-quit-at-boundary t)
+  (corfu-quit-no-match t)
+  :init
+  (corfu-global-mode))
    
-(setq tab-always-indent t)
- 
+(setq tab-always-indent 'complete)
+
 (use-package orderless :straight t
   :init
   (setq completion-styles '(orderless)
@@ -229,14 +229,9 @@
   :config
   (advice-add 'slime-display-or-scroll-completions :around #'my/slime-completion-in-region))
 
-(use-package slime-company :straight t
-  :after (slime company)
-  :hook (slime-editing-mode . (lambda () (set (make-local-variable 'company-backends))
-                '((company-slime company-dabbrev-code company-semantic)))))
-
 (setq inferior-lisp-program "ros -Q run")
 ;; (cl-pushnew 'slime-clime slime-contribs)
-(slime-setup '(slime-fancy slime-company slime-quicklisp))
+(slime-setup '(slime-fancy slime-quicklisp))
 
 (use-package smartparens :straight t
   :hook (((js-mode python-mode typescript-mode typescript-tsx-mode rustic-mode haskell-mode) . turn-on-smartparens-mode)
@@ -277,13 +272,10 @@
 
 (use-package consult-lsp :straight t
   :after (consult lsp)
-  :demand t
-  :bind ((:map typescript-mode-map
-               ([remap xref-find-apropos] . consult-lsp-symbols)
-               ("C-c e" . consult-lsp-diagnostics))
-         (:map python-mode-map
-               ([remap xref-find-apropos] . consult-lsp-symbols)
-               ("C-c e" . consult-lsp-diagnostics))))
+  :commands (consult-lsp-symbols consult-lsp-diagnostics)
+  :init
+  (define-key lsp-mode-map [remap xref-find-apropos] #'consult-lsp-symbols)
+  (define-key lsp-mode-map (kbd "C-c e") #'consult-lsp-diagnostics))
 
 (use-package lsp-sonarlint :straight t)
 
@@ -410,8 +402,8 @@ if one already exists."
   :after magit)
 
 (use-package magit-todos :straight t
-  :after magit)
-  
+  :after magit
+  :init (magit-todos-mode))
 
 (use-package git-timemachine :straight t)
 
