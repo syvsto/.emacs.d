@@ -203,13 +203,6 @@
 (fido-mode 1)
 (setq completion-show-help nil)
 
-(defun up-directory (arg)
-  "Move up a directory (delete backwards to /)."
-  (interactive "p")
-  (if (string-match-p "/." (minibuffer-contents))
-      (zap-up-to-char (- arg) ?/)
-    (delete-minibuffer-contents)))
-
 (defun exit-with-top-completion ()
   "Exit minibuffer with top completion candidate."
   (interactive)
@@ -227,7 +220,6 @@
     (exit-minibuffer)))
 
 (bind-key "RET" #'exit-with-top-completion icomplete-fido-mode-map)
-(bind-key "C-<backspace>" #'up-directory minibuffer-local-filename-completion-map)
 
 (use-package link-hint
   :straight t
@@ -287,6 +279,8 @@
   :config
   (setq lsp-ui-sideline-enable nil
         lsp-ui-doc-enable nil))
+
+(use-package iedit :straight t)
 
 (use-package consult-lsp :straight t
   :after (consult lsp)
@@ -469,7 +463,7 @@ if one already exists."
   (modus-themes-load-themes)
   (modus-themes-load-vivendi))
 
-(set-face-attribute 'default nil :font "Iosevka" :height 110)
+(set-face-attribute 'default nil :font "Iosevka" :height 130)
 (global-hl-line-mode +1)
 
 (use-package mood-line :straight t
