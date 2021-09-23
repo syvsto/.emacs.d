@@ -232,6 +232,7 @@
   
   (fido-mode 1))
 
+;; Jump to links/clickable items on screen
 (use-package link-hint
   :straight t
   :init
@@ -249,10 +250,7 @@
    do (eval-after-load mode `(define-key ,map "'" #'link-hint-open-link))))
 
 
-
-(setq inferior-lisp-program "ros -Q run")
-(use-package sly :straight t)
-(use-package sly-quicklisp :straight t)
+;; Delimiter editing/structured editing
 
 (use-package smartparens :straight t
   :hook (((js-mode python-mode typescript-mode typescript-tsx-mode rustic-mode haskell-mode) . turn-on-smartparens-mode)
@@ -459,6 +457,10 @@ if one already exists."
          ("M-g g" . avy-goto-line)
          (:map isearch-mode-map
                ("C-'" . avy-isearch))))
+
+(setq inferior-lisp-program "ros -Q run")
+(use-package sly :straight t)
+(use-package sly-quicklisp :straight t)
 
 ;; Looks
 
