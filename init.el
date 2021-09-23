@@ -81,7 +81,10 @@
 
 (use-package dired-git-info :straight t
  :bind (:map dired-mode-map
-        (")" . dired-git-info-mode)))
+             (")" . dired-git-info-mode)))
+
+(use-package rgrep
+  :bind ("M-s g" . rgrep))
  
 ;; Completion/selection
 
@@ -200,10 +203,18 @@
 
 
 ;; Fido mode, a builtin minibuffer completion mechanism
-(fido-mode 1)
-(setq completion-show-help nil)
-
-(defun exit-with-top-completion ()
+(use-package icomplete
+  :bind ((:map icomplete-fido-mode-map
+	       ("RET" . exit-with-top-completion)
+	       ("C-." . nil)
+	       ("C-," . nil))
+	 (:map icomplete-minibuffer-map
+	       ("C-." . nil)
+	       ("C-," . nil)))
+  :custom
+  (completion-show-help nil)
+  :init
+  (defun exit-with-top-completion ()
   "Exit minibuffer with top completion candidate."
   (interactive)
   (let ((content (minibuffer-contents-no-properties)))
@@ -218,8 +229,8 @@
           (substring content 0 (or (cdr (last completions)) 0))
           (car completions)))))
     (exit-minibuffer)))
-
-(bind-key "RET" #'exit-with-top-completion icomplete-fido-mode-map)
+  
+  (fido-mode 1))
 
 (use-package link-hint
   :straight t
@@ -324,7 +335,7 @@ if one already exists."
      (if (and vterm-buffer (not current-prefix-arg))
          (pop-to-buffer-same-window vterm-buffer)
        (vterm t))))
-
+ 
  (nconc project-switch-commands '((magit-status "Magit") (project-vterm "Vterm"))))
 
 
