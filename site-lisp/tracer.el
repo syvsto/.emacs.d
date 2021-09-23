@@ -19,6 +19,7 @@
     (cond ((derived-mode-p 'typescript-mode) (trace-js thing))
           ((derived-mode-p 'js-mode) (trace-js thing))
           ((derived-mode-p 'haskell-mode) (trace-haskell thing))
+	  ((derived-mode-p 'emacs-lisp-mode) (trace-emacs-lisp thing))
           ((derived-mode-p 'rust-mode) (trace-rust thing))
           ((derived-mode-p 'python-mode) (trace-python thing)))))
 
@@ -44,6 +45,11 @@
   (newline-and-indent)
   (insert (concat "print(\"" symbol " = \", " symbol ")"))
   (newline-and-indent))
+
+(defun trace-emacs-lisp (symbol)
+  (end-of-line)
+  (newline-and-indent)
+  (insert (concat "(message \"" symbol " = \" " symbol ")")))
 
 (define-minor-mode tracer-mode
   "Mode that sets up keybindings for tracer. Enable the minor mode in supported modes"

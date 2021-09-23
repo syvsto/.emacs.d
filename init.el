@@ -501,7 +501,7 @@ if one already exists."
 ;; Custom packages
 (use-package tracer
   :load-path "site-lisp/"
-  :hook ((typescript-mode typescript-tsx-mode js-mode haskell-mode rustic-mode python-mode) . tracer-mode))
+  :hook (prog-mode . tracer-mode))
 
 (use-package observable-dataflow-mode
   :straight (:host github :repo "syvsto/observable-dataflow-mode"))
