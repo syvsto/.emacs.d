@@ -90,7 +90,6 @@
 
 (use-package corfu :straight t
   :custom
-  (corfu-quit-at-boundary t)
   (corfu-quit-no-match t)
   :init
   (corfu-global-mode))
