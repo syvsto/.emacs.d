@@ -69,6 +69,9 @@
   :bind (("M-o" . ace-window)
          ("C-x o" . ace-window)))
 
+(use-package ctrlf :straight t
+  :init (ctrlf-mode +1))
+
 (winner-mode +1)
 
 (use-package dired
@@ -251,15 +254,10 @@
 
 ;; Delimiter editing/structured editing
 
-(use-package smartparens :straight t
-  :hook (((js-mode python-mode typescript-mode typescript-tsx-mode rustic-mode haskell-mode) . turn-on-smartparens-mode)
-         ((emacs-lisp-mode lisp-mode) . turn-on-smartparens-strict-mode))
-  :init
-  (require 'smartparens-config)
-  (sp-use-smartparens-bindings)
-  (show-smartparens-global-mode t))
-
-(add-hook 'text-mode-hook #'electric-pair-local-mode)
+(use-package parinfer-rust-mode :straight t
+  :hook ((emacs-lisp-mode lisp-mode) . parinfer-rust-mode))
+(use-package electric-pair
+  :hook ((js-mode python-mode text-mode typescript-mode typescript-tsx-mode) . electric-pair-local-mode))
 
 ;; LSP support
 (use-package flycheck :straight t)
@@ -488,9 +486,6 @@ if one already exists."
 
 (use-package all-the-icons-dired :straight t
   :hook (dired-mode . all-the-icons-dired-mode))
-
-(use-package rainbow-delimiters :straight t
-  :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; Jupyter
 (use-package jupyter :straight t
