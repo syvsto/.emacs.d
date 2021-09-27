@@ -487,7 +487,10 @@ if one already exists."
   (scroll-bar-mode -1))
 
 (use-package all-the-icons-dired :straight t
- :hook (dired-mode . all-the-icons-dired-mode))
+  :hook (dired-mode . all-the-icons-dired-mode))
+
+(use-package rainbow-delimiters :straight t
+  :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; Jupyter
 (use-package jupyter :straight t
