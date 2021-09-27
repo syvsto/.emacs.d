@@ -261,6 +261,11 @@
 
 ;; LSP support
 (use-package flycheck :straight t)
+(use-package flycheck-posframe :straight t
+  :after flycheck
+  :config
+  (flycheck-posframe-configure-pretty-defaults)
+  (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode))
 (use-package lsp-mode :straight t
   :init
   (setq lsp-headerline-breadcrumb-enable t)
