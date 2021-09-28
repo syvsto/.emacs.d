@@ -471,14 +471,10 @@ if one already exists."
    ("C-h v" . helpful-variable)
    ("C-h k" . helpful-key))
 
-(use-package modus-themes :straight t
-  :init
-  (setq modus-themes-org-blocks 'gray-background
-        modus-themes-completions 'opinionated)
-  (modus-themes-load-themes)
-  (modus-themes-load-vivendi))
+(load "~/.emacs.d/themes/ceres-theme.el")
+(load-theme 'ceres t)
 
-(set-face-attribute 'default nil :font "Iosevka" :height 130)
+(set-face-attribute 'default nil :font "Iosevka" :height 110)
 (global-hl-line-mode +1)
 
 (use-package mood-line :straight t
