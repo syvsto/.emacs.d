@@ -143,6 +143,10 @@
     `(dired-directory ((,class :foreground ,fg)))
     `(dired-flagged ((,class :background ,blue :foreground ,fg)))
     `(dired-header ((,class :foreground ,fg :bold t :underline t)))
+    `(diredfl-file-name ((,class :foreground ,fg)))
+    `(diredfl-file-suffix ((,class :foreground ,fg2)))
+    `(diredfl-dir-name ((,class :foreground ,fg :italic t)))
+    `(diredfl-dir-heading ((,class :foreground ,fg :bold t :underline t)))
 
     ;; ibuffer
     `(ibuffer-deletion-face ((,class :foreground ,warning)))
