@@ -69,9 +69,6 @@
   :bind (("M-o" . ace-window)
          ("C-x o" . ace-window)))
 
-(use-package ctrlf :straight t
-  :init (ctrlf-mode +1))
-
 (winner-mode +1)
 
 (use-package dired
@@ -90,6 +87,11 @@
   :bind ("M-s g" . rgrep))
  
 ;; Completion/selection
+
+(use-package completion
+  :hook (completion-list-mode . (lambda ()
+                                 (let ((inhibit-message t))
+                                    (toggle-truncate-lines 1)))))
 
 (use-package corfu :straight t
   :custom
@@ -128,8 +130,8 @@
          ("M-'" . consult-register-store) ;; orig. abbrev-prefix-mark (unrelated)
          ("C-M-#" . consult-register)
          ;; Other custom bindings
-         ("M-y" . consult-yank-pop)	;; orig. yank-pop
-         ("<help> a" . consult-apropos)	;; orig. apropos-command
+         ("M-y" . consult-yank-pop)     ;; orig. yank-pop
+         ("<help> a" . consult-apropos) ;; orig. apropos-command
          ;; M-g bindings (goto-map)
          ("M-g e" . consult-compile-error)
          ("M-g o" . consult-outline)
@@ -163,8 +165,8 @@
   (setq consult-narrow-key "<") ;; (kbd "C-+")
   (setq consult-project-root-function
         (lambda ()
-	  (when-let (project (project-current))
-	    (car (project-roots project))))))
+          (when-let (project (project-current))
+            (car (project-roots project))))))
 
 (use-package marginalia :straight t
   :init (marginalia-mode))
@@ -207,30 +209,31 @@
 ;; Fido mode, a builtin minibuffer completion mechanism
 (use-package icomplete
   :bind ((:map icomplete-fido-mode-map
-	       ("RET" . exit-with-top-completion)
-	       ("C-." . nil)
-	       ("C-," . nil))
-	 (:map icomplete-minibuffer-map
-	       ("C-." . nil)
-	       ("C-," . nil)))
+               ("RET" . exit-with-top-completion)
+               ("C-." . nil)
+               ("C-," . nil))
+         (:map icomplete-minibuffer-map
+               ("C-." . nil)
+               ("C-," . nil)))
   :custom
   (completion-show-help nil)
+  (enable-recursive-minibuffers t)
   :init
   (defun exit-with-top-completion ()
-  "Exit minibuffer with top completion candidate."
-  (interactive)
-  (let ((content (minibuffer-contents-no-properties)))
-    (unless (let (completion-ignore-case)
-              (test-completion content
-                               minibuffer-completion-table
-                               minibuffer-completion-predicate))
-      (when-let ((completions (completion-all-sorted-completions)))
-        (delete-minibuffer-contents)
-        (insert
-         (concat
-          (substring content 0 (or (cdr (last completions)) 0))
-          (car completions)))))
-    (exit-minibuffer)))
+    "Exit minibuffer with top completion candidate."
+    (interactive)
+    (let ((content (minibuffer-contents-no-properties)))
+      (unless (let (completion-ignore-case)
+                (test-completion content
+                                 minibuffer-completion-table
+                                 minibuffer-completion-predicate))
+        (when-let ((completions (completion-all-sorted-completions)))
+          (delete-minibuffer-contents)
+          (insert
+           (concat
+            (substring content 0 (or (cdr (last completions)) 0))
+            (car completions)))))
+      (exit-minibuffer)))
   
   (fido-mode 1))
 
@@ -273,9 +276,6 @@
   :hook ((lsp-mode . lsp-enable-which-key-integration)
          (lsp-mode . electric-pair-local-mode)
          ((rjsx-mode . (lambda ()
-                         (require 'lsp-sonarlint)
-                         (require 'lsp-sonarlint-javascript)
-                         (setq lsp-sonarlint-javascript-enabled t)
                          (lsp)))
           (python-mode . (lambda ()
                           (require 'lsp-sonarlint)
@@ -439,6 +439,9 @@ if one already exists."
 
 ;; Searching
 
+(use-package ctrlf :straight t
+  :init (ctrlf-mode +1))
+
 (use-package anzu :straight t
   :diminish anzu-mode
   :bind ([remap query-replace] . anzu-query-replace)
@@ -474,7 +477,7 @@ if one already exists."
 (load "~/.emacs.d/themes/ceres-theme.el")
 (load-theme 'ceres t)
 
-(set-face-attribute 'default nil :font "Iosevka" :height 110)
+(set-face-attribute 'default nil :font "Iosevka" :height 140)
 (global-hl-line-mode +1)
 
 (use-package mood-line :straight t
