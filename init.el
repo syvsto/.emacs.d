@@ -93,11 +93,14 @@
                                  (let ((inhibit-message t))
                                     (toggle-truncate-lines 1)))))
 
-(use-package corfu :straight t
-  :custom
-  (corfu-quit-no-match t)
-  :init
-  (corfu-global-mode))
+(use-package company-tabnine :straight t
+  :hook (prog-mode . company-mode)
+  :config
+  (add-to-list 'company-backends #'company-tabnine)
+  (unbind-key "C-n" 'company-active-map)
+  (unbind-key "C-p" 'company-active-map)
+  (setq company-idle-delay 0)
+  (setq company-show-numbers t))
    
 (setq tab-always-indent 'complete)
 
