@@ -81,6 +81,12 @@
    `(org-footnote  ((,class (:underline t))))
    `(org-link ((,class (:underline t))))
    `(org-special-keyword ((,class (:foreground ,fg))))
+
+   `(markdown-header-face-1 ((,class (:bold t :height 1.6))))
+   `(markdown-header-face-2 ((,class (:bold t :height 1.2))))
+   `(markdown-header-face-3 ((,class (:bold nil :height 1.1))))
+   `(markdown-header-face-4 ((,class (:bold t))))
+
    `(anzu-mode-line ((,class :inherit bold :background ,blue)))
    `(anzu-mode-line-no-match ((,class :inherit bold :background ,warning)))
    `(anzu-replace-highlight ((,class :inherit isearch :underline t)))
