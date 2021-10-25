@@ -17,6 +17,18 @@
 (straight-use-package 'use-package)
 (use-package diminish :straight t)
 
+;; Modal editing
+(use-package boon :straight t
+  :bind (("C-x f" . find-file)
+         ("C-x s" . save-buffer)
+         ("C-x C-s" . save-some-buffers)
+         (:map boon-command-map
+                      ("p" . consult-line)
+                      ("%" . query-replace)))
+  :init
+  (require 'boon-colemak)
+  (boon-mode 1))
+
 
 ;; Platform specifics
 
@@ -85,7 +97,22 @@
 
 (use-package rgrep
   :bind ("M-s g" . rgrep))
- 
+
+(use-package popper :straight t
+  :bind (("C-`" . popper-toggle-latest)
+         ("M-`" . popper-cycle)
+         ("C-M-`" . popper-toggle-type))
+  :init
+  (setq popper-reference-buffers
+        '("\\*Messages*\\*"
+          "Output\\*$"
+          "\\*Async Shell Command\\*"
+          help-mode
+          compilation-mode))
+  (popper-mode +1)
+  (popper-echo-mode +1))
+
+
 ;; Completion/selection
 
 (use-package completion
@@ -97,8 +124,6 @@
   :hook (prog-mode . company-mode)
   :config
   (add-to-list 'company-backends #'company-tabnine)
-  (unbind-key "C-n" 'company-active-map)
-  (unbind-key "C-p" 'company-active-map)
   (setq company-idle-delay 0)
   (setq company-show-numbers t))
    
@@ -208,37 +233,42 @@
  :hook
  (embark-collect-mode . consult-preview-at-point-mode))
 
+(use-package emacs
+ :init
+ (defun crm-indicator (args)
+  (cons (concat "[CRM] " (car args)) (cdr args)))
+ (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+ (setq minibuffer-prompt-properties
+  '(read-only t cursor-intangible t face minibuffer-prompt))
+ (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
 
-;; Fido mode, a builtin minibuffer completion mechanism
-(use-package icomplete
-  :bind ((:map icomplete-fido-mode-map
-               ("RET" . exit-with-top-completion)
-               ("C-." . nil)
-               ("C-," . nil))
-         (:map icomplete-minibuffer-map
-               ("C-." . nil)
-               ("C-," . nil)))
-  :custom
-  (completion-show-help nil)
-  (enable-recursive-minibuffers t)
+(use-package mct
+ :straight (mct :repo "protesilaos/mct" :host gitlab)
+ :init
+ (mct-mode 1)
+ (file-name-shadow-mode 1)
+ (minibuffer-depth-indicate-mode 1)
+ (minibuffer-electric-default-mode 1)
+ :custom
+ (mct-remove-shadowed-file-names t)
+ (mct-hide-completion-mode-line t)
+ (completion-ignore-case t)
+ (completions-detailed t)
+ (enable-recursive-minibuffers t)
+ (minibuffer-eldef-shorten-default t)
+ (read-buffer-completion-ignore-case t)
+ (read-file-name-completion-ignore-case t)
+ (resize-mini-windows t))
+
+(use-package orderless
   :init
-  (defun exit-with-top-completion ()
-    "Exit minibuffer with top completion candidate."
-    (interactive)
-    (let ((content (minibuffer-contents-no-properties)))
-      (unless (let (completion-ignore-case)
-                (test-completion content
-                                 minibuffer-completion-table
-                                 minibuffer-completion-predicate))
-        (when-let ((completions (completion-all-sorted-completions)))
-          (delete-minibuffer-contents)
-          (insert
-           (concat
-            (substring content 0 (or (cdr (last completions)) 0))
-            (car completions)))))
-      (exit-minibuffer)))
-  
-  (fido-mode 1))
+  (setq completion-styles '(substring initials flex partial-completion)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles . (partial-completion initials substring))))))
+
+(use-package savehist
+  :init
+  (savehist-mode))
 
 ;; Jump to links/clickable items on screen
 (use-package link-hint
@@ -264,6 +294,7 @@
   :hook ((emacs-lisp-mode lisp-mode) . parinfer-rust-mode))
 (use-package electric-pair
   :hook ((js-mode python-mode text-mode typescript-mode typescript-tsx-mode) . electric-pair-local-mode))
+(show-paren-mode 1)
 
 ;; LSP support
 (use-package flycheck :straight t)
@@ -274,7 +305,7 @@
   (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode))
 (use-package lsp-mode :straight t
   :init
-  (setq lsp-headerline-breadcrumb-enable t)
+  (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-keymap-prefix "C-c l")
   :hook ((lsp-mode . lsp-enable-which-key-integration)
          (lsp-mode . electric-pair-local-mode)
@@ -427,10 +458,6 @@ if one already exists."
 (use-package forge :straight t
   :after magit)
 
-(use-package magit-todos :straight t
-  :after magit
-  :init (magit-todos-mode))
-
 (use-package git-timemachine :straight t)
 
 (use-package ibuffer-vc :straight t
@@ -480,7 +507,7 @@ if one already exists."
 (load "~/.emacs.d/themes/ceres-theme.el")
 (load-theme 'ceres t)
 
-(set-face-attribute 'default nil :font "Iosevka" :height 140)
+(set-face-attribute 'default nil :font "Fira Code" :height 130)
 (global-hl-line-mode +1)
 
 (use-package mood-line :straight t
@@ -514,6 +541,10 @@ if one already exists."
 (setq org-src-fontify-natively t
       org-fontify-quote-and-verse-blocks t)
 (put 'narrow-to-region 'disabled nil)
+(use-package org-bullets :straight t
+ :custom
+ (org-bullets-bullet-list '("◉" "○"))
+ :hook (org-mode . org-bullets-mode))
 
 ;; Custom packages
 (use-package tracer
@@ -522,3 +553,37 @@ if one already exists."
 
 (use-package observable-dataflow-mode
   :straight (:host github :repo "syvsto/observable-dataflow-mode"))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("0b0fe98ef2d1d9e65af498064a3dff485c09ab6f1f945b53afef1305b2b6130d" "ddf1a8fb709f9c974b764f12370f58e166cb11e8893366e675f4de5d5bb08017" "0ca407654295e80555a59ac173c789fb1f6fb06f94f9a53ed7d6517b021b38a6" "b900e7362d1049d4d2b4244f3a9a50eb59cc73dd65c83ea81c20659e3ab71595" "976f726421fb7b616376258cc2c5567392b113f885d480fe6f0753ab8e917996" "76db88acebfe8d7aecbac1ef2774cde04b86df5ac9f994b784b88baf501d0f67" "d746b3f894b54ffda5c683b309443e1f1a2d3da3e8bfffc8ff56721cd735d843" "692185aa53ed84c34bf0ef171e6a781c49c1b2680646e1045e72651c7179b6d2" "1eb55e21c75d5cd40afdb9ea8fd0b002716dc26714621869b8d429fd2aad0cc7" "6ccc8bb072a59ef522712719e2d69d18e22e5d11b41844c9703f53594c3d5397" "41d77463d60f52763b829b093e5f1bd07912994d434f8a4d851a9b2275d2fcd4" "28a359ced8026870d8c9c9ef77195ece0a6d7fcbc704d649c0738bb2786f44f6" "f07f34717602564cf0a0e839132003de82d0f59b9b842917fb98812b32c09422" "56b9cdcd58c83c6a25a6b4cf3c1387cfa40c4b2b3e28d11c6a8f786492e7d4db" "5ee8b67ec605e2743daf7edc3644b5a7b1a0145d2b078e7a1bfa47d63b5760fd" "c388c353c3c1052580a68ccbd73ecc4b5872157263c308e092fc9988d68f4288" "39b1e77823c24989cd59f092ee8cb2c0abd10e4efc2fff307071e89a85653553" "b6cabfbec1b53121ae62584b0ae2b748ec74b346afbb29ac1aaa788fa9e11eb5" "95f3086aef8d255ca8b21cc28d22052a98e3da75fede49084a7ba00e5a0b5ff0" "670dea67ad7d5715d30fbde5fda222d29c5580d7cd54ad981989c101d132c1b4" "ce93c03c4c5faa7413b66096349e18f9da2a1a9519a4ffdfc1c9550c8099e756" "01efe37b0d91845ebd5a801802de137c78ae1eb7bc1eecd189487bf818378483" "fea3edcf0423f12043140e2318f918b31d2c300cc02193f432dfd07e3b5d2952" "c9f38716edb9842eb26d80edf4baa39ea40cafc24f908292dcb9ba9f9922641a" "f01073c0f8539ab557e19e59e04076eb9c6d834bac8d4139d63778eed71b686a" default)))
+ 
+(custom-set-faces)
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ 
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ 
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ 
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ 
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ 

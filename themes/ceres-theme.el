@@ -64,7 +64,7 @@
    `(isearch-fail ((,class :inherit warning)))
    `(lazy-highlight ((,class :bold t :background ,bg-light)))
    `(match ((,class :bold t :background ,bg-light)))
-   `(mode-line ((,class (:overline ,fg :bold t :foreground ,bg :background ,fg))))
+   `(mode-line ((,class (:overline ,fg :underline ,fg :bold t :foreground ,bg :background ,fg))))
    `(mode-line-inactive ((,class (:overline ,fg :foreground ,fg :background ,bg :weight normal))))
    `(vertical-border ((,class (:foreground ,fg))))
    `(minibuffer-prompt ((,class (:bold t :foreground ,fg))))
