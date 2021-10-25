@@ -24,6 +24,7 @@
          ("C-x C-s" . save-some-buffers)
          (:map boon-command-map
                       ("p" . consult-line)
+                      ("&" . async-shell-command)
                       ("%" . query-replace)))
   :init
   (require 'boon-colemak)
@@ -31,7 +32,6 @@
 
 
 ;; Platform specifics
-
 (when (memq window-system '(mac ns x))
   (progn
     (use-package exec-path-from-shell :straight t
@@ -121,11 +121,14 @@
                                     (toggle-truncate-lines 1)))))
 
 (use-package company-tabnine :straight t
+  :custom
+  (company-idle-delay 0)
+  (company-show-quick-access t))
+(use-package company :straight t
   :hook (prog-mode . company-mode)
   :config
-  (add-to-list 'company-backends #'company-tabnine)
-  (setq company-idle-delay 0)
-  (setq company-show-numbers t))
+  (add-to-list 'company-backends #'company-tabnine))
+  
    
 (setq tab-always-indent 'complete)
 
@@ -586,4 +589,3 @@ if one already exists."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- 
