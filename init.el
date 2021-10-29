@@ -303,12 +303,17 @@
 (show-paren-mode 1)
 
 ;; LSP support
-(use-package flycheck :straight t)
-(use-package flycheck-posframe :straight t
-  :after flycheck
-  :config
-  (flycheck-posframe-configure-pretty-defaults)
-  (add-hook 'flycheck-mode-hook #'flycheck-posframe-mode))
+(use-package flycheck :straight t
+ :hook (flycheck-mode . (lambda ()
+                          (if (display-graphic-p)
+                           (flycheck-pos-tip-mode)
+                           (flycheck-popup-tip-mode)))))
+
+(use-package flycheck-pos-tip :straight t
+ :commands flycheck-pos-tip-mode)
+(use-package flycheck-popup-tip :straight t
+ :commands flycheck-popup-tip-mode)
+
 (use-package lsp-mode :straight t
   :init
   (setq lsp-headerline-breadcrumb-enable nil)
