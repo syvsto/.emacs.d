@@ -22,6 +22,8 @@
   :bind (("C-x f" . find-file)
          ("C-x s" . save-buffer)
          ("C-x C-s" . save-some-buffers)
+         ("C-x e" . pp-eval-last-sexp)
+         ("C-x C-e" . kmacro-end-and-call-macro)
          (:map boon-command-map
                       ("p" . consult-line)
                       ("&" . async-shell-command)
@@ -29,7 +31,6 @@
   :init
   (require 'boon-colemak)
   (boon-mode 1))
-
 
 ;; Platform specifics
 (when (memq window-system '(mac ns x))
@@ -457,6 +458,8 @@ if one already exists."
   :hook ((zig-mode . electric-pair-local-mode)
          (zig-mode . lsp)))
 
+(use-package q-mode :straight t)
+
 ;; Terminal
 
 (use-package vterm :straight t)
@@ -520,7 +523,7 @@ if one already exists."
 (load "~/.emacs.d/themes/ceres-theme.el")
 (load-theme 'ceres t)
 
-(set-face-attribute 'default nil :font "Fira Code" :height 130)
+(set-face-attribute 'default nil :font "Fira Code" :height 100)
 (global-hl-line-mode +1)
 
 (use-package mood-line :straight t
