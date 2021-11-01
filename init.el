@@ -25,7 +25,7 @@
          ("C-x e" . pp-eval-last-sexp)
          ("C-x C-e" . kmacro-end-and-call-macro)
          (:map boon-command-map
-                      ("p" . consult-line)
+                      ("p" . ctrlf-forward-default)
                       ("&" . async-shell-command)
                       ("%" . query-replace)))
   :init
