@@ -40,6 +40,7 @@
   (custom-theme-set-faces
    'ceres
    `(default ((,class (:background ,bg :foreground ,fg))))
+   `(solaire-default-face ((,class (:background ,bg-light))))
    `(font-lock-comment-face ((,class (:foreground ,fg2))))
    `(font-lock-negation-char-face ((,class (:foreground ,fg))))
    `(font-lock-reference-face ((,class (:foreground ,fg))))
@@ -56,9 +57,10 @@
    `(region ((,class (:background ,fg :foreground ,bg))))
    `(highlight ((,class (:foreground ,bg :background ,fg))))
    `(hl-line ((,class (:background  ,bg-light))))
+   `(solaire-hl-line-face ((,class (:background ,bg))))
    `(fringe ((,class (:background ,bg))))
    `(cursor ((,class (:background ,fg :foreground ,bg))))
-   `(show-paren-match ((,class (:background ,blue))))
+   `(show-paren-match ((,class (:inherit underline))))
    `(sp-pair-overlay-face ((,class :inherit underline)))
    `(isearch ((,class (:bold t :foreground ,bg :background ,blue))))
    `(isearch-fail ((,class :inherit warning)))
@@ -66,6 +68,7 @@
    `(match ((,class :bold t :background ,bg-light)))
    `(mode-line ((,class (:overline ,fg :underline ,fg :bold t :foreground ,bg :background ,fg))))
    `(mode-line-inactive ((,class (:overline ,fg :foreground ,fg :background ,bg :weight normal))))
+   `(solaire-mode-line-inactive-face ((,class (:overline ,fg :foreground ,fg :background ,bg-light :weight normal))))
    `(vertical-border ((,class (:foreground ,fg))))
    `(minibuffer-prompt ((,class (:bold t :foreground ,fg))))
    `(default-italic ((,class (:italic t))))

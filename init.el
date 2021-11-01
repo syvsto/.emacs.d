@@ -523,6 +523,10 @@ if one already exists."
 (load "~/.emacs.d/themes/ceres-theme.el")
 (load-theme 'ceres t)
 
+(use-package solaire-mode :straight t
+ :config
+ (solaire-global-mode +1))
+
 (set-face-attribute 'default nil :font "Fira Code" :height 100)
 (global-hl-line-mode +1)
 
