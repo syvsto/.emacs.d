@@ -21,6 +21,7 @@
 (use-package boon :straight t
   :bind (("C-x f" . find-file)
          ("C-x s" . save-buffer)
+         ("C-x ;" . comment-line)
          ("C-x C-s" . save-some-buffers)
          ("C-x e" . pp-eval-last-sexp)
          ("C-x C-e" . kmacro-end-and-call-macro)
@@ -487,7 +488,7 @@ if one already exists."
  :config
  (solaire-global-mode +1))
 
-(set-face-attribute 'default nil :font "Fira Code" :height 130)
+(set-face-attribute 'default nil :font "Fira Code" :height 110)
 (global-hl-line-mode +1)
 
 (use-package mood-line :straight t
