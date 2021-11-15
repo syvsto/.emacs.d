@@ -34,7 +34,8 @@
       (bg "#f5f3ed")
       (fg "#101010")
       (fg2 "#888888")
-      (blue "#1bb7de")
+      (blue "#009bc2")
+      (blue-light "#82e6ff")
       (warning "#e61c1c")
       (warning2 "#fcba03"))
   (custom-theme-set-faces
@@ -62,7 +63,7 @@
    `(cursor ((,class (:background ,fg :foreground ,bg))))
    `(show-paren-match ((,class (:inherit underline))))
    `(sp-pair-overlay-face ((,class :inherit underline)))
-   `(isearch ((,class (:bold t :foreground ,bg :background ,blue))))
+   `(isearch ((,class (:bold t :foreground ,fg :background ,blue-light :bold t))))
    `(isearch-fail ((,class :inherit warning)))
    `(lazy-highlight ((,class :bold t :background ,bg-light)))
    `(match ((,class :bold t :background ,bg-light)))
@@ -90,11 +91,11 @@
    `(markdown-header-face-3 ((,class (:bold nil :height 1.1))))
    `(markdown-header-face-4 ((,class (:bold t))))
 
-   `(anzu-mode-line ((,class :inherit bold :background ,blue)))
+   `(anzu-mode-line ((,class :inherit bold :background ,blue-light)))
    `(anzu-mode-line-no-match ((,class :inherit bold :background ,warning)))
    `(anzu-replace-highlight ((,class :inherit isearch :underline t)))
    `(anzu-replace-to ((,class :background ,warning2 :foreground ,bg :underline t)))
-   `(objed-mode-line ((,class :background ,blue)))
+   `(objed-mode-line ((,class :background ,blue-light)))
 
    ;; rainbow delimiters
    `(rainbow-delimiters-base-face-error ((,class :foreground ,warning)))
@@ -128,17 +129,17 @@
    `(git-gutter+-modified ((,class :foreground ,fg)))
         
    ;; avy
-   `(avy-lead-face ((,class :background ,warning :foreground ,bg)))
-   `(avy-lead-face-0 ((,class :background ,blue :foreground ,bg)))
-   `(avy-lead-face-1 ((,class :background ,warning2 :foreground ,bg)))
-   `(avy-lead-face-2 ((,class :background ,bg-light :foreground ,bg)))
+   `(avy-lead-face ((,class :background ,warning2 :foreground ,fg :bold t)))
+   `(avy-lead-face-0 ((,class :background ,blue-light :foreground ,fg :bold t)))
+   `(avy-lead-face-1 ((,class :background ,bg-light :foreground ,fg :bold t)))
+   `(avy-lead-face-2 ((,class :background ,warning :foreground ,bg :bold t)))
 
    ;; ace-window
-   `(aw-leading-char-face ((,class :inherit bold :height 1.5 :background ,bg :foreground ,warning)))
+   `(aw-leading-char-face ((,class :inherit bold :height 3.0 :background ,bg :foreground ,warning)))
         
    ;; completions
-   `(completions-common-part ((,class :background ,blue)))
-   `(orderless-match-face-0 ((,class :background ,blue)))
+   `(completions-common-part ((,class :background ,blue-light)))
+   `(orderless-match-face-0 ((,class :background ,blue-light)))
    `(orderless-match-face-1 ((,class :background ,warning)))
    `(orderless-match-face-2 ((,class :background ,warning2)))
    `(orderless-match-face-3 ((,class :background ,bg-light)))
@@ -147,12 +148,12 @@
    `(js2-function-param ((,class :foreground ,fg :italic t)))
 
    ;; eshell
-   `(eshell-prompt ((,class :bold t :foreground ,fg :background ,blue)))
+   `(eshell-prompt ((,class :bold t :foreground ,fg :background ,blue-light)))
 
    ;; dired
    `(all-the-icons-dired-dir-face ((,class :foreground ,fg)))
    `(dired-directory ((,class :foreground ,fg)))
-   `(dired-flagged ((,class :background ,blue :foreground ,fg)))
+   `(dired-flagged ((,class :background ,blue-light :foreground ,fg)))
    `(dired-header ((,class :foreground ,fg :bold t :underline t)))
    `(diredfl-file-name ((,class :foreground ,fg)))
    `(diredfl-file-suffix ((,class :foreground ,fg2)))
@@ -167,13 +168,13 @@
 
    ;; Helm
    `(helm-action ((,class :underline t)))
-   `(helm-selection ((,class :foreground ,fg :background ,blue)))
+   `(helm-selection ((,class :foreground ,fg :background ,blue-light)))
    `(helm-selection-line ((,class :bold t :underline t)))
    `(helm-source-header ((,class :bold t :underline t :height 1.3)))
    `(helm-ff-directory ((,class :bold t)))
    `(helm-ff-dotted-directory ((,class :italic t :bold t)))
    `(helm-match ((,class :foreground ,blue :background ,bg)))
-   `(helm-match-item ((,class :background ,blue :foreground ,fg)))
+   `(helm-match-item ((,class :background ,blue-light :foreground ,fg)))
    `(helm-ff-file-extension ((,class :foreground ,fg2)))
 
    ;; Selectrum

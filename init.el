@@ -26,9 +26,13 @@
          ("C-x e" . pp-eval-last-sexp)
          ("C-x C-e" . kmacro-end-and-call-macro)
          (:map boon-command-map
-                      ("p" . consult-line)
-                      ("&" . async-shell-command)
-                      ("%" . query-replace)))
+               ("p" . consult-line)
+               ("&" . async-shell-command)
+               ("%" . query-replace))
+         (:map boon-forward-search-map
+               ("r" . ctrlf-forward-alternate))
+         (:map boon-backward-search-map
+               ("r" . ctrlf-backward-alternate)))
   :init
   (require 'boon-colemak)
   (boon-mode 1))
@@ -312,10 +316,11 @@
 ;; Other programming niceties
 
 (use-package devdocs :straight t
-  :bind ((:map typescript-mode-map
-               ("C-c d" . devdocs-lookup)))
   :hook (typescript-mode . (lambda ()
-                             (setq-local devdocs-current-docs '("typescript")))))
+                             (setq-local devdocs-current-docs '("typescript"))))
+        (js-mode . (lambda ()
+                    (setq-local devdocs-current-docs '("javascript")))))
+                            
 
 (use-package yasnippet :straight t
  :config
@@ -351,8 +356,15 @@ if one already exists."
 (use-package rjsx-mode :straight t)
 (use-package json-mode :straight t)
 
+(use-package javascript-mode :ensure nil
+  :hook (js-mode . lsp)
+  :bind ((:map js-mode-map
+                  ("C-c d" . devdocs-lookup))))
+
 (use-package typescript-mode :straight t
  :mode (rx ".ts" string-end)
+ :bind ((:map typescript-mode-map
+                 ("C-c d" . devdocs-lookup)))
  :hook ((typescript-mode typescript-tsx-mode) . lsp)
  :custom
  (typescript-indent-level 4)
