@@ -26,6 +26,7 @@
          ("C-x e" . pp-eval-last-sexp)
          ("C-x C-e" . kmacro-end-and-call-macro)
          (:map boon-command-map
+               ("^" . crux-switch-to-previous-buffer)
                ("p" . consult-line)
                ("h" . avy-goto-char-timer)
                ("&" . async-shell-command)
@@ -36,6 +37,13 @@
   :config
   (add-to-list 'boon-special-mode-list 'speedbar-mode))
 
+;; Other tweaks to default keybindings
+(use-package emacs
+ :bind (("M-\\" . cycle-spacing)
+        ("M-u" . upcase-dwim)
+        ("M-l" . downcase-dwim)
+        ("M-c" . capitalize-dwim)))
+ 
 ;; Platform specifics
 (when (memq window-system '(mac ns x))
   (progn
@@ -90,6 +98,14 @@
          ("C-x o" . ace-window)))
 
 (winner-mode +1)
+
+(defun my/pulse-line (&rest _)
+ "Pulse the current line"
+ (pulse-momentary-highlight-one-line (point)))
+
+(dolist (command '(scroll-up-command scroll-down-command recenter-top-bottom other-window))
+ 
+ (advice-add command :after #'my/pulse-line))
 
 (use-package dired
   :hook (dired-mode . dired-hide-details-mode))

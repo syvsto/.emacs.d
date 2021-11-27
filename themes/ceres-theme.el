@@ -160,6 +160,13 @@
    `(diredfl-dir-name ((,class :foreground ,fg :italic t)))
    `(diredfl-dir-heading ((,class :foreground ,fg :bold t :underline t)))
 
+   ;; speedbar
+   `(speedbar-selected-face ((,class :bold t :foreground ,fg)))
+   `(speedbar-highlight-face ((,class :bold t :foreground ,fg :background ,bg :underline t)))
+   `(speedbar-file-face ((,class :foreground ,fg)))
+   `(speedbar-directory-face ((,class :foreground ,fg)))
+   `(speedbar-tag-face ((,class :foreground ,fg2)))
+
    ;; ibuffer
    `(ibuffer-deletion-face ((,class :foreground ,warning)))
    `(ibuffer-filter-group-name-face ((,class :bold t)))
