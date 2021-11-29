@@ -15,7 +15,6 @@
 ;; Setup use-package
 
 (straight-use-package 'use-package)
-(use-package diminish :straight t)
 
 ;; Modal editing
 (use-package boon :straight t
@@ -25,6 +24,7 @@
          ("C-x C-s" . save-some-buffers)
          ("C-x e" . pp-eval-last-sexp)
          ("C-x C-e" . kmacro-end-and-call-macro)
+         ("M-g M-s" . speedbar)
          (:map boon-command-map
                ("^" . crux-switch-to-previous-buffer)
                ("p" . consult-line)
@@ -83,20 +83,17 @@
 (global-so-long-mode 1)
 
 ;; Navigation
-
 (use-package rotate :straight t
  :bind ("C-x 4 r" . rotate-layout))
 
 (use-package crux :straight t
   :bind (("C-x 4 t" . crux-transpose-windows)
          ("C-x M-e" . crux-eval-and-replace)
-         ("C-^" . crux-top-join-line)
-         ("C-a" . crux-move-beginning-of-line)))
+         ("C-^" . crux-top-join-line)))
 
 (use-package ace-window :straight t
   :bind (("M-o" . ace-window)
          ("C-x o" . ace-window)))
-
 (winner-mode +1)
 
 (defun my/pulse-line (&rest _)
@@ -106,6 +103,8 @@
 (dolist (command '(scroll-up-command scroll-down-command recenter-top-bottom other-window))
  (advice-add command :after #'my/pulse-line))
 
+
+;; File management
 (use-package dired
   :hook (dired-mode . dired-hide-details-mode))
 
@@ -125,6 +124,12 @@
  :ensure nil
  :config
  (setq view-read-only t))
+
+(use-package speedbar
+  :ensure nil
+  :config
+  (speedbar-add-supported-extension ".ts")
+  (speedbar-add-supported-extension ".tsx"))
 
 (use-package popper :straight t
   :bind (("C-`" . popper-toggle-latest)
@@ -161,8 +166,6 @@
   :hook (prog-mode . company-mode)
   :config
   (add-to-list 'company-backends #'company-tabnine))
-
-(setq tab-always-indent 'complete)
 
 (use-package consult
   :straight t
@@ -261,11 +264,19 @@
 
 (use-package completion
  :ensure nil
+ :hook (icomplete-minibuffer-setup . my/icomplete-styles)
+ :bind ((:map icomplete-minibuffer-map
+         ("C-." . nil)
+         ("C-," . nil)))
  :config
- (setq enable-recursive-minibuffers t)
- (setq completion-styles '(initials partial-completion flex))
- (setq completion-cycle-threshold 10)
- (fido-mode 1))
+  (setq enable-recursive-minibuffers t)
+  (defun my/icomplete-styles ()
+    "Used to override the default flex completion style for fido"
+    (setq-local completion-styles '(initials partial-completion flex))
+    (setq-local completion-category-overrides '((files . (initials))
+                                                (buffers . (partial-completion))))
+    (setq-local completion-cycle-threshold 10)
+   (fido-mode 1)))
 
 ;; Jump to links/clickable items on screen
 (use-package link-hint
@@ -386,10 +397,7 @@ if one already exists."
  :custom
  (typescript-indent-level 4)
  :init (define-derived-mode typescript-tsx-mode typescript-mode "typescript-tsx")
-       (add-to-list 'auto-mode-alist (cons (rx ".tsx" string-end) #'typescript-tsx-mode))
- :config
- (speedbar-add-supported-extension ".ts")
- (speedbar-add-supported-extension ".tsx"))
+       (add-to-list 'auto-mode-alist (cons (rx ".tsx" string-end) #'typescript-tsx-mode)))
 
 (use-package tree-sitter-langs :straight t)
 (use-package tree-sitter :straight t
