@@ -191,7 +191,7 @@
    `(selectrum-secondary-highlight ((,class :foreground ,blue)))
 
    ;; Vertico
-   `(vertico-current ((,class :bold t :background ,fg :foreground ,bg)))
+   `(vertico-current ((,class :bold t :underline t)))
 
    ;; Consult
    `(consult-annotation ((,class :foreground ,bg-light)))
