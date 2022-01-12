@@ -67,9 +67,9 @@
    `(isearch-fail ((,class :inherit warning)))
    `(lazy-highlight ((,class :bold t :background ,bg-light)))
    `(match ((,class :bold t :background ,bg-light)))
+   `(header-line ((,class :foreground ,bg :background ,fg)))
    `(mode-line ((,class (:overline ,fg :underline ,fg :bold t :foreground ,bg :background ,fg))))
    `(mode-line-inactive ((,class (:overline ,fg :foreground ,fg :background ,bg :weight normal))))
-   `(solaire-mode-line-inactive-face ((,class (:overline ,fg :foreground ,fg :background ,bg-light :weight normal))))
    `(vertical-border ((,class (:foreground ,fg))))
    `(minibuffer-prompt ((,class (:bold t :foreground ,fg))))
    `(default-italic ((,class (:italic t))))
@@ -113,6 +113,7 @@
    `(rainbow-delimiters-unmatched-face ((,class :inherit bold :foreground ,warning2)))
 
    ;; magit
+   `(magit-header-line ((t (:underline nil))))
    `(magit-branch-local ((,class :inherit italic :foreground ,fg :underline t)))
    `(magit-section-heading ((,class :bold t :foreground ,fg :height 1.1 :underline t)))
    `(magit-branch-remote ((,class :inherit italic :foreground ,fg :underline t)))
@@ -189,15 +190,35 @@
    `(selectrum-primary-highlight ((,class :bold t)))
    `(selectrum-secondary-highlight ((,class :foreground ,blue)))
 
+   ;; Vertico
+   `(vertico-current ((,class :bold t :background ,fg :foreground ,bg)))
+
    ;; Consult
    `(consult-annotation ((,class :foreground ,bg-light)))
    `(consult-file ((,class :foreground ,fg2)))
 
+   ;; Company-tooltip
    `(company-tooltip ((,class :background ,bg-lighter)))
    `(company-tooltip-annotation ((,class :foreground ,blue)))
    `(company-tooltip-selection ((,class :foreground ,bg-lighter :background ,fg :bold t)))
    `(company-tooltip-common ((,class :italic t)))
-   `(company-tooltip-common-selection ((,class :foreground ,bg-lighter :background ,fg :italic t)))))
+   `(company-tooltip-common-selection ((,class :foreground ,bg-lighter :background ,fg :italic t)))
+
+   ;; Nano modeline
+   `(nano-modeline-active ((,class (:bold t :foreground ,bg :background ,fg))))
+   `(nano-modeline-active-name ((,class (:bold t :foreground ,bg :background ,fg))))
+   `(nano-modeline-active-primary ((,class (:bold t :foreground ,bg :background ,fg))))
+   `(nano-modeline-active-secondary ((,class (:bold t :foreground ,bg :background ,fg))))
+   `(nano-modeline-active-status-RO ((,class (:bold t :foreground ,bg :background ,blue))))
+   `(nano-modeline-active-status-RW ((,class (:bold t :foreground ,bg :background ,blue-light))))
+   `(nano-modeline-active-status-** ((,class (:bold t :foreground ,bg :background ,warning2))))
+   `(nano-modeline-inactive ((,class (:bold nil :foreground ,bg-light :background ,fg))))
+   `(nano-modeline-inactive-name ((,class (:bold nil :foreground ,bg-light :background ,fg))))
+   `(nano-modeline-inactive-primary ((,class (:bold nil :italic t :foreground ,bg-light :background ,fg))))
+   `(nano-modeline-inactive-secondary ((,class (:bold nil :italic t :foreground ,bg-light :background ,fg))))
+   `(nano-modeline-inactive-status-RO ((,class (:bold nil :italic t :foreground ,bg-light :background ,fg))))
+   `(nano-modeline-inactive-status-RW ((,class (:bold nil :italic t :foreground ,bg-light :background ,fg))))
+   `(nano-modeline-inactive-status-** ((,class (:bold nil :italic t :foreground ,bg-light :background ,fg))))))
 
 ;;;###autoload
 (when load-file-name
