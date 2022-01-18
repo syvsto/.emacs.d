@@ -156,17 +156,6 @@
   (popper-mode +1)
   (popper-echo-mode +1))
 
-(use-package strokes
- :ensure nil
- :config
- (strokes-mode 1)
- (defun my/git-checkout-stroke ()
-  (interactive)
-  (shell-command "git fetch")
-  (current-kill 0)
-  (shell-command (concat "git checkout " (substring-no-properties (car kill-ring))))))
-
-
 ;; Completion/selection
 
 (use-package consult
@@ -239,8 +228,6 @@
     (devdocs-lookup nil ident))
   (setq prefix-help-command #'embark-prefix-help-command)
   :bind (("C-." . embark-act)
-         (:map minibuffer-mode-map
-               ("C-l" . embark-collect-live))
          (:map embark-identifier-map
                ("D" . embark-devdocs-lookup)))
    :config
@@ -572,6 +559,9 @@ if one already exists."
 
 (use-package all-the-icons-dired :straight t
   :hook (dired-mode . all-the-icons-dired-mode))
+
+(use-package all-the-icons-ibuffer :straight t
+ :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
 
 ;; Jupyter
 (use-package jupyter :straight t
