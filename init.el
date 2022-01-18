@@ -35,7 +35,8 @@
   (require 'boon-colemak)
   (boon-mode 1)
   :config
-  (add-to-list 'boon-special-mode-list 'speedbar-mode))
+  (let ((modes '(speedbar-mode sly-db-mode sly-inspector-mode)))
+    (mapc #'(lambda (mode) (add-to-list 'boon-special-mode-list mode)) modes)))
 
 (use-package multiple-cursors :straight t
   :config
@@ -105,13 +106,14 @@
          ("C-x o" . ace-window)))
 (winner-mode +1)
 
+
+;; Pulse current line when jumping somewhere
 (defun my/pulse-line (&rest _)
  "Pulse the current line"
  (pulse-momentary-highlight-one-line (point)))
 
-(dolist (command '(scroll-up-command scroll-down-command recenter-top-bottom other-window))
+(dolist (command '(recenter-top-bottom other-window ace-window boon-switch-mark xref-pop-marker-stack))
  (advice-add command :after #'my/pulse-line))
-
 
 ;; File management
 (use-package dired
@@ -312,11 +314,13 @@
 
 ;; Delimiter editing/structured editing
 
-(use-package parinfer-rust-mode :straight t
-  :hook ((emacs-lisp-mode lisp-mode) . parinfer-rust-mode))
+(use-package paredit :straight t
+  :hook ((emacs-lisp-mode lisp-mode) . paredit-mode))
 (use-package electric-pair
   :hook ((js-mode python-mode text-mode typescript-mode typescript-tsx-mode) . electric-pair-local-mode))
 (show-paren-mode 1)
+(use-package rainbow-delimiters :straight t
+  :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; LSP support
 (use-package flycheck :straight t
@@ -531,7 +535,12 @@ if one already exists."
   (setf (alist-get ?. avy-dispatch-alist) 'my/avy-action-embark))
 
 (setq inferior-lisp-program "ros -Q run")
-(use-package sly :straight t)
+(use-package sly :straight t
+ :commands (sly)
+ :hook ((sly-mrepl . (lambda () (sly-symbol-completion-mode -1))))
+ :bind ((:map lisp-mode-map
+           ([remap pp-eval-last-sexp] . sly-eval-last-expression))))
+ 
 (use-package sly-quicklisp :straight t)
 
 (use-package cider :straight t)
@@ -553,7 +562,7 @@ if one already exists."
  :config
  (solaire-global-mode +1))
 
-(set-face-attribute 'default nil :font "Fira Code" :height 130)
+(set-face-attribute 'default nil :font "Fira Code" :height 100)
 (global-hl-line-mode +1)
 
 (menu-bar-mode -1)
