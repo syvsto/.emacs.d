@@ -266,20 +266,50 @@
    '(read-only t cursor-intangible t face minibuffer-prompt))
  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
 
-  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
-  ;; Vertico commands are hidden in normal buffers.
-  ;; (setq read-extended-command-predicate
-  ;;       #'command-completion-default-include-p)
-
   ;; Enable recursive minibuffers
  (setq enable-recursive-minibuffers t)
- (setq completion-in-region-function
-      (lambda (&rest args)
-        (apply (if vertico-mode
-                   #'consult-completion-in-region
-                 #'completion--in-region)
-               args)))
  (setq tab-always-indent 'complete))
+
+(use-package corfu :straight t
+  :custom
+  (corfu-cycle t)
+  (corfu-preselect-first nil)
+  :bind
+  (:map corfu-map
+	("TAB" . corfu-next)
+        ("S-TAB" . corfu-previous)
+        ([tab] . corfu-next)
+        ([backtab] . corfu-previous))
+  :init
+  (corfu-global-mode))
+
+(use-package kind-icon :straight t
+  :custom
+  (kind-icon-default-face 'corfu-default)
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
+(use-package cape :straight t
+  :bind (("C-c p p" . completion-at-point)
+	 ("C-c p t" . complete-tag)
+	 ("C-c p d" . cape-dabbrev)        
+         ("C-c p f" . cape-file)
+         ("C-c p k" . cape-keyword)
+         ("C-c p s" . cape-symbol)
+         ("C-c p a" . cape-abbrev)
+         ("C-c p i" . cape-ispell)
+         ("C-c p l" . cape-line)
+         ("C-c p w" . cape-dict)
+         ("C-c p \\" . cape-tex)
+         ("C-c p _" . cape-tex)
+         ("C-c p ^" . cape-tex)
+         ("C-c p &" . cape-sgml)
+         ("C-c p r" . cape-rfc1345))
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-tex)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-keyword))
 
 ;; Jump to links/clickable items on screen
 (use-package link-hint
@@ -324,7 +354,6 @@
 (use-package lsp-mode :straight t
   :init
   (setq lsp-headerline-breadcrumb-enable nil)
-  (setq lsp-keymap-prefix "C-c l")
   :hook ((lsp-mode . lsp-enable-which-key-integration)
          (lsp-mode . electric-pair-local-mode)
          ((rjsx-mode . (lambda ()
@@ -339,7 +368,7 @@
   :bind (:map lsp-ui-mode-map
          ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
          ([remap xref-find-references] . lsp-ui-peek-find-references)
-         ("C-c l g e" . lsp-ui-flycheck-list))
+         ("s-l g e" . lsp-ui-flycheck-list))
   :config
   (setq lsp-ui-sideline-enable nil
         lsp-ui-doc-enable nil))
@@ -353,13 +382,14 @@
                              (setq-local devdocs-current-docs '("typescript"))))
         (js-mode . (lambda ()
                     (setq-local devdocs-current-docs '("javascript")))))
-                            
 
-(use-package yasnippet :straight t
- :config
- (yas-global-mode 1))
 
-(use-package yasnippet-snippets :straight t)
+(use-package tempel :straight t
+  :init
+  (defun tempel-setup-capf ()
+    (add-hook 'completion-at-point-functions #'tempel-expand -1 'local))
+  (add-hook 'prog-mode-hook 'tempel-setup-capf)
+  (add-hook 'text-mode-hook 'tempel-setup-capf))
 
 (use-package project :demand nil
  :bind (:map project-prefix-map
