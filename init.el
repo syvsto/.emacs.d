@@ -60,6 +60,9 @@
     (use-package exec-path-from-shell :straight t
       :config
       (exec-path-from-shell-initialize))
+    (use-package ns-auto-titlebar :straight t
+      :config
+      (ns-auto-titlebar-mode))
     (setq-default mac-option-modifier 'meta)
     (setq ns-right-option-modifier nil)))
 
@@ -229,6 +232,8 @@
   (setq prefix-help-command #'embark-prefix-help-command)
   :bind (("C-." . embark-act)
          (:map embark-identifier-map
+               ("D" . embark-devdocs-lookup))
+         (:map embark-variable-map
                ("D" . embark-devdocs-lookup)))
    :config
  (add-to-list 'display-buffer-alist
