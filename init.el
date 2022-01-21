@@ -16,6 +16,10 @@
 
 (straight-use-package 'use-package)
 
+;; Performance tweaks
+(setq gc-cons-threshold 100000000)
+(setq read-process-output-max (* 1024 1024))
+
 ;; Modal editing
 (use-package boon :straight t
   :bind (("C-x f" . find-file)
@@ -38,12 +42,17 @@
   (let ((modes '(speedbar-mode sly-db-mode sly-inspector-mode)))
     (mapc #'(lambda (mode) (add-to-list 'boon-special-mode-list mode)) modes)))
 
+(use-package xref :straight t)
+
 (use-package multiple-cursors :straight t
   :config
   (bind-keys :map boon-command-map
              :prefix "b"
              :prefix-map my/mc-map
              ("n" . mc/mark-next-lines)
+             ("i n" . mc/insert-numbers)
+             ("i l" . mc/insert-letters)
+             ("a" . mc/vertical-align)
              ("N" . mc/mark-previous-lines)
              ("b" . mc/mark-all-dwim)))
 
@@ -64,14 +73,15 @@
       :config
       (ns-auto-titlebar-mode))
     (setq-default mac-option-modifier 'meta)
-    (setq ns-right-option-modifier nil)))
+    (setq ns-right-option-modifier nil
+	  mac-command-key-is-meta t
+          mac-command-modifier 'super)))
 
 
-;; Some options that make Emacs less intrusive
-
+;; some options that make Emacs less intrusive
 (setq frame-resize-pixelwise t)
-
 (use-package no-littering :straight t)
+
 ;; store all backup and autosave files in the tmp dir
 (setq backup-directory-alist
       `((".*" . ,temporary-file-directory)))
@@ -234,17 +244,7 @@
          (:map embark-identifier-map
                ("D" . embark-devdocs-lookup))
          (:map embark-variable-map
-               ("D" . embark-devdocs-lookup)))
-   :config
- (add-to-list 'display-buffer-alist
-              '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                nil
-                (window-parameters (mode-line-format . none))))
- (add-hook 'embark-collect-post-revert-hook
-          (defun resize-embark-collect-window (&rest _)
-            (when (memq embark-collect--kind '(:live :completions))
-              (fit-window-to-buffer (get-buffer-window)
-                                    (max (floor (frame-height) 4) 10) 1)))))
+               ("D" . embark-devdocs-lookup))))
 
 (use-package embark-consult :straight t
  :after (embark consult)
@@ -281,12 +281,12 @@
   (corfu-preselect-first nil)
   :bind
   (:map corfu-map
-	("TAB" . corfu-next)
+  	("TAB" . corfu-next)
         ("S-TAB" . corfu-previous)
         ([tab] . corfu-next)
         ([backtab] . corfu-previous))
-  :init
-  (corfu-global-mode))
+    :init
+    (corfu-global-mode))
 
 (use-package kind-icon :straight t
   :custom
@@ -297,7 +297,7 @@
 (use-package cape :straight t
   :bind (("C-c p p" . completion-at-point)
 	 ("C-c p t" . complete-tag)
-	 ("C-c p d" . cape-dabbrev)        
+	 ("C-c p d" . cape-dabbrev)
          ("C-c p f" . cape-file)
          ("C-c p k" . cape-keyword)
          ("C-c p s" . cape-symbol)
@@ -584,7 +584,7 @@ if one already exists."
  :config
  (solaire-global-mode +1))
 
-(set-face-attribute 'default nil :font "Fira Code" :height 100)
+(set-face-attribute 'default nil :font "Fira Code" :height 120)
 (global-hl-line-mode +1)
 
 (menu-bar-mode -1)
