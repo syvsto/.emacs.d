@@ -19,6 +19,7 @@
 ;; Performance tweaks
 (setq gc-cons-threshold 100000000)
 (setq read-process-output-max (* 1024 1024))
+(global-so-long-mode 1)
 
 ;; Modal editing
 (use-package boon :straight t
@@ -42,7 +43,14 @@
   (let ((modes '(speedbar-mode sly-db-mode sly-inspector-mode)))
     (mapc #'(lambda (mode) (add-to-list 'boon-special-mode-list mode)) modes)))
 
+(define-key global-map (kbd "C-z") nil)
+
 (use-package xref :straight t)
+
+(use-package super-save :straight t
+  :config
+  (super-save-mode +1)
+  (add-to-list 'super-save-triggers 'ace-window))
 
 (use-package multiple-cursors :straight t
   :config
@@ -56,7 +64,7 @@
              ("N" . mc/mark-previous-lines)
              ("b" . mc/mark-all-dwim)))
 
-;; Other tweaks to default keybindings
+;; Swap to a bunch of more useful keybindings than the defaults
 (use-package emacs
  :bind (("M-\\" . cycle-spacing)
         ("M-u" . upcase-dwim)
@@ -78,7 +86,7 @@
           mac-command-modifier 'super)))
 
 
-;; some options that make Emacs less intrusive
+;; some options that make Emacs a less intrusive OS citizen
 (setq frame-resize-pixelwise t)
 (use-package no-littering :straight t)
 
@@ -94,6 +102,8 @@
 (recentf-mode +1)
 (delete-selection-mode +1)
 
+
+;; Documentation enhancements
 (use-package which-key :straight t
   :diminish which-key-mode
   :config (which-key-mode +1))
@@ -103,7 +113,11 @@
   :config
   (eldoc-mode +1))
 
-(global-so-long-mode 1)
+(use-package helpful :straight t
+  :bind (("C-h f" . helpful-callable))
+   ("C-h v" . helpful-variable)
+   ("C-h k" . helpful-key))
+
 
 ;; Navigation
 (use-package rotate :straight t
@@ -359,6 +373,7 @@
 (use-package lsp-mode :straight t
   :init
   (setq lsp-headerline-breadcrumb-enable nil)
+  (setq lsp-keymap-prefix "C-z")
   :hook ((lsp-mode . lsp-enable-which-key-integration)
          (lsp-mode . electric-pair-local-mode)
          ((rjsx-mode . (lambda ()
@@ -373,7 +388,7 @@
   :bind (:map lsp-ui-mode-map
          ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
          ([remap xref-find-references] . lsp-ui-peek-find-references)
-         ("s-l g e" . lsp-ui-flycheck-list))
+         ("C-z g e" . lsp-ui-flycheck-list))
   :config
   (setq lsp-ui-sideline-enable nil
         lsp-ui-doc-enable nil))
@@ -568,11 +583,6 @@ if one already exists."
 (use-package cider :straight t)
 
 ;; Looks
-(use-package helpful :straight t
-  :bind (("C-h f" . helpful-callable))
-   ("C-h v" . helpful-variable)
-   ("C-h k" . helpful-key))
-
 (use-package nano-modeline :straight t
   :config
   (nano-modeline-mode))
@@ -584,7 +594,7 @@ if one already exists."
  :config
  (solaire-global-mode +1))
 
-(set-face-attribute 'default nil :font "Fira Code" :height 120)
+(set-face-attribute 'default nil :font "Input Mono" :height 120)
 (global-hl-line-mode +1)
 
 (menu-bar-mode -1)
