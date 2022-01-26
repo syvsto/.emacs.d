@@ -47,11 +47,6 @@
 
 (use-package xref :straight t)
 
-(use-package super-save :straight t
-  :config
-  (super-save-mode +1)
-  (add-to-list 'super-save-triggers 'ace-window))
-
 (use-package multiple-cursors :straight t
   :config
   (bind-keys :map boon-command-map
@@ -81,6 +76,7 @@
       :config
       (ns-auto-titlebar-mode))
     (setq-default mac-option-modifier 'meta)
+    (setq delete-by-moving-to-trash 'system-move-file-to-trash)
     (setq ns-right-option-modifier nil
 	  mac-command-key-is-meta t
           mac-command-modifier 'super)))
