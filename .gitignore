@@ -6,3 +6,7 @@ parinfer-rust
 elpa
 etc
 .DS_Store
+
+.cache/
+.log/
+eln-cache/
