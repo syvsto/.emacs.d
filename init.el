@@ -575,6 +575,7 @@ if one already exists."
            ([remap pp-eval-last-sexp] . sly-eval-last-expression))))
  
 (use-package sly-quicklisp :straight t)
+(use-package sly-asdf :straight t)
 
 (use-package cider :straight t)
 
@@ -590,7 +591,7 @@ if one already exists."
  :config
  (solaire-global-mode +1))
 
-(set-face-attribute 'default nil :font "Input Mono" :height 120)
+(set-face-attribute 'default nil :font "Fira Code" :height 100)
 (global-hl-line-mode +1)
 
 (menu-bar-mode -1)
