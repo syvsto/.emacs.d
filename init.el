@@ -29,6 +29,11 @@
          ("C-x C-s" . save-some-buffers)
          ("C-x e" . pp-eval-last-sexp)
          ("C-x C-e" . kmacro-end-and-call-macro)
+         ("M-g s h p" . highlight-phrase)
+         ("M-g s h r" . highlight-regexp)
+         ("M-g s h l" . highlight-lines-mathcing-regexp)
+         ("M-g s h u" . unhighlight-regexp)
+         ("M-g M-s" . speedbar)
          ("M-g M-s" . speedbar)
          (:map boon-command-map
                ("^" . crux-switch-to-previous-buffer)
