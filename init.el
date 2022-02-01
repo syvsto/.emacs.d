@@ -36,7 +36,6 @@
          ("M-g M-s" . speedbar)
          ("M-g M-s" . speedbar)
          (:map boon-command-map
-               ("^" . crux-switch-to-previous-buffer)
                ("p" . consult-line)
                ("&" . async-shell-command)
                ("%" . query-replace)))
