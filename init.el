@@ -38,7 +38,6 @@
          (:map boon-command-map
                ("^" . crux-switch-to-previous-buffer)
                ("p" . consult-line)
-               ("h" . avy-goto-char-timer)
                ("&" . async-shell-command)
                ("%" . query-replace)))
   :init
@@ -124,14 +123,19 @@
 (use-package rotate :straight t
  :bind ("C-x 4 r" . rotate-layout))
 
-(use-package crux :straight t
-  :bind (("C-x 4 t" . crux-transpose-windows)
-         ("C-x M-e" . crux-eval-and-replace)
-         ("C-^" . crux-top-join-line)))
-
 (use-package ace-window :straight t
+  :custom
+  (aw-scope 'frame)
   :bind (("M-o" . ace-window)
-         ("C-x o" . ace-window)))
+         ("C-x o" . ace-window)
+         ("C-x 5 o" . my/ace-window-global))
+  :config
+  (defun my/ace-window-global (arg)
+    (interactive "P")
+    (setf aw-scope 'global)
+    (ace-window arg)
+    (setf aw-scope 'frame)))
+
 (winner-mode +1)
 
 
