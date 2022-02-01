@@ -83,7 +83,7 @@
     (setq-default mac-option-modifier 'meta)
     (setq delete-by-moving-to-trash 'system-move-file-to-trash)
     (setq ns-right-option-modifier nil
-	  mac-command-key-is-meta t
+	  mac-right-option-modifier nil
           mac-command-modifier 'super)))
 
 
@@ -271,8 +271,17 @@
   :init
   (savehist-mode))
 
+(defun up-directory (arg)
+  "Move up a directory (delete backwards to /)."
+  (interactive "p")
+  (if (string-match-p "/." (minibuffer-contents))
+      (zap-up-to-char (- arg) ?/)
+    (delete-minibuffer-contents)))
+
 (use-package vertico :straight t
- :init (vertico-mode))
+  :bind ((:map vertico-map
+	       ("C-<backspace>" . up-directory)))
+  :init (vertico-mode))
 
 (use-package orderless :straight t
  :init
@@ -596,7 +605,7 @@ if one already exists."
  :config
  (solaire-global-mode +1))
 
-(set-face-attribute 'default nil :font "Fira Code" :height 100)
+(set-face-attribute 'default nil :font "Fira Code" :height 120)
 (global-hl-line-mode +1)
 
 (menu-bar-mode -1)
