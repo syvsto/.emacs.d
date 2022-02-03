@@ -74,7 +74,7 @@
    `(minibuffer-prompt ((,class (:bold t :foreground ,fg))))
    `(default-italic ((,class (:italic t))))
    `(link ((,class (:foreground ,fg :underline t))))
-   `(org-code ((,class (:foreground ,fg2))))
+   `(org-code ((,class (:inherit fixed-pitch))))
    `(org-hide ((,class (:foreground ,fg2))))
    `(org-document-title ((,class (:inherit fixed-pitch :bold t :height 1.6))))
    `(org-level-1 ((,class (:inherit fixed-pitch :bold t :height 1.2))))
