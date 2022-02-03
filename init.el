@@ -36,6 +36,7 @@
          ("M-g M-s" . speedbar)
          ("M-g M-s" . speedbar)
          (:map boon-command-map
+               ("^" . delete-indentation)
                ("p" . consult-line)
                ("&" . async-shell-command)
                ("%" . query-replace)))
@@ -377,10 +378,13 @@
                ("C-c f" . eglot-format)
                ("C-c a" . eglot-code-actions)
                ("C-c h" . eldoc)))
-  :hook ((js-mode javascript-jsx-mode typescript-mode python-mode typescript-tsx-mode) . eglot-ensure))
+  :hook ((js-mode javascript-jsx-mode typescript-mode python-mode typescript-tsx-mode c-mode zig-mode) . eglot-ensure)
+  :config
+  (let ((servers '((typescript-tsx-mode . ("typescript-language-server" "--stdio")))))
+    (dolist (server servers)
+      (add-to-list 'eglot-server-programs server))))
 
 ;; Other programming niceties
-
 (use-package devdocs :straight t
   :hook (typescript-mode . (lambda ()
                              (setq-local devdocs-current-docs '("typescript"))))
@@ -419,12 +423,12 @@ if one already exists."
 
 
 ;; Language specifics
+(bind-key "C-c C-c" 'eval-defun)
 
 (use-package rjsx-mode :straight t)
 (use-package json-mode :straight t)
 
 (use-package javascript-mode :ensure nil
-  :hook (js-mode . lsp)
   :bind ((:map js-mode-map
                   ("C-c d" . devdocs-lookup))))
 
@@ -432,7 +436,6 @@ if one already exists."
  :mode (rx ".ts" string-end)
  :bind ((:map typescript-mode-map
                  ("C-c d" . devdocs-lookup)))
- :hook ((typescript-mode typescript-tsx-mode) . lsp)
  :custom
  (typescript-indent-level 4)
  :init (define-derived-mode typescript-tsx-mode typescript-mode "typescript-tsx")
@@ -447,19 +450,11 @@ if one already exists."
 (use-package prettier :straight t
   :hook (after-init . global-prettier-mode))
 
-(use-package python-pytest :straight t
-  :bind (:map python-mode-map
-              ("C-c M-t" . python-pytest-dispatch)))
-
 (use-package pyvenv :straight t)
 
 (use-package rustic :straight t
-  :custom
-  (rustic-lsp-client 'eglot))
-
-(use-package c
- :ensure nil
- :hook (c-mode . lsp))
+  :init
+  (setq rustic-lsp-client 'eglot))
 
 (use-package haskell-mode :straight t
   :bind ((:map haskell-mode-map
@@ -499,8 +494,7 @@ if one already exists."
 
 (use-package zig-mode :straight t
   :config (setq zig-format-on-save nil)
-  :hook ((zig-mode . electric-pair-local-mode)
-         (zig-mode . lsp)))
+  :hook ((zig-mode . electric-pair-local-mode)))
 
 (use-package q-mode :straight t)
 
