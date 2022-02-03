@@ -600,6 +600,10 @@ if one already exists."
 (use-package jupyter :straight t
   :demand t)
 
+;; Markdown
+(use-package markdown-mode :straight t
+  :hook (markdown-mode . variable-pitch-mode))
+
 ;; Org mode
 (straight-use-package '(org-contrib :includes org))
 (setq org-babel-python-command "/usr/local/bin/python3")
