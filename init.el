@@ -48,8 +48,6 @@
 
 (define-key global-map (kbd "C-z") nil)
 
-(use-package xref :straight t)
-
 (use-package multiple-cursors :straight t
   :config
   (bind-keys :map boon-command-map
@@ -353,6 +351,7 @@
                        (help help-mode-map)
                        (info Info-mode-map)
                        (apropos apropos-mode-map)
+                       (vertico vertico-map)
                        (man Man-mode-map)
                        (woman woman-mode-map)
                        (package package-menu-mode-map)
@@ -372,41 +371,13 @@
   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; LSP support
-(use-package flycheck :straight t
- :hook (flycheck-mode . (lambda ()
-                          (if (display-graphic-p)
-                           (flycheck-pos-tip-mode)
-                           (flycheck-popup-tip-mode)))))
-
-(use-package flycheck-pos-tip :straight t
- :commands flycheck-pos-tip-mode)
-(use-package flycheck-popup-tip :straight t
- :commands flycheck-popup-tip-mode)
-
-(use-package lsp-mode :straight t
-  :init
-  (setq lsp-headerline-breadcrumb-enable nil)
-  (setq lsp-keymap-prefix "C-z")
-  :hook ((lsp-mode . lsp-enable-which-key-integration)
-         (lsp-mode . electric-pair-local-mode)
-         ((rjsx-mode . (lambda ()
-                         (lsp)))
-          (python-mode . (lambda ()
-                          (require 'lsp-sonarlint)
-                          (require 'lsp-sonarlint-python)
-                          (setq lsp-sonarlint-python-enabled t)
-                          (lsp))))))
-                          
-(use-package lsp-ui :straight t
-  :bind (:map lsp-ui-mode-map
-         ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
-         ([remap xref-find-references] . lsp-ui-peek-find-references)
-         ("C-z g e" . lsp-ui-flycheck-list))
-  :config
-  (setq lsp-ui-sideline-enable nil
-        lsp-ui-doc-enable nil))
-
-(use-package lsp-sonarlint :straight t)
+(use-package eglot :straight t
+  :bind ((:map eglot-mode-map
+	       ("C-c r" . eglot-rename)
+               ("C-c f" . eglot-format)
+               ("C-c a" . eglot-code-actions)
+               ("C-c h" . eldoc)))
+  :hook ((js-mode javascript-jsx-mode typescript-mode python-mode typescript-tsx-mode) . eglot-ensure))
 
 ;; Other programming niceties
 
@@ -482,7 +453,9 @@ if one already exists."
 
 (use-package pyvenv :straight t)
 
-(use-package rustic :straight t)
+(use-package rustic :straight t
+  :custom
+  (rustic-lsp-client 'eglot))
 
 (use-package c
  :ensure nil
@@ -523,8 +496,6 @@ if one already exists."
   (setq haskell-process-auto-import-loaded-modules t)
   (setq haskell-process-log t)
   (cons "-fno-ghci-sandbox" haskell-process-args-cabal-repl))
-
-(use-package lsp-haskell :straight t)
 
 (use-package zig-mode :straight t
   :config (setq zig-format-on-save nil)
@@ -609,12 +580,15 @@ if one already exists."
  (solaire-global-mode +1))
 
 (set-face-attribute 'default nil :font "Fira Code" :height 120)
+(set-face-attribute 'variable-pitch nil :font "Baskerville" :height 140)
+(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 120)
 (global-hl-line-mode +1)
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (when (display-graphic-p)
   (scroll-bar-mode -1))
+(setq inhibit-startup-message t)
 
 (use-package all-the-icons-dired :straight t
   :hook (dired-mode . all-the-icons-dired-mode))
@@ -642,6 +616,9 @@ if one already exists."
 (setq org-src-fontify-natively t
       org-fontify-quote-and-verse-blocks t)
 (put 'narrow-to-region 'disabled nil)
+
+(add-hook 'org-mode-hook 'variable-pitch-mode)
+
 (use-package org-bullets :straight t
  :custom
  (org-bullets-bullet-list '("◉" "○"))
