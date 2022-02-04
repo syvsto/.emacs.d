@@ -273,17 +273,38 @@
   :init
   (savehist-mode))
 
-(defun up-directory (arg)
-  "Move up a directory (delete backwards to /)."
-  (interactive "p")
-  (if (string-match-p "/." (minibuffer-contents))
-      (zap-up-to-char (- arg) ?/)
-    (delete-minibuffer-contents)))
+(use-package vertico :straight (vertico :files (:defaults "extensions/*")
+					:includes (vertico-buffer
+						   vertico-directory
+                                                   vertico-quick
+                                                   vertico-unobtrusive))
+  :init
+  (vertico-mode)
+  (vertico-mouse-mode)
+  (vertico-multiform-mode)
+  (setq vertico-multiform-commands
+	'((consult-line unobtrusive)))
+  (setq vertico-multiform-categories
+	'((file grid)
+          (consult-grep buffer)
+          (imenu buffer))))
 
-(use-package vertico :straight t
-  :bind ((:map vertico-map
-	       ("C-<backspace>" . up-directory)))
-  :init (vertico-mode))
+(use-package vertico-directory
+  :after vertico
+  :straight nil
+  :ensure nil
+  :bind (:map vertico-map
+	      ("RET" . vertico-directory-enter)
+              ("DEL" . vertico-directory-delete-char)
+              ("M-DEL" . vertico-directory-delete-word))
+  :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
+
+(use-package vertico-quick
+  :after vertico
+  :straight nil
+  :ensure nil
+  :bind (:map vertico-map
+	      ("C-'" . vertico-quick-exit)))
 
 (use-package orderless :straight t
  :init
@@ -619,6 +640,7 @@ if one already exists."
 
 (use-package org-bullets :straight t
  :custom
+ (org-hide-leading-stars t)
  (org-bullets-bullet-list '("◉" "○"))
  :hook (org-mode . org-bullets-mode))
 
@@ -629,32 +651,3 @@ if one already exists."
 
 (use-package observable-dataflow-mode
   :straight (:host github :repo "syvsto/observable-dataflow-mode"))
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("0879f035d73898b649b400a1eb9d181454f07813f72e95d29d0e261d143b7677" "b1ab18494e2c38db94d79e738b2363f00cb0e3911eb412ed9f22b94371d36b31" "8539c8cbdac7a8c0a0c4a245a94505a8fb24aefd73614d6460ac22582882ae1f" "46db3f711e9841de910e035283e41808b76da39accabc888dc2c6fa448ff211c" "df8c9b2088b9e7e6446d188ccfea0d07f00e53a8650c2992b46d4762c70cf5a1" "022247b238dc89da3adbf0bf212936ea9087270313c19986697e3c8e6bc427a8" "95884bd7aa9e2e58033f5415b197ff00847094c65de0998df41a0877ad4cae83" "80561f6abb6de398aed73f86e91126fd71a1e1fe0776c0dc96eaed4dbb1bb857" "53dd393b4fe534566e7580819dff7c23ddbfcab573ef641eb58030d4e4e07ed0" "f635565d597752185c8c0c61f966960ab37c1a22bef52130be25d63cc7b0c115" "e8aa22b1a37dd574b17f82f7a390248c9872b3de3c9b9caf7d866c3b760bd8fb" "d276ed225e1c3db31fc8e6af8cc4f27911fdf2ed084dc7e0dc8c1b4cc50a22d5" "6c94687ced2519e70d492ec71b26728f4e46d00c631ae4513b3de23497d23fdc" "c00730484c95c18e1f9d48c86dd844f79a97804fc19251efcb05e809fbb11a02" "f4356ee156dd770322f70f1caa4346fe1e09f78d9f08fa63addeaa47a231368e" "07f72c2cc09c81b0c4ad975549763cdc7f67b910b277ffddee416fd32e4a589c" default)))
-(custom-set-faces)
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- 
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- 
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- 
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- 
