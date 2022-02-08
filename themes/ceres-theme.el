@@ -81,6 +81,7 @@
    `(org-level-2 ((,class (:inherit fixed-pitch :bold nil :height 1.1))))
    `(org-level-3 ((,class (:inherit fixed-pitch :bold t))))
    `(org-level-4 ((,class (:inherit fixed-pitch :bold nil))))
+   `(org-headline-done ((,class (:foreground ,fg2 :strike-through t))))
    `(org-checkbox ((,class (:inherit fixed-pitch :bold t))))
    `(org-date ((,class (:underline t))))
    `(org-footnote  ((,class (:underline t))))
