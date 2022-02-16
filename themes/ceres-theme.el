@@ -1,6 +1,6 @@
 ;;; ceres-theme.el --- Theme 
 
-;; Copyright (C) 2020 , Syver Storm-Furru
+;; Copyright (C) 2022, Syver Storm-Furru
 
 ;; Author: Syver Storm-Furru
 ;; Version: 0.1
@@ -64,9 +64,11 @@
    `(show-paren-match ((,class (:inherit underline))))
    `(sp-pair-overlay-face ((,class :inherit underline)))
    `(isearch ((,class (:bold t :foreground ,fg :background ,blue-light :bold t))))
+   `(isearch-group-1 ((,class (:bold t :foreground ,fg :background ,warning :bold t))))
+   `(isearch-group-2 ((,class (:bold t :foreground ,fg :background ,warning :bold t))))
    `(isearch-fail ((,class :inherit warning)))
-   `(lazy-highlight ((,class :bold t :background ,bg-light)))
-   `(match ((,class :bold t :background ,bg-light)))
+   `(lazy-highlight ((,class :bold t :background ,fg :foreground ,bg-lighter)))
+   `(match ((,class :bold t :background ,fg :foreground ,bg-lighter)))
    `(header-line ((,class :foreground ,bg :background ,fg)))
    `(mode-line ((,class (:overline ,fg :underline ,fg :bold t :foreground ,bg :background ,fg))))
    `(mode-line-inactive ((,class (:overline ,fg :foreground ,fg :background ,bg :weight normal))))

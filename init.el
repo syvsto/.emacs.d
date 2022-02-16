@@ -21,38 +21,11 @@
 (setq read-process-output-max (* 1024 1024))
 (global-so-long-mode 1)
 
-;; Modal editing
-(use-package boon :straight t
-  :bind (("C-x f" . find-file)
-         ("C-x s" . save-buffer)
-         ("C-x ;" . comment-line)
-         ("C-x C-s" . save-some-buffers)
-         ("C-x e" . pp-eval-last-sexp)
-         ("C-x C-e" . kmacro-end-and-call-macro)
-         ("M-g s h p" . highlight-phrase)
-         ("M-g s h r" . highlight-regexp)
-         ("M-g s h l" . highlight-lines-mathcing-regexp)
-         ("M-g s h u" . unhighlight-regexp)
-         ("M-g M-s" . speedbar)
-         ("M-g M-s" . speedbar)
-         (:map boon-command-map
-               ("^" . delete-indentation)
-               ("p" . consult-line)
-               ("&" . async-shell-command)
-               ("%" . query-replace)))
-  :init
-  (require 'boon-colemak)
-  (boon-mode 1)
-  :config
-  (let ((modes '(speedbar-mode sly-db-mode sly-inspector-mode)))
-    (mapc #'(lambda (mode) (add-to-list 'boon-special-mode-list mode)) modes)))
-
 (define-key global-map (kbd "C-z") nil)
 
 (use-package multiple-cursors :straight t
   :config
-  (bind-keys :map boon-command-map
-             :prefix "b"
+  (bind-keys :prefix "C-z"
              :prefix-map my/mc-map
              ("n" . mc/mark-next-lines)
              ("i n" . mc/insert-numbers)
@@ -142,7 +115,7 @@
  "Pulse the current line"
  (pulse-momentary-highlight-one-line (point)))
 
-(dolist (command '(recenter-top-bottom other-window ace-window boon-switch-mark xref-pop-marker-stack))
+(dolist (command '(recenter-top-bottom other-window ace-window xref-pop-marker-stack))
  (advice-add command :after #'my/pulse-line))
 
 ;; File management
@@ -595,7 +568,7 @@ if one already exists."
  (solaire-global-mode +1))
 
 (set-face-attribute 'default nil :font "Fira Code" :height 120)
-(set-face-attribute 'variable-pitch nil :font "Baskerville" :height 140)
+(set-face-attribute 'variable-pitch nil :font "Baskerville" :height 150)
 (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 120)
 (global-hl-line-mode +1)
 
@@ -651,3 +624,17 @@ if one already exists."
 
 (use-package observable-dataflow-mode
   :straight (:host github :repo "syvsto/observable-dataflow-mode"))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("2371ba6224eaba0a6828f31f95393155bb865f6afde5a34b0172ce6a4c2ad07c" "a2d68805b09fc9678fb7132927aff5742c7e1dc55291e87eef98471b587e7014" "b14adf7023a50b56de758d1577662f736df77611515b62cb7af7b70e6a7dac40" "b5d7d25c3b79b28dbcb2596b57a537def847cc18221ed90030aa96d3a0d205a9" "38a5bc13e376a0bd3758eee380d094ffe6ba567f17ff980c6a9835f05ab24a1b" default))
+ '(warning-suppress-log-types '((comp))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
