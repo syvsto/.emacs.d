@@ -32,7 +32,7 @@
              ("i l" . mc/insert-letters)
              ("a" . mc/vertical-align)
              ("N" . mc/mark-previous-lines)
-             ("b" . mc/mark-all-dwim)))
+             ("m" . mc/mark-all-dwim)))
 
 ;; Swap to a bunch of more useful keybindings than the defaults
 (use-package emacs
@@ -132,7 +132,7 @@
              (")" . dired-git-info-mode)))
 
 (use-package rgrep
-  :bind ("M-g s g" . rgrep))
+  :bind ("M-s g" . rgrep))
 
 (use-package view
  :ensure nil
@@ -183,23 +183,25 @@
          ("M-y" . consult-yank-pop)     ;; orig. yank-pop
          ("<help> a" . consult-apropos) ;; orig. apropos-command
          ;; M-g bindings (goto-map)
-         ("M-g e" . consult-compile-error)
+         ("M-g E" . consult-compile-error)
          ("M-g o" . consult-outline)
          ("M-g m" . consult-mark)
          ("M-g k" . consult-global-mark)
          ("M-g i" . consult-imenu)
+	 ("M-g s" . flymake-goto-next-error)
+	 ("M-g e" . consult-flymake)
          ([remap imenu] . consult-imenu)
          ("M-g I" . consult-project-imenu)
          ;; M-s bindings (search-map)
-         ("M-g s f" . consult-find)
-         ("M-g s L" . consult-locate)
-         ("M-g s G" . consult-git-grep)
-         ("M-g s r" . consult-ripgrep)
-         ("M-g s l" . consult-line)
-         ("M-g s m" . consult-multi-occur)
-         ("M-g s k" . consult-keep-lines)
-         ("M-g s U" . consult-focus-lines)
-           ;; Isearch integration
+         ("M-s f" . consult-find)
+         ("M-s L" . consult-locate)
+         ("M-s G" . consult-git-grep)
+         ("M-s r" . consult-ripgrep)
+         ("M-s l" . consult-line)
+         ("M-s m" . consult-multi-occur)
+         ("M-s k" . consult-keep-lines)
+         ("M-s U" . consult-focus-lines)
+         ;; Isearch integration
          ("M-s e" . consult-isearch)
          (:map isearch-mode-map
                ("M-e" . consult-isearch) ;; orig. isearch-edit-string
@@ -256,7 +258,7 @@
   (vertico-mouse-mode)
   (vertico-multiform-mode)
   (setq vertico-multiform-commands
-	'((consult-line unobtrusive)))
+	'((consult-flymake buffer)))
   (setq vertico-multiform-categories
 	'((file grid)
           (consult-grep buffer)
@@ -357,9 +359,7 @@
 
 ;; Delimiter editing/structured editing
 
-(use-package paredit :straight t
-  :hook ((emacs-lisp-mode lisp-mode) . paredit-mode))
-(use-package electric-pair
+&(use-package electric-pair
   :hook ((js-mode python-mode text-mode typescript-mode typescript-tsx-mode) . electric-pair-local-mode))
 (show-paren-mode 1)
 (use-package rainbow-delimiters :straight t
@@ -630,7 +630,7 @@ if one already exists."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("2371ba6224eaba0a6828f31f95393155bb865f6afde5a34b0172ce6a4c2ad07c" "a2d68805b09fc9678fb7132927aff5742c7e1dc55291e87eef98471b587e7014" "b14adf7023a50b56de758d1577662f736df77611515b62cb7af7b70e6a7dac40" "b5d7d25c3b79b28dbcb2596b57a537def847cc18221ed90030aa96d3a0d205a9" "38a5bc13e376a0bd3758eee380d094ffe6ba567f17ff980c6a9835f05ab24a1b" default))
+   '("d2457dde677c0049fbacfc7deb56c7ff5fdb1405dec78b7f14b3fedf3f53a37b" "a25c368c59f1e6d66fdf061dcc8c557763913f6b4d49576cc72173ac67298bf8" "10a57e03b8203adb7f66392e5179a52977f22cf618bb9ec823f2d9268eaa417b" "12317f37c057efed7f222ec0dfa2dceaa862707ddde769d8130e50c36103d9b6" "6842b68bbeb33c1912ddcb5cd0734d441b56d7d0e9882c49adc44899a3fa9976" "fdbf380d3b067f33fc023df2cbc7e591d92f6b33eddc26aaa59235f0ad2f54e9" "2371ba6224eaba0a6828f31f95393155bb865f6afde5a34b0172ce6a4c2ad07c" "a2d68805b09fc9678fb7132927aff5742c7e1dc55291e87eef98471b587e7014" "b14adf7023a50b56de758d1577662f736df77611515b62cb7af7b70e6a7dac40" "b5d7d25c3b79b28dbcb2596b57a537def847cc18221ed90030aa96d3a0d205a9" "38a5bc13e376a0bd3758eee380d094ffe6ba567f17ff980c6a9835f05ab24a1b" default))
  '(warning-suppress-log-types '((comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

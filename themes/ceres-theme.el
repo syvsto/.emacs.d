@@ -67,8 +67,8 @@
    `(isearch-group-1 ((,class (:bold t :foreground ,fg :background ,warning :bold t))))
    `(isearch-group-2 ((,class (:bold t :foreground ,fg :background ,warning :bold t))))
    `(isearch-fail ((,class :inherit warning)))
-   `(lazy-highlight ((,class :bold t :background ,fg :foreground ,bg-lighter)))
-   `(match ((,class :bold t :background ,fg :foreground ,bg-lighter)))
+   `(lazy-highlight ((,class :bold nil :background ,warning2 :foreground ,fg)))
+   `(match ((,class :bold nil :background ,warning :foreground ,fg)))
    `(header-line ((,class :foreground ,bg :background ,fg)))
    `(mode-line ((,class (:overline ,fg :underline ,fg :bold t :foreground ,bg :background ,fg))))
    `(mode-line-inactive ((,class (:overline ,fg :foreground ,fg :background ,bg :weight normal))))
@@ -222,7 +222,14 @@
    `(nano-modeline-inactive-secondary ((,class (:bold nil :italic t :foreground ,bg-light :background ,fg))))
    `(nano-modeline-inactive-status-RO ((,class (:bold nil :italic t :foreground ,bg-light :background ,fg))))
    `(nano-modeline-inactive-status-RW ((,class (:bold nil :italic t :foreground ,bg-light :background ,fg))))
-   `(nano-modeline-inactive-status-** ((,class (:bold nil :italic t :foreground ,bg-light :background ,fg))))))
+   `(nano-modeline-inactive-status-** ((,class (:bold nil :italic t :foreground ,bg-light :background ,fg))))
+
+   ;; IBuffer
+   `(ibuffer-filter-group-name ((,class (:bold t :underline t : height 1.2))))
+   
+   ;; sh-mode
+   `(sh-quoted-exec ((,class (:italic t :foreground ,fg))))))
+
 
 ;;;###autoload
 (when load-file-name
