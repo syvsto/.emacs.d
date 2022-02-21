@@ -134,10 +134,10 @@
    `(git-gutter+-modified ((,class :foreground ,fg2)))
         
    ;; avy
-   `(avy-lead-face ((,class :background ,warning2 :foreground ,fg :bold t)))
-   `(avy-lead-face-0 ((,class :background ,blue-light :foreground ,fg :bold t)))
-   `(avy-lead-face-1 ((,class :background ,bg-light :foreground ,fg :bold t)))
-   `(avy-lead-face-2 ((,class :background ,warning :foreground ,bg :bold t)))
+   `(avy-lead-face ((,class :background ,blue :foreground ,bg-lighter :bold t)))
+   `(avy-lead-face-0 ((,class :background ,warning :foreground ,bg-lighter :bold t)))
+   `(avy-lead-face-1 ((,class :background ,warning2 :foreground ,bg-lighter :bold t)))
+   `(avy-lead-face-2 ((,class :background ,blue-light :foreground ,bg-lighter :bold t)))
 
    ;; ace-window
    `(aw-leading-char-face ((,class :inherit bold :height 3.0 :background ,bg :foreground ,warning)))

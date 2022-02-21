@@ -525,6 +525,8 @@ if one already exists."
   (global-undo-tree-mode +1))
 
 (use-package avy
+  :custom
+  (avy-background t)
   :bind (("M-g M-g" . avy-goto-line)
          ("M-g g" . avy-goto-line)
          (:map isearch-mode-map
@@ -591,6 +593,7 @@ if one already exists."
 
 ;; Org mode
 (straight-use-package '(org-contrib :includes org))
+(setq org-use-speed-commands t)
 (setq org-babel-python-command "/usr/local/bin/python3")
 (org-babel-do-load-languages
    'org-babel-load-languages
