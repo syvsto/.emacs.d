@@ -126,12 +126,12 @@
    `(transient-value ((,class :inherit bold :foreground ,fg)))
 
    ;; git gutter
-   `(git-gutter-fr+-added ((,class :foreground ,fg)))
-   `(git-gutter-fr+-deleted ((,class :foreground ,fg)))
-   `(git-gutter-fr+-modified ((,class :foregroun ,fg)))
-   `(git-gutter+-added ((,class :foreground ,fg)))
-   `(git-gutter+-deleted ((,class :foreground ,fg)))
-   `(git-gutter+-modified ((,class :foreground ,fg)))
+   `(git-gutter-fr+-added ((,class :foreground ,fg2)))
+   `(git-gutter-fr+-deleted ((,class :foreground ,fg2)))
+   `(git-gutter-fr+-modified ((,class :foreground ,fg2)))
+   `(git-gutter+-added ((,class :foreground ,fg2)))
+   `(git-gutter+-deleted ((,class :foreground ,fg2)))
+   `(git-gutter+-modified ((,class :foreground ,fg2)))
         
    ;; avy
    `(avy-lead-face ((,class :background ,warning2 :foreground ,fg :bold t)))
@@ -213,8 +213,8 @@
    `(nano-modeline-active-name ((,class (:bold t :foreground ,bg :background ,fg))))
    `(nano-modeline-active-primary ((,class (:bold t :foreground ,bg :background ,fg))))
    `(nano-modeline-active-secondary ((,class (:bold t :foreground ,bg :background ,fg))))
-   `(nano-modeline-active-status-RO ((,class (:bold t :foreground ,bg :background ,blue))))
-   `(nano-modeline-active-status-RW ((,class (:bold t :foreground ,bg :background ,blue-light))))
+   `(nano-modeline-active-status-RO ((,class (:bold t :foreground ,bg :background ,warning))))
+   `(nano-modeline-active-status-RW ((,class (:bold t :foreground ,bg :background ,blue))))
    `(nano-modeline-active-status-** ((,class (:bold t :foreground ,bg :background ,warning2))))
    `(nano-modeline-inactive ((,class (:bold nil :foreground ,bg-light :background ,fg))))
    `(nano-modeline-inactive-name ((,class (:bold nil :foreground ,bg-light :background ,fg))))

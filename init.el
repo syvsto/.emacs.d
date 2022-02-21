@@ -359,7 +359,7 @@
 
 ;; Delimiter editing/structured editing
 
-&(use-package electric-pair
+(use-package electric-pair
   :hook ((js-mode python-mode text-mode typescript-mode typescript-tsx-mode) . electric-pair-local-mode))
 (show-paren-mode 1)
 (use-package rainbow-delimiters :straight t
@@ -504,12 +504,16 @@ if one already exists."
 
 (use-package git-timemachine :straight t)
 
+(use-package git-gutter-fringe+ :straight t
+  :config
+  (global-git-gutter+-mode))
+
 (use-package ibuffer-vc :straight t
-  :bind ("C-x C-b" . ibuffer)
-  :hook (ibuffer-mode . (lambda ()
-                          (ibuffer-vc-set-filter-groups-by-vc-root)
-                          (unless (eq ibuffer-sorting-mode 'alphabetic)
-                            (ibuffer-do-sort-by-alphabetic)))))
+	     :bind ("C-x C-b" . ibuffer)
+	     :hook (ibuffer-mode . (lambda ()
+				     (ibuffer-vc-set-filter-groups-by-vc-root)
+				     (unless (eq ibuffer-sorting-mode 'alphabetic)
+				       (ibuffer-do-sort-by-alphabetic)))))
 
 ;; Searching
 (use-package anzu :straight t
