@@ -39,7 +39,9 @@
  :bind (("M-\\" . cycle-spacing)
         ("M-u" . upcase-dwim)
         ("M-l" . downcase-dwim)
-        ("M-c" . capitalize-dwim)))
+        ("M-c" . capitalize-dwim))
+ :config
+ (repeat-mode 1))
  
 ;; Platform specifics
 (when (memq window-system '(mac ns x))
@@ -89,23 +91,22 @@
    ("C-h v" . helpful-variable)
    ("C-h k" . helpful-key))
 
+(setq sentence-end-double-space nil)
+
 
 ;; Navigation
 (use-package rotate :straight t
- :bind ("C-x 4 r" . rotate-layout))
+  :bind ("C-x 4 r" . rotate-layout)
+  :config
+  (defvar rotate-repeat-map (make-sparse-keymap) "A map for repeating `rotate-layout' keys.")
+  (define-key rotate-repeat-map "r" #'rotate-layout)
+  (put 'rotate-layout 'repeat-map 'rotate-repeat-map))
 
 (use-package ace-window :straight t
   :custom
   (aw-scope 'frame)
   :bind (("M-o" . ace-window)
-         ("C-x o" . ace-window)
-         ("C-x 5 o" . my/ace-window-global))
-  :config
-  (defun my/ace-window-global (arg)
-    (interactive "P")
-    (setf aw-scope 'global)
-    (ace-window arg)
-    (setf aw-scope 'frame)))
+         ("C-x o" . ace-window)))
 
 (winner-mode +1)
 
@@ -115,7 +116,7 @@
  "Pulse the current line"
  (pulse-momentary-highlight-one-line (point)))
 
-(dolist (command '(recenter-top-bottom other-window ace-window xref-pop-marker-stack))
+(dolist (command '(recenter-top-bottom other-window ace-window other-frame xref-pop-marker-stack))
  (advice-add command :after #'my/pulse-line))
 
 ;; File management
@@ -188,7 +189,6 @@
          ("M-g m" . consult-mark)
          ("M-g k" . consult-global-mark)
          ("M-g i" . consult-imenu)
-	 ("M-g s" . flymake-goto-next-error)
 	 ("M-g e" . consult-flymake)
          ([remap imenu] . consult-imenu)
          ("M-g I" . consult-project-imenu)
@@ -279,7 +279,7 @@
   :straight nil
   :ensure nil
   :bind (:map vertico-map
-	      ("C-'" . vertico-quick-exit)))
+	      ("M-j" . vertico-quick-exit)))
 
 (use-package orderless :straight t
  :init
@@ -338,25 +338,6 @@
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-keyword))
 
-;; Jump to links/clickable items on screen
-(use-package link-hint
-  :straight t
-  :init
-  (cl-loop
-   for (mode map) in '((minibuffer minibuffer-local-completion-map)
-                       (embark embark-collect-mode-map)
-                       (help help-mode-map)
-                       (info Info-mode-map)
-                       (apropos apropos-mode-map)
-                       (vertico vertico-map)
-                       (man Man-mode-map)
-                       (woman woman-mode-map)
-                       (package package-menu-mode-map)
-                       (eww eww-mode-map)
-                       (dired dired-mode-map))
-   do (eval-after-load mode `(define-key ,map "'" #'link-hint-open-link))))
-
-
 ;; Delimiter editing/structured editing
 
 (use-package electric-pair
@@ -377,6 +358,18 @@
   (let ((servers '((typescript-tsx-mode . ("typescript-language-server" "--stdio")))))
     (dolist (server servers)
       (add-to-list 'eglot-server-programs server))))
+
+(use-package flymake
+  :ensure nil
+  :bind  ((:map flymake-mode-map
+		("M-g s" . flymake-goto-next-error)
+		("M-g r" . flymake-goto-prev-error)))
+  :config
+  (defvar flymake-repeat-map (make-sparse-keymap) "A map for repeating `flymake' keys.")
+  (define-key flymake-repeat-map "s" #'flymake-goto-next-error)
+  (define-key flymake-repeat-map "r" #'flymake-goto-prev-error)
+  (put 'flymake-goto-next-error 'repeat-map 'flymake-repeat-map)
+  (put 'flymake-goto-prev-error 'repeat-map 'flymake-repeat-map))
 
 ;; Other programming niceties
 (use-package devdocs :straight t
@@ -535,7 +528,7 @@ if one already exists."
   :bind (("M-g M-g" . avy-goto-line)
          ("M-g g" . avy-goto-line)
          (:map isearch-mode-map
-               ("C-'" . avy-isearch)))
+               ("M-j" . avy-isearch)))
   :config
   (defun my/avy-action-embark (pt)
    (unwind-protect
@@ -572,7 +565,7 @@ if one already exists."
  (solaire-global-mode +1))
 
 (set-face-attribute 'default nil :font "Fira Code" :height 120)
-(set-face-attribute 'variable-pitch nil :font "Baskerville" :height 150)
+(set-face-attribute 'variable-pitch nil :font "Baskerville" :height 160)
 (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 120)
 (global-hl-line-mode +1)
 
