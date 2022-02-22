@@ -105,8 +105,7 @@
 (use-package ace-window :straight t
   :custom
   (aw-scope 'frame)
-  :bind (("M-o" . ace-window)
-         ("C-x o" . ace-window)))
+  :bind (("C-x o" . ace-window)))
 
 (winner-mode +1)
 
@@ -293,7 +292,7 @@
    '(read-only t cursor-intangible t face minibuffer-prompt))
  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
 
-  ;; Enable recursive minibuffers
+ ;; Enable recursive minibuffers
  (setq enable-recursive-minibuffers t)
  (setq tab-always-indent 'complete))
 
@@ -525,8 +524,6 @@ if one already exists."
   (global-undo-tree-mode +1))
 
 (use-package avy
-  :custom
-  (avy-background t)
   :bind (("M-g M-g" . avy-goto-line)
          ("M-g g" . avy-goto-line)
          (:map isearch-mode-map
@@ -558,6 +555,12 @@ if one already exists."
 (use-package nano-modeline :straight t
   :config
   (nano-modeline-mode))
+
+(use-package tab-bar-echo-area :straight t
+  :custom
+  (tab-bar-show nil)
+  :config
+  (tab-bar-echo-area-mode 1))
 
 (load "~/.emacs.d/themes/ceres-theme.el")
 (load-theme 'ceres t)
