@@ -73,8 +73,7 @@
 (setq ring-bell-function 'ignore)
 (defalias 'yes-or-no-p 'y-or-n-p)
 (recentf-mode +1)
-(delete-selection-mode +1)
-
+(setq view-read-only t)
 
 ;; Documentation enhancements
 (use-package which-key :straight t
@@ -105,7 +104,8 @@
 (use-package ace-window :straight t
   :custom
   (aw-scope 'frame)
-  :bind (("C-x o" . ace-window)))
+  :bind (("C-x o" . ace-window)
+	 ("M-o" . ace-window)))
 
 (winner-mode +1)
 
