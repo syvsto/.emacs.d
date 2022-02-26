@@ -496,9 +496,9 @@ if one already exists."
 
 (use-package git-timemachine :straight t)
 
-(use-package git-gutter-fringe+ :straight t
+(use-package diff-hl :straight t
   :config
-  (global-git-gutter+-mode))
+  (global-diff-hl-mode))
 
 (use-package ibuffer-vc :straight t
 	     :bind ("C-x C-b" . ibuffer)

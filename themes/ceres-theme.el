@@ -132,7 +132,12 @@
    `(git-gutter+-added ((,class :foreground ,fg2)))
    `(git-gutter+-deleted ((,class :foreground ,fg2)))
    `(git-gutter+-modified ((,class :foreground ,fg2)))
-        
+
+   ;; diff-hl
+   `(diff-hl-change ((,class :foreground ,blue :background ,bg)))
+   `(diff-hl-insert ((,class :foreground "PaleGreen" :background ,bg)))
+   `(diff-hl-delete ((,class :foreground ,warning :background ,bg)))
+
    ;; avy
    `(avy-lead-face ((,class :background ,blue :foreground ,bg-lighter :bold t)))
    `(avy-lead-face-0 ((,class :background ,warning :foreground ,bg-lighter :bold t)))
@@ -243,3 +248,4 @@
 ;; End:
 
 ;;; ceres-theme.el ends here
+
