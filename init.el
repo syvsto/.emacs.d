@@ -21,18 +21,20 @@
 (setq read-process-output-max (* 1024 1024))
 (global-so-long-mode 1)
 
-(define-key global-map (kbd "C-z") nil)
-
-(use-package multiple-cursors :straight t
+(use-package objed :straight t
+  :custom
+  (objed-modeline-hint nil)
   :config
-  (bind-keys :prefix "C-z"
-             :prefix-map my/mc-map
-             ("n" . mc/mark-next-lines)
-             ("i n" . mc/insert-numbers)
-             ("i l" . mc/insert-letters)
-             ("a" . mc/vertical-align)
-             ("N" . mc/mark-previous-lines)
-             ("m" . mc/mark-all-dwim)))
+  (objed-mode 1)
+  (defun my/objed-mini-buffer-hint (&rest _)
+    (minibuffer-message 
+     (format "Current Objed object: %s (%s) "
+	     (symbol-name objed--object)
+	     (char-to-string
+	      (aref
+	       (symbol-name objed--obj-state)
+	       0)))))
+  )
 
 ;; Swap to a bunch of more useful keybindings than the defaults
 (use-package emacs
@@ -232,7 +234,7 @@
     (interactive "DevDocs: ")
     (devdocs-lookup nil ident))
   (setq prefix-help-command #'embark-prefix-help-command)
-  :bind (("C-." . embark-act)
+  :bind (("M-i" . embark-act)
          (:map embark-identifier-map
                ("D" . embark-devdocs-lookup))
          (:map embark-variable-map
@@ -373,7 +375,6 @@
   (put 'flymake-goto-next-error 'repeat-map 'flymake-repeat-map)
   (put 'flymake-goto-prev-error 'repeat-map 'flymake-repeat-map))
 
-;; Other programming niceties
 (use-package devdocs :straight t
   :hook (typescript-mode . (lambda ()
                              (setq-local devdocs-current-docs '("typescript"))))
@@ -603,6 +604,9 @@ if one already exists."
   :hook (markdown-mode . variable-pitch-mode))
 
 ;; Org mode
+
+(define-key global-map (kbd "C-z") nil)
+
 (straight-use-package '(org-contrib :includes org))
 (setq org-use-speed-commands t)
 (setq org-babel-python-command "/usr/local/bin/python3")
@@ -627,6 +631,19 @@ if one already exists."
  (org-hide-leading-stars t)
  (org-bullets-bullet-list '("◉" "○"))
  :hook (org-mode . org-bullets-mode))
+
+(use-package org-roam :straight t
+  ;; FIXME: Bind all org map bindings here, so I don't override previous binding. This can probably be split up, just need to read bind-keys docs.
+  :bind ((:prefix "C-z" :prefix-map my/org-map
+		  ("a c" . org-capture)
+		  ("a a" . org-agenda)
+		  ("r i" . org-roam-node-insert)
+		  ("r f" . org-roam-node-find)
+		  ("r c" . org-roam-capture)))
+  :custom
+  (org-roam-directory "~/org-roam")
+  :config
+  (org-roam-db-autosync-mode))
 
 ;; Custom packages
 (use-package tracer

@@ -99,6 +99,9 @@
    `(anzu-mode-line-no-match ((,class :inherit bold :background ,warning)))
    `(anzu-replace-highlight ((,class :inherit isearch :underline t)))
    `(anzu-replace-to ((,class :background ,warning2 :foreground ,fg :underline t)))
+
+   ;; Objed
+   `(objed-hl ((,class :background ,bg-lighter)))
    `(objed-mode-line ((,class :background ,blue-light)))
 
    ;; rainbow delimiters
