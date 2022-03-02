@@ -41,7 +41,8 @@
         ("M-l" . downcase-dwim)
         ("M-c" . capitalize-dwim))
  :config
- (repeat-mode 1))
+ (unless (version<= emacs-version "28.0")
+   (repeat-mode 1)))
  
 ;; Platform specifics
 (when (memq window-system '(mac ns x))
@@ -309,11 +310,11 @@
     :init
     (corfu-global-mode))
 
-(use-package kind-icon :straight t
-  :custom
-  (kind-icon-default-face 'corfu-default)
-  :config
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+;; (use-package kind-icon :straight t
+;;   :custom
+;;   (kind-icon-default-face 'corfu-default)
+;;   :config
+;;   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (use-package cape :straight t
   :bind (("C-c p p" . completion-at-point)
@@ -340,7 +341,7 @@
 ;; Delimiter editing/structured editing
 
 (use-package electric-pair
-  :hook ((js-mode python-mode text-mode typescript-mode typescript-tsx-mode) . electric-pair-local-mode))
+  :hook (prog-mode . electric-pair-local-mode))
 (show-paren-mode 1)
 (use-package rainbow-delimiters :straight t
   :hook (prog-mode . rainbow-delimiters-mode))
@@ -352,9 +353,11 @@
                ("C-c f" . eglot-format)
                ("C-c a" . eglot-code-actions)
                ("C-c h" . eldoc)))
-  :hook ((js-mode javascript-jsx-mode typescript-mode python-mode typescript-tsx-mode c-mode zig-mode) . eglot-ensure)
+  :hook ((js-mode javascript-jsx-mode typescript-mode python-mode typescript-tsx-mode c-mode zig-mode csharp-mode) . eglot-ensure)
   :config
-  (let ((servers '((typescript-tsx-mode . ("typescript-language-server" "--stdio")))))
+  (let ((servers '((typescript-tsx-mode . ("typescript-language-server" "--stdio"))
+		   (csharp-mode . ("OmniSharp" "--lsp"))
+		   (csharp-tree-sitter-mode . ("~/.local/bin/OmniSharp/OmniSharp" "-lsp")))))
     (dolist (server servers)
       (add-to-list 'eglot-server-programs server))))
 
@@ -425,9 +428,14 @@ if one already exists."
  :custom
  (typescript-indent-level 4)
  :init (define-derived-mode typescript-tsx-mode typescript-mode "typescript-tsx")
-       (add-to-list 'auto-mode-alist (cons (rx ".tsx" string-end) #'typescript-tsx-mode)))
+ (add-to-list 'auto-mode-alist (cons (rx ".tsx" string-end) #'typescript-tsx-mode)))
+
+(use-package csharp-mode :straight t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-tree-sitter-mode)))
 
 (use-package tree-sitter-langs :straight t)
+(use-package tree-sitter-indent :straight t)
 (use-package tree-sitter :straight t
  :hook (typescript-mode . tree-sitter-hl-mode)
  :config
