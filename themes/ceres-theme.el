@@ -76,7 +76,10 @@
    `(minibuffer-prompt ((,class (:bold t :foreground ,fg))))
    `(default-italic ((,class (:italic t))))
    `(link ((,class (:foreground ,fg :underline t))))
+
+   ;; Org-mode
    `(org-code ((,class (:inherit fixed-pitch))))
+   `(org-block ((,class (:inherit fixed-pitch))))
    `(org-hide ((,class (:foreground ,fg2))))
    `(org-document-title ((,class (:inherit fixed-pitch :bold t :height 1.6))))
    `(org-level-1 ((,class (:inherit fixed-pitch :bold t :height 1.2))))
@@ -89,6 +92,8 @@
    `(org-footnote  ((,class (:underline t))))
    `(org-link ((,class (:underline t))))
    `(org-special-keyword ((,class (:foreground ,fg))))
+
+   `(org-agenda-structure ((,class (:foreground ,fg2))))
 
    `(markdown-header-face-1 ((,class (:bold t :height 1.6))))
    `(markdown-header-face-2 ((,class (:bold t :height 1.2))))

@@ -33,8 +33,9 @@
 	     (char-to-string
 	      (aref
 	       (symbol-name objed--obj-state)
-	       0)))))
-  )
+	       0))))))
+
+(use-package multiple-cursors :straight t)
 
 ;; Swap to a bunch of more useful keybindings than the defaults
 (use-package emacs
@@ -610,6 +611,10 @@ if one already exists."
 (straight-use-package '(org-contrib :includes org))
 (setq org-use-speed-commands t)
 (setq org-babel-python-command "/usr/local/bin/python3")
+(setq org-load-done t)
+(setq org-hide-emphasis-markers t)
+(setq org-agenda-files (list "~/notes.org"))
+(setq org-default-notes-file "~/notes.org")
 (org-babel-do-load-languages
    'org-babel-load-languages
    '((sqlite . t)
