@@ -350,19 +350,18 @@
   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; LSP support
-(use-package eglot :straight t
-  :bind ((:map eglot-mode-map
-	       ("C-c r" . eglot-rename)
-               ("C-c f" . eglot-format)
-               ("C-c a" . eglot-code-actions)
-               ("C-c h" . eldoc)))
-  :hook ((js-mode javascript-jsx-mode typescript-mode python-mode typescript-tsx-mode c-mode zig-mode csharp-mode) . eglot-ensure)
-  :config
-  (let ((servers '((typescript-tsx-mode . ("typescript-language-server" "--stdio"))
-		   (csharp-mode . ("OmniSharp" "--lsp"))
-		   (csharp-tree-sitter-mode . ("~/.local/bin/OmniSharp/OmniSharp" "-lsp")))))
-    (dolist (server servers)
-      (add-to-list 'eglot-server-programs server))))
+(use-package lsp-mode :straight t
+  :hook ((python-mode zig-mode typescript-mode typescript-tsx-mode javascript-mode csharp-mode c-mode) . lsp)
+  :custom
+  (lsp-keymap-prefix "C-c l")
+  (lsp-enable-symbol-highlighting nil)
+  (lsp-headerline-breadcrumb-enable nil))
+(use-package lsp-ui :straight t
+  :bind ((:map lsp-mode-map
+	       ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+	       ([remap xref-find-references] . lsp-ui-peek-find-references))))
+(use-package consult-lsp :straight t)
+  
 
 (use-package flymake
   :ensure nil
@@ -448,9 +447,7 @@ if one already exists."
 
 (use-package pyvenv :straight t)
 
-(use-package rustic :straight t
-  :init
-  (setq rustic-lsp-client 'eglot))
+(use-package rustic :straight t)
 
 (use-package haskell-mode :straight t
   :bind ((:map haskell-mode-map
@@ -579,9 +576,9 @@ if one already exists."
  :config
  (solaire-global-mode +1))
 
-(set-face-attribute 'default nil :font "Fira Code" :height 120)
-(set-face-attribute 'variable-pitch nil :font "Baskerville" :height 160)
-(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 120)
+(set-face-attribute 'default nil :font "Fira Code" :height 100)
+(set-face-attribute 'variable-pitch nil :font "Noto Sans" :height 120)
+(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 100)
 (global-hl-line-mode +1)
 
 (menu-bar-mode -1)
@@ -663,7 +660,7 @@ if one already exists."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("d2457dde677c0049fbacfc7deb56c7ff5fdb1405dec78b7f14b3fedf3f53a37b" "a25c368c59f1e6d66fdf061dcc8c557763913f6b4d49576cc72173ac67298bf8" "10a57e03b8203adb7f66392e5179a52977f22cf618bb9ec823f2d9268eaa417b" "12317f37c057efed7f222ec0dfa2dceaa862707ddde769d8130e50c36103d9b6" "6842b68bbeb33c1912ddcb5cd0734d441b56d7d0e9882c49adc44899a3fa9976" "fdbf380d3b067f33fc023df2cbc7e591d92f6b33eddc26aaa59235f0ad2f54e9" "2371ba6224eaba0a6828f31f95393155bb865f6afde5a34b0172ce6a4c2ad07c" "a2d68805b09fc9678fb7132927aff5742c7e1dc55291e87eef98471b587e7014" "b14adf7023a50b56de758d1577662f736df77611515b62cb7af7b70e6a7dac40" "b5d7d25c3b79b28dbcb2596b57a537def847cc18221ed90030aa96d3a0d205a9" "38a5bc13e376a0bd3758eee380d094ffe6ba567f17ff980c6a9835f05ab24a1b" default))
+   '("b45e8c816fec55f8aa03621b730a238e7610a7bf580ed9a6e4e120882e9bff2a" "72eefdab51d2b0c22327504a7c819aa19a6ed10b18889758249881b2954cdbe8" "d2457dde677c0049fbacfc7deb56c7ff5fdb1405dec78b7f14b3fedf3f53a37b" "a25c368c59f1e6d66fdf061dcc8c557763913f6b4d49576cc72173ac67298bf8" "10a57e03b8203adb7f66392e5179a52977f22cf618bb9ec823f2d9268eaa417b" "12317f37c057efed7f222ec0dfa2dceaa862707ddde769d8130e50c36103d9b6" "6842b68bbeb33c1912ddcb5cd0734d441b56d7d0e9882c49adc44899a3fa9976" "fdbf380d3b067f33fc023df2cbc7e591d92f6b33eddc26aaa59235f0ad2f54e9" "2371ba6224eaba0a6828f31f95393155bb865f6afde5a34b0172ce6a4c2ad07c" "a2d68805b09fc9678fb7132927aff5742c7e1dc55291e87eef98471b587e7014" "b14adf7023a50b56de758d1577662f736df77611515b62cb7af7b70e6a7dac40" "b5d7d25c3b79b28dbcb2596b57a537def847cc18221ed90030aa96d3a0d205a9" "38a5bc13e376a0bd3758eee380d094ffe6ba567f17ff980c6a9835f05ab24a1b" default))
  '(warning-suppress-log-types '((comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

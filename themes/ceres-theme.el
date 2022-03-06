@@ -241,7 +241,12 @@
    `(ibuffer-filter-group-name ((,class (:bold t :underline t : height 1.2))))
    
    ;; sh-mode
-   `(sh-quoted-exec ((,class (:italic t :foreground ,fg))))))
+   `(sh-quoted-exec ((,class (:italic t :foreground ,fg))))
+
+   ;; lsp mode
+   `(lsp-face-highlight-textual ((,class (:background ,blue-light))))))
+
+
 
 
 ;;;###autoload
