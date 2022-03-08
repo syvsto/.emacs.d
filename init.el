@@ -351,7 +351,8 @@
 
 ;; LSP support
 (use-package lsp-mode :straight t
-  :hook ((python-mode zig-mode typescript-mode typescript-tsx-mode javascript-mode csharp-mode c-mode) . lsp)
+  :hook (((python-mode zig-mode typescript-mode typescript-tsx-mode javascript-mode javascript-jsx-mode csharp-tree-sitter-mode c-mode) . lsp)
+	 (lsp-mode . lsp-enable-which-key-integration))
   :custom
   (lsp-keymap-prefix "C-c l")
   (lsp-enable-symbol-highlighting nil)
@@ -390,9 +391,9 @@
   (add-hook 'text-mode-hook 'tempel-setup-capf))
 
 (use-package project :demand nil
- :bind (:map project-prefix-map
+ :bind ((:map project-prefix-map
         ("t" . project-vterm)
-        ("m" . magit-status))
+        ("m" . magit-status)))
  :config
  (defun project-vterm ()
    "Start VTerm in the current project's root directory.
@@ -408,8 +409,9 @@ if one already exists."
      (if (and vterm-buffer (not current-prefix-arg))
          (pop-to-buffer-same-window vterm-buffer)
        (vterm t))))
- 
- (nconc project-switch-commands '((magit-status "Magit") (project-vterm "Vterm"))))
+
+ (unless (version<= emacs-version "28.0")
+   (nconc project-switch-commands '((magit-status "Magit") (project-vterm "Vterm")))))
 
 
 ;; Language specifics
@@ -501,6 +503,14 @@ if one already exists."
 (use-package forge :straight t
   :after magit)
 
+(use-package code-review :straight t
+  :after forge
+  :bind ((:map forge-topic-mode-map
+	       ("C-c r" . code-review-forge-pr-at-point))
+	 (:map code-review-mode-map
+	       ("C-c C-n" . code-review-comment-jump-next)
+	       ("C-c C-p" . code-review-comment-jump-previous))))
+
 (use-package git-timemachine :straight t)
 
 (use-package diff-hl :straight t
@@ -576,9 +586,9 @@ if one already exists."
  :config
  (solaire-global-mode +1))
 
-(set-face-attribute 'default nil :font "Fira Code" :height 100)
-(set-face-attribute 'variable-pitch nil :font "Noto Sans" :height 120)
-(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 100)
+(set-face-attribute 'default nil :font "Fira Code" :height 110)
+(set-face-attribute 'variable-pitch nil :font "Baskerville" :height 150)
+(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 110)
 (global-hl-line-mode +1)
 
 (menu-bar-mode -1)
@@ -591,7 +601,11 @@ if one already exists."
   :hook (dired-mode . all-the-icons-dired-mode))
 
 (use-package all-the-icons-ibuffer :straight t
- :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
+  :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
+
+(use-package olivetti :straight t
+  :custom
+  (olivetti-body-width 140))
 
 ;; Jupyter
 (use-package jupyter :straight t
@@ -636,9 +650,11 @@ if one already exists."
 
 (use-package org-roam :straight t
   ;; FIXME: Bind all org map bindings here, so I don't override previous binding. This can probably be split up, just need to read bind-keys docs.
-  :bind ((:prefix "C-z" :prefix-map my/org-map
+  :bind ((:prefix "C-z" :prefix-map my/writing-map
+		  ("o" . olivetti-mode)
 		  ("a c" . org-capture)
 		  ("a a" . org-agenda)
+		  ("a l" . org-store-link)
 		  ("r i" . org-roam-node-insert)
 		  ("r f" . org-roam-node-find)
 		  ("r c" . org-roam-capture)))
@@ -660,7 +676,7 @@ if one already exists."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("b45e8c816fec55f8aa03621b730a238e7610a7bf580ed9a6e4e120882e9bff2a" "72eefdab51d2b0c22327504a7c819aa19a6ed10b18889758249881b2954cdbe8" "d2457dde677c0049fbacfc7deb56c7ff5fdb1405dec78b7f14b3fedf3f53a37b" "a25c368c59f1e6d66fdf061dcc8c557763913f6b4d49576cc72173ac67298bf8" "10a57e03b8203adb7f66392e5179a52977f22cf618bb9ec823f2d9268eaa417b" "12317f37c057efed7f222ec0dfa2dceaa862707ddde769d8130e50c36103d9b6" "6842b68bbeb33c1912ddcb5cd0734d441b56d7d0e9882c49adc44899a3fa9976" "fdbf380d3b067f33fc023df2cbc7e591d92f6b33eddc26aaa59235f0ad2f54e9" "2371ba6224eaba0a6828f31f95393155bb865f6afde5a34b0172ce6a4c2ad07c" "a2d68805b09fc9678fb7132927aff5742c7e1dc55291e87eef98471b587e7014" "b14adf7023a50b56de758d1577662f736df77611515b62cb7af7b70e6a7dac40" "b5d7d25c3b79b28dbcb2596b57a537def847cc18221ed90030aa96d3a0d205a9" "38a5bc13e376a0bd3758eee380d094ffe6ba567f17ff980c6a9835f05ab24a1b" default))
+   '("118b4d40a523a61b4991c520fc078b9ca70eca6774fc1a8dc87e6a4fa778b637" "b45e8c816fec55f8aa03621b730a238e7610a7bf580ed9a6e4e120882e9bff2a" "72eefdab51d2b0c22327504a7c819aa19a6ed10b18889758249881b2954cdbe8" "d2457dde677c0049fbacfc7deb56c7ff5fdb1405dec78b7f14b3fedf3f53a37b" "a25c368c59f1e6d66fdf061dcc8c557763913f6b4d49576cc72173ac67298bf8" "10a57e03b8203adb7f66392e5179a52977f22cf618bb9ec823f2d9268eaa417b" "12317f37c057efed7f222ec0dfa2dceaa862707ddde769d8130e50c36103d9b6" "6842b68bbeb33c1912ddcb5cd0734d441b56d7d0e9882c49adc44899a3fa9976" "fdbf380d3b067f33fc023df2cbc7e591d92f6b33eddc26aaa59235f0ad2f54e9" "2371ba6224eaba0a6828f31f95393155bb865f6afde5a34b0172ce6a4c2ad07c" "a2d68805b09fc9678fb7132927aff5742c7e1dc55291e87eef98471b587e7014" "b14adf7023a50b56de758d1577662f736df77611515b62cb7af7b70e6a7dac40" "b5d7d25c3b79b28dbcb2596b57a537def847cc18221ed90030aa96d3a0d205a9" "38a5bc13e376a0bd3758eee380d094ffe6ba567f17ff980c6a9835f05ab24a1b" default))
  '(warning-suppress-log-types '((comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
