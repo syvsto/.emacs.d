@@ -392,12 +392,11 @@
                     (setq-local devdocs-current-docs '("javascript")))))
 
 
-(use-package tempel :straight t
-  :init
-  (defun tempel-setup-capf ()
-    (add-hook 'completion-at-point-functions #'tempel-expand -1 'local))
-  (add-hook 'prog-mode-hook 'tempel-setup-capf)
-  (add-hook 'text-mode-hook 'tempel-setup-capf))
+(use-package yasnippet :straight t
+  :config
+  (yas-global-mode 1))
+
+(use-package yasnippet-snippets :straight t)
 
 (use-package project :demand nil
  :bind ((:map project-prefix-map
@@ -459,6 +458,8 @@ if one already exists."
 (use-package pyvenv :straight t)
 
 (use-package rustic :straight t)
+
+(use-package wgrep :straight t)
 
 (use-package haskell-mode :straight t
   :bind ((:map haskell-mode-map
@@ -595,9 +596,9 @@ if one already exists."
  :config
  (solaire-global-mode +1))
 
-(set-face-attribute 'default nil :font "Fira Code" :height 100)
-(set-face-attribute 'variable-pitch nil :font "Noto Sans" :height 100)
-(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 100)
+(set-face-attribute 'default nil :font "Fira Code" :height 110)
+(set-face-attribute 'variable-pitch nil :font "Baskerville" :height 150)
+(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 110)
 (global-hl-line-mode +1)
 
 (menu-bar-mode -1)
