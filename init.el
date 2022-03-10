@@ -361,7 +361,11 @@
   :bind ((:map lsp-mode-map
 	       ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
 	       ([remap xref-find-references] . lsp-ui-peek-find-references))))
-(use-package consult-lsp :straight t)
+(use-package consult-lsp :straight t
+  :bind ((:map lsp-mode-map
+	       ([remap xref-find-apropos] . consult-lsp-symbols)))
+  :config
+  (consult-lsp-marginalia-mode 1))
   
 
 (use-package flymake
