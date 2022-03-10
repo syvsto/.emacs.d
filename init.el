@@ -218,7 +218,13 @@
   (setq consult-project-root-function
         (lambda ()
           (when-let (project (project-current))
-            (car (project-roots project))))))
+            (car (project-roots project)))))
+  (setq completion-in-region-function
+      (lambda (&rest args)
+        (apply (if vertico-mode
+                   #'consult-completion-in-region
+                 #'completion--in-region)
+               args))))
 
 (use-package marginalia :straight t
   :init (marginalia-mode))
@@ -297,31 +303,30 @@
  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
 
  ;; Enable recursive minibuffers
- (setq enable-recursive-minibuffers t)
- (setq tab-always-indent 'complete))
+ (setq enable-recursive-minibuffers t ))
 
-(use-package corfu :straight t
+(use-package company :straight t
   :custom
-  (corfu-cycle t)
-  (corfu-preselect-first nil)
-  :bind
-  (:map corfu-map
-  	("TAB" . corfu-next)
-        ("S-TAB" . corfu-previous)
-        ([tab] . corfu-next)
-        ([backtab] . corfu-previous))
-    :init
-    (corfu-global-mode))
+  (company-frontends '(company-preview-frontend))
+  (company-minimum-prefix-length 4)
+  :bind ((:map company-active-map
+	       ("M-n" . company-select-next)
+	       ("M-p" . company-select-previous)
+	       ("C-n" . nil)
+	       ("C-p" . nil)
+	       ("<return>" . my/company-abort-and-newline)
+	       ("<tab>" . company-complete-selection)))
+  :hook (prog-mode . company-mode)
+  :config
+  (defun my/company-abort-and-newline ()
+    (interactive)
+    (company-abort)
+    (newline)))
 
-;; (use-package kind-icon :straight t
-;;   :custom
-;;   (kind-icon-default-face 'corfu-default)
-;;   :config
-;;   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+(use-package consult-company :straight t)
 
 (use-package cape :straight t
-  :bind (("C-c p p" . completion-at-point)
-	 ("C-c p t" . complete-tag)
+  :bind (("C-c p t" . complete-tag)
 	 ("C-c p d" . cape-dabbrev)
          ("C-c p f" . cape-file)
          ("C-c p k" . cape-keyword)
@@ -590,9 +595,9 @@ if one already exists."
  :config
  (solaire-global-mode +1))
 
-(set-face-attribute 'default nil :font "Fira Code" :height 110)
-(set-face-attribute 'variable-pitch nil :font "Baskerville" :height 150)
-(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 110)
+(set-face-attribute 'default nil :font "Fira Code" :height 100)
+(set-face-attribute 'variable-pitch nil :font "Noto Sans" :height 100)
+(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 100)
 (global-hl-line-mode +1)
 
 (menu-bar-mode -1)
@@ -603,6 +608,18 @@ if one already exists."
 
 (use-package all-the-icons-dired :straight t
   :hook (dired-mode . all-the-icons-dired-mode))
+
+(use-package dirvish :straight t
+  :bind (("C-x C-d" . dirvish)
+	 (:map dired-mode-map
+	       ("M-s" . dirvish-setup-menu)
+	       ("SPC" . dirvish-show-history)
+	       ("r" . dirvish-roam)
+	       ("M-a" . dirvish-mark-actions-menu)
+	       ("M-s" . dirvish-setup-menu)
+	       ("M-f" . dirvish-toggle-fullscreen)))
+  :init
+  (dirvish-override-dired-mode))
 
 (use-package all-the-icons-ibuffer :straight t
   :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
