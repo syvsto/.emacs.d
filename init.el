@@ -123,17 +123,28 @@
  (advice-add command :after #'my/pulse-line))
 
 ;; File management
-(use-package dired
-  :hook (dired-mode . dired-hide-details-mode))
-
 (use-package diredfl
   :straight t
   :config
   (diredfl-global-mode 1))
 
-(use-package dired-git-info :straight t
- :bind (:map dired-mode-map
-             (")" . dired-git-info-mode)))
+(use-package all-the-icons-dired :straight t
+  :config
+  (all-the-icons-dired-mode 1))
+
+(use-package dirvish :straight t
+  :bind (("C-x C-d" . dirvish)
+	 (:map dired-mode-map
+	       ("M-s" . dirvish-setup-menu)
+	       ("SPC" . dirvish-show-history)
+	       ("r" . dirvish-roam)
+	       ("M-a" . dirvish-mark-actions-menu)
+	       ("M-s" . dirvish-setup-menu)
+	       ("M-f" . dirvish-toggle-fullscreen)))
+  :custom
+  (dirvish-attributes '(file-size all-the-icons))
+  :init
+  (dirvish-override-dired-mode))
 
 (use-package rgrep
   :bind ("M-s g" . rgrep))
@@ -608,21 +619,6 @@ if one already exists."
 (when (display-graphic-p)
   (scroll-bar-mode -1))
 (setq inhibit-startup-message t)
-
-(use-package all-the-icons-dired :straight t
-  :hook (dired-mode . all-the-icons-dired-mode))
-
-(use-package dirvish :straight t
-  :bind (("C-x C-d" . dirvish)
-	 (:map dired-mode-map
-	       ("M-s" . dirvish-setup-menu)
-	       ("SPC" . dirvish-show-history)
-	       ("r" . dirvish-roam)
-	       ("M-a" . dirvish-mark-actions-menu)
-	       ("M-s" . dirvish-setup-menu)
-	       ("M-f" . dirvish-toggle-fullscreen)))
-  :init
-  (dirvish-override-dired-mode))
 
 (use-package all-the-icons-ibuffer :straight t
   :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
