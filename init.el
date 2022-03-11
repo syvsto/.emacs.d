@@ -314,6 +314,7 @@
 	       ("M-p" . company-select-previous)
 	       ("C-n" . nil)
 	       ("C-p" . nil)
+	       (";" . consult-company)
 	       ("<return>" . my/company-abort-and-newline)
 	       ("<tab>" . company-complete-selection)))
   :hook (prog-mode . company-mode)
@@ -326,7 +327,8 @@
 (use-package consult-company :straight t)
 
 (use-package cape :straight t
-  :bind (("C-c p t" . complete-tag)
+  :bind (("C-c p p" . completion-at-point)
+	 ("C-c p t" . complete-tag)
 	 ("C-c p d" . cape-dabbrev)
          ("C-c p f" . cape-file)
          ("C-c p k" . cape-keyword)
@@ -646,7 +648,7 @@ if one already exists."
 (setq org-babel-python-command "/usr/local/bin/python3")
 (setq org-load-done t)
 (setq org-hide-emphasis-markers t)
-(setq org-agenda-files (list "~/notes.org"))
+(setq org-agenda-files (list "~/notes.org" "~/jobb/calendar.org" "~/jobb/time.org"))
 (setq org-default-notes-file "~/notes.org")
 (org-babel-do-load-languages
    'org-babel-load-languages
