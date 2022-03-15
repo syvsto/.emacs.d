@@ -321,19 +321,11 @@
   (company-frontends '(company-preview-frontend))
   (company-minimum-prefix-length 4)
   :bind ((:map company-active-map
-	       ("M-n" . company-select-next)
-	       ("M-p" . company-select-previous)
+	       ("M-n" . consult-company)
 	       ("C-n" . nil)
 	       ("C-p" . nil)
-	       (";" . consult-company)
-	       ("<return>" . my/company-abort-and-newline)
 	       ("<tab>" . company-complete-selection)))
-  :hook (prog-mode . company-mode)
-  :config
-  (defun my/company-abort-and-newline ()
-    (interactive)
-    (company-abort)
-    (newline)))
+  :hook (prog-mode . company-mode))
 
 (use-package consult-company :straight t)
 
@@ -372,7 +364,7 @@
   :hook (((python-mode zig-mode typescript-mode typescript-tsx-mode javascript-mode javascript-jsx-mode csharp-tree-sitter-mode c-mode) . lsp)
 	 (lsp-mode . lsp-enable-which-key-integration))
   :custom
-  (lsp-keymap-prefix "C-c l")
+  (lsp-keymap-prefix "M-p")
   (lsp-enable-symbol-highlighting nil)
   (lsp-headerline-breadcrumb-enable nil))
 (use-package lsp-ui :straight t
@@ -682,6 +674,15 @@ if one already exists."
   (org-roam-directory "~/org-roam")
   :config
   (org-roam-db-autosync-mode))
+
+(use-package org-notifications :straight t
+  :init
+  (setq org-notifications-non-agenda-file '("~/jobb/calendar.org"))
+  (setq org-notifications-which-agenda-files 'non-agenda-file)
+  (setq org-notifications-notify-before-time 300)
+  (org-notifications-start))
+
+(use-package osm :straight t)
 
 ;; Custom packages
 (use-package tracer
