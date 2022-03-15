@@ -21,6 +21,8 @@
 (setq read-process-output-max (* 1024 1024))
 (global-so-long-mode 1)
 
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
+
 (use-package objed :straight t
   :custom
   (objed-modeline-hint nil)
@@ -586,7 +588,8 @@ if one already exists."
 ;; Looks
 (use-package nano-modeline :straight t
   :config
-  (nano-modeline-mode))
+  (nano-modeline-mode)
+  )
 
 (use-package tab-bar-echo-area :straight t
   :custom
@@ -594,16 +597,20 @@ if one already exists."
   :config
   (tab-bar-echo-area-mode 1))
 
-(load "~/.emacs.d/themes/ceres-theme.el")
-(load-theme 'ceres t)
+;; (load "~/.emacs.d/themes/ceres-theme.el")
+;; (load-theme 'ceres t)
+
+(use-package modus-themes :straight t
+  :config
+  (modus-themes-load-operandi))
 
 (use-package solaire-mode :straight t
  :config
  (solaire-global-mode +1))
 
-(set-face-attribute 'default nil :font "Fira Code" :height 110)
-(set-face-attribute 'variable-pitch nil :font "Baskerville" :height 150)
-(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 110)
+(set-face-attribute 'default nil :font "Fira Code" :height 120)
+(set-face-attribute 'variable-pitch nil :font "Baskerville" :height 160)
+(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 120)
 (global-hl-line-mode +1)
 
 (menu-bar-mode -1)
@@ -704,4 +711,8 @@ if one already exists."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(nano-modeline-active ((t (:inherit mode-line :box nil))))
+ '(nano-modeline-active-name ((t (:inherit (mode-line bold) :box nil))))
+ '(nano-modeline-active-status-** ((t (:inherit mode-line :background "#e4c340" :box nil))))
+ '(nano-modeline-active-status-RO ((t (:inherit mode-line :background "#f2b0a2" :box nil))))
+ '(nano-modeline-active-status-RW ((t (:inherit mode-line :background "#c0efff" :box nil)))))
