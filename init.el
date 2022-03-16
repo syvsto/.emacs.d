@@ -24,19 +24,9 @@
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
 (use-package objed :straight t
-  :custom
-  (objed-modeline-hint nil)
   :config
-  (objed-mode 1)
-  (defun my/objed-mini-buffer-hint (&rest _)
-    (minibuffer-message 
-     (format "Current Objed object: %s (%s) "
-	     (symbol-name objed--object)
-	     (char-to-string
-	      (aref
-	       (symbol-name objed--obj-state)
-	       0))))))
-
+  (setq objed-modeline-hint nil)
+  (objed-mode 1))
 (use-package multiple-cursors :straight t)
 
 ;; Swap to a bunch of more useful keybindings than the defaults
@@ -47,7 +37,11 @@
         ("M-c" . capitalize-dwim))
  :config
  (unless (version<= emacs-version "28.0")
-   (repeat-mode 1)))
+   (repeat-mode 1)
+   (defvar winner-repeat-map (make-sparse-keymap) "A map for repeating `winner-mode' keys.")
+   (define-key winner-repeat-map (kbd "<left>") #'winner-undo)
+   (define-key winner-repeat-map (kbd "<right>") #'winner-redo)
+   (put 'winner-undo 'repeat-map 'winner-repeat-map)))
  
 ;; Platform specifics
 (when (memq window-system '(mac ns x))
@@ -661,11 +655,30 @@ if one already exists."
 
 (add-hook 'org-mode-hook 'variable-pitch-mode)
 
-(use-package org-bullets :straight t
- :custom
- (org-hide-leading-stars t)
- (org-bullets-bullet-list '("◉" "○"))
- :hook (org-mode . org-bullets-mode))
+(use-package org-modern :straight t
+  :hook ((org-mode . org-modern-mode)
+	 (org-agenda-finalize . org-modern-agenda))
+  :config
+  (setq
+ ;; Edit settings
+ org-auto-align-tags nil
+ org-tags-column 0
+ org-catch-invisible-edits 'show-and-error
+ org-special-ctrl-a/e t
+ org-insert-heading-respect-content t
+
+ ;; Org styling, hide markup etc.
+ org-hide-emphasis-markers t
+ org-pretty-entities t
+ org-ellipsis "…"
+
+ ;; Agenda styling
+ org-agenda-block-separator ?─
+ org-agenda-time-grid
+ '((daily today require-timed)
+   (800 1000 1200 1400 1600 1800 2000)
+   " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
+ org-agenda-current-time-string "⭠ now ─────────────────────────────────────────────────"))
 
 (use-package org-roam :straight t
   ;; FIXME: Bind all org map bindings here, so I don't override previous binding. This can probably be split up, just need to read bind-keys docs.
@@ -711,8 +724,16 @@ if one already exists."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(nano-modeline-active ((t (:inherit mode-line :box nil))))
  '(nano-modeline-active-name ((t (:inherit (mode-line bold) :box nil))))
+ '(nano-modeline-active-primary ((t (:inherit mode-line :foreground "#184034" :box nil))))
+ '(nano-modeline-active-secondary ((t (:inherit mode-line :foreground "#184034" :box nil))))
  '(nano-modeline-active-status-** ((t (:inherit mode-line :background "#e4c340" :box nil))))
  '(nano-modeline-active-status-RO ((t (:inherit mode-line :background "#f2b0a2" :box nil))))
- '(nano-modeline-active-status-RW ((t (:inherit mode-line :background "#c0efff" :box nil)))))
+ '(nano-modeline-active-status-RW ((t (:inherit mode-line :background "#c0efff" :box nil))))
+ '(nano-modeline-inactive ((t (:inherit mode-line-inactive :box nil))))
+ '(nano-modeline-inactive-name ((t (:inherit mode-line-inactive :box nil))))
+ '(nano-modeline-inactive-primary ((t (:inherit mode-line-inactive :foreground "#404148" :box nil))))
+ '(nano-modeline-inactive-secondary ((t (:inherit mode-line-inactive :foreground "#404148" :box nil))))
+ '(nano-modeline-inactive-status-** ((t (:inherit mode-line-inactive :foreground "#702f00" :box nil))))
+ '(nano-modeline-inactive-status-RO ((t (:inherit mode-line-inactive :foreground "#8a0000" :box nil))))
+ '(nano-modeline-inactive-status-RW ((t (:inherit mode-line-inactive :foreground "#003f8a" :box nil)))))
