@@ -318,10 +318,21 @@
   (company-minimum-prefix-length 4)
   :bind ((:map company-active-map
 	       ("M-n" . consult-company)
-	       ("C-n" . nil)
-	       ("C-p" . nil)
+	       ("C-n" . my/objed-next-line)
+	       ("C-p" . my/objed-previous-line)
 	       ("<tab>" . company-complete-selection)))
-  :hook (prog-mode . company-mode))
+  :hook (prog-mode . company-mode)
+  :config
+  (defun my/objed-previous-line ()
+    (interactive)
+    (company-abort)
+    (objed-activate)
+    (objed-previous-line))
+  (defun my/objed-next-line ()
+    (interactive)
+    (company-abort)
+    (objed-activate)
+    (objed-next-line)))
 
 (use-package consult-company :straight t)
 
@@ -522,8 +533,6 @@ if one already exists."
 	       ("C-c C-n" . code-review-comment-jump-next)
 	       ("C-c C-p" . code-review-comment-jump-previous))))
 
-(use-package git-timemachine :straight t)
-
 (use-package diff-hl :straight t
   :config
   (global-diff-hl-mode))
@@ -703,6 +712,14 @@ if one already exists."
   (org-notifications-start))
 
 (use-package osm :straight t)
+
+(defun my/ddg-search-webkit (keyword)
+  (interactive "sSearch for: ")
+  (let* ((keywords (s-split-words keyword))
+	 (search-string (s-join "+" keywords)))
+    (xwidget-webkit-browse-url (concat "https://duckduckgo.com/?q=" search-string))))
+
+(bind-key "C-z s" 'my/ddg-search-webkit)
 
 ;; Custom packages
 (use-package tracer
