@@ -612,8 +612,6 @@ if one already exists."
  (solaire-global-mode +1))
 
 (set-face-attribute 'default nil :font "Fira Code" :height 120)
-(set-face-attribute 'variable-pitch nil :font "Baskerville" :height 160)
-(set-face-attribute 'fixed-pitch nil :font "Fira Code" :height 120)
 (global-hl-line-mode +1)
 
 (menu-bar-mode -1)
@@ -635,7 +633,6 @@ if one already exists."
 
 ;; Markdown
 (use-package markdown-mode :straight t
-  :hook (markdown-mode . variable-pitch-mode)
   :mode ("\\.mdx" . markdown-mode))
 
 ;; Org mode
@@ -662,8 +659,6 @@ if one already exists."
 (setq org-src-fontify-natively t
       org-fontify-quote-and-verse-blocks t)
 (put 'narrow-to-region 'disabled nil)
-
-(add-hook 'org-mode-hook 'variable-pitch-mode)
 
 (use-package org-modern :straight t
   :hook ((org-mode . org-modern-mode)
