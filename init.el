@@ -635,7 +635,8 @@ if one already exists."
 
 ;; Markdown
 (use-package markdown-mode :straight t
-  :hook (markdown-mode . variable-pitch-mode))
+  :hook (markdown-mode . variable-pitch-mode)
+  :mode ("\\.mdx" . markdown-mode))
 
 ;; Org mode
 
