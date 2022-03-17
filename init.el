@@ -713,14 +713,6 @@ if one already exists."
 
 (use-package osm :straight t)
 
-(defun my/ddg-search-webkit (keyword)
-  (interactive "sSearch for: ")
-  (let* ((keywords (s-split-words keyword))
-	 (search-string (s-join "+" keywords)))
-    (xwidget-webkit-browse-url (concat "https://duckduckgo.com/?q=" search-string))))
-
-(bind-key "C-z s" 'my/ddg-search-webkit)
-
 ;; Custom packages
 (use-package tracer
   :load-path "site-lisp/"
@@ -728,6 +720,11 @@ if one already exists."
 
 (use-package observable-dataflow-mode
   :straight (:host github :repo "syvsto/observable-dataflow-mode"))
+
+(use-package web-search
+  :load-path "site-lisp/"
+  :bind ("M-s M-s" . my/search-webkit))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
