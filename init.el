@@ -640,7 +640,14 @@ if one already exists."
 (use-package markdown-mode :straight t
   :mode ("\\.mdx" . markdown-mdx-mode)
   :config
-  (define-derived-mode markdown-mdx-mode markdown-mode "markdown-mdx"))
+  (define-derived-mode markdown-mdx-mode markdown-mode "markdown-mdx")
+  (add-hook 'markdown-mdx-mode-hook #'(lambda () (prettier-mode 0)))
+  (defun my/format-mdx-on-save ()
+    (interactive)
+    (save-buffer)
+    (shell-command (concat "prettier --write --parser mdx " buffer-file-name)))
+  (bind-key "C-x C-s" #'my/format-mdx-on-save markdown-mdx-mode-map)
+  )
 
 ;; Org mode
 
