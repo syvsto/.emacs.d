@@ -717,6 +717,7 @@ if one already exists."
 (use-package org-alert :straight t
   :init
   (setq alert-default-style 'osx-notifier)
+  (setq alert-fade-time 30)
   :config
   (org-alert-enable))
 
