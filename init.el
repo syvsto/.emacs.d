@@ -320,6 +320,7 @@
 	       ("M-n" . consult-company)
 	       ("C-n" . my/objed-next-line)
 	       ("C-p" . my/objed-previous-line)
+	       ("<return>" . nil)
 	       ("<tab>" . company-complete-selection)))
   :hook (prog-mode . company-mode)
   :config
@@ -333,6 +334,11 @@
     (company-abort)
     (objed-activate)
     (objed-next-line)))
+
+(use-package company-tabnine :straight t
+  :config
+  (setq company-idle-delay 0)
+  (add-to-list 'company-backends #'company-tabnine))
 
 (use-package consult-company :straight t)
 
@@ -408,7 +414,9 @@
   :config
   (yas-global-mode 1))
 
-(use-package yasnippet-snippets :straight t)
+(use-package yasnippet-snippets :straight t
+  :init
+  (yasnippet-snippets-initialize))
 
 (use-package project :demand nil
  :bind ((:map project-prefix-map
@@ -527,6 +535,8 @@ if one already exists."
   :custom
   (forge-owned-accounts '(("syvsto"))))
 
+(use-package gh-notify :straight t)
+
 (use-package code-review :straight t
   :after forge
   :bind ((:map forge-topic-mode-map
@@ -616,7 +626,9 @@ if one already exists."
  :config
  (solaire-global-mode +1))
 
-(set-face-attribute 'default nil :font "Fira Code" :height 120)
+(set-face-attribute 'default nil :font "Berkeley Mono" :height 120)
+(set-face-attribute 'fixed-pitch nil :font "Berkeley Mono Mono" :height 120)
+
 (global-hl-line-mode +1)
 
 (menu-bar-mode -1)
@@ -646,10 +658,20 @@ if one already exists."
     (interactive)
     (save-buffer)
     (shell-command (concat "prettier --write --parser mdx " buffer-file-name)))
-  (bind-key "C-x C-s" #'my/format-mdx-on-save markdown-mdx-mode-map)
-  )
+  (bind-key "C-x C-s" #'my/format-mdx-on-save markdown-mdx-mode-map))
 
 ;; Org mode
+
+(use-package logos :straight t
+  :config
+  (setq-default logos-olivetti t
+		logos-hide-mode-line t
+		logos-variable-pitch nil
+		logos-indicate-buffer-boundaries t
+		logos-buffer-read-only t)
+  :bind (([remap narrow-to-region] . logos-narrow-dwim)
+	 ([remap forward-page] . logos-forward-page)
+	 ([remap backward-page] . logos-backward-page)))
 
 (define-key global-map (kbd "C-z") nil)
 
@@ -699,10 +721,20 @@ if one already exists."
    " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
  org-agenda-current-time-string "⭠ now ─────────────────────────────────────────────────"))
 
+(use-package epresent :straight t
+  :config
+  (defun my/epresent-run ()
+    (interactive)
+    (epresent-run)
+    (setq-local header-line-format nil)
+    (hl-line-mode 0)
+    (message nil)))
+
 (use-package org-roam :straight t
   ;; FIXME: Bind all org map bindings here, so I don't override previous binding. This can probably be split up, just need to read bind-keys docs.
   :bind ((:prefix "C-z" :prefix-map my/writing-map
-		  ("o" . olivetti-mode)
+		  ("o" . logos-focus-mode)
+		  ("e" . my/epresent-run)
 		  ("a c" . org-capture)
 		  ("a a" . org-agenda)
 		  ("a l" . org-store-link)
