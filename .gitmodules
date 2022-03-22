@@ -1,0 +1,3 @@
+[submodule "site-lisp/code-compass"]
+	path = site-lisp/code-compass
+	url = https://github.com/ag91/code-compass

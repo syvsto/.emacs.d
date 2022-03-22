@@ -321,6 +321,7 @@
 	       ("C-n" . my/objed-next-line)
 	       ("C-p" . my/objed-previous-line)
 	       ("<return>" . nil)
+	       ("RET" . nil)
 	       ("<tab>" . company-complete-selection)))
   :hook (prog-mode . company-mode)
   :config
@@ -386,6 +387,7 @@
 	       ([remap xref-find-references] . lsp-ui-peek-find-references))))
 
 (use-package consult-lsp :straight t
+  :after lsp
   :bind ((:map lsp-mode-map
 	       ("C-c e" . consult-lsp-diagnostics)
 	       ([remap xref-find-apropos] . consult-lsp-symbols)))
@@ -524,6 +526,24 @@ if one already exists."
 
 (use-package q-mode :straight t)
 
+(setq inferior-lisp-program "ros -Q run")
+(use-package sly :straight t
+ :commands (sly)
+ :hook ((sly-mrepl . (lambda () (sly-symbol-completion-mode -1))))
+ :bind ((:map lisp-mode-map
+           ([remap pp-eval-last-sexp] . sly-eval-last-expression))))
+ 
+(use-package sly-quicklisp :straight t)
+(use-package sly-asdf :straight t)
+
+(use-package cider :straight t)
+
+(use-package restclient :straight t)
+(use-package ob-restclient :straight t)
+(use-package company-restclient :straight t
+  :config
+  (add-to-list 'company-backends #'company-restclient))
+
 ;; Terminal
 (use-package vterm :straight t)
 
@@ -589,18 +609,6 @@ if one already exists."
    t)
   (setf (alist-get ?. avy-dispatch-alist) 'my/avy-action-embark))
 
-(setq inferior-lisp-program "ros -Q run")
-(use-package sly :straight t
- :commands (sly)
- :hook ((sly-mrepl . (lambda () (sly-symbol-completion-mode -1))))
- :bind ((:map lisp-mode-map
-           ([remap pp-eval-last-sexp] . sly-eval-last-expression))))
- 
-(use-package sly-quicklisp :straight t)
-(use-package sly-asdf :straight t)
-
-(use-package cider :straight t)
-
 ;; Looks
 (use-package nano-modeline :straight t
   :config
@@ -627,9 +635,6 @@ if one already exists."
  :config
  (solaire-global-mode +1))
 
-(set-face-attribute 'default nil :font "Berkeley Mono" :height 120)
-(set-face-attribute 'fixed-pitch nil :font "Berkeley Mono Mono" :height 120)
-
 (global-hl-line-mode +1)
 
 (menu-bar-mode -1)
@@ -644,6 +649,16 @@ if one already exists."
 (use-package olivetti :straight t
   :custom
   (olivetti-body-width 140))
+
+;; Font setup
+(defun my/set-font-size (val)
+  "Set font size to val."
+  (interactive)
+  (set-face-attribute 'default nil :font "Berkeley Mono" :height val)
+  (set-face-attribute 'fixed-pitch nil :font "Berkeley Mono" :height val)
+  (set-face-attribute 'variable-pitch nil :font "Berkeley Mono Variable" :height val))
+
+(my/set-font-size 130)
 
 ;; Jupyter
 (use-package jupyter :straight t
@@ -662,18 +677,6 @@ if one already exists."
   (bind-key "C-x C-s" #'my/format-mdx-on-save markdown-mdx-mode-map))
 
 ;; Org mode
-
-(use-package logos :straight t
-  :config
-  (setq-default logos-olivetti t
-		logos-hide-mode-line t
-		logos-variable-pitch nil
-		logos-indicate-buffer-boundaries t
-		logos-buffer-read-only t)
-  :bind (([remap narrow-to-region] . logos-narrow-dwim)
-	 ([remap forward-page] . logos-forward-page)
-	 ([remap backward-page] . logos-backward-page)))
-
 (define-key global-map (kbd "C-z") nil)
 
 (straight-use-package '(org-contrib :includes org))
@@ -688,6 +691,7 @@ if one already exists."
    '((sqlite . t)
      (python . t)
      (emacs-lisp . t)
+     (restclient . t)
      (jupyter . t)
      (shell . t)))
 (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
@@ -734,7 +738,7 @@ if one already exists."
 (use-package org-roam :straight t
   ;; FIXME: Bind all org map bindings here, so I don't override previous binding. This can probably be split up, just need to read bind-keys docs.
   :bind ((:prefix "C-z" :prefix-map my/writing-map
-		  ("o" . logos-focus-mode)
+		  ("o" . olivetti-mode)
 		  ("e" . my/epresent-run)
 		  ("a c" . org-capture)
 		  ("a a" . org-agenda)
@@ -754,7 +758,14 @@ if one already exists."
   :config
   (org-alert-enable))
 
+;;Fun stuff
 (use-package osm :straight t)
+
+(use-package async :straight t)
+(use-package code-compass
+  :load-path "site-lisp/code-compass"
+  :custom
+  (c/preferred-browser "/Applications/Firefox.app/Contents/MacOS/firefox"))
 
 ;; Custom packages
 (use-package tracer
