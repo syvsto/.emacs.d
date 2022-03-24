@@ -753,7 +753,7 @@ if one already exists."
 
 (use-package org-alert :straight t
   :init
-  (setq alert-default-style 'osx-notifier)
+  (setq alert-default-style 'fringe)
   (setq alert-fade-time 30)
   :config
   (org-alert-enable))
@@ -765,6 +765,7 @@ if one already exists."
 (use-package code-compass
   :load-path "site-lisp/code-compass"
   :custom
+  (c/display-icon nil)
   (c/preferred-browser "/Applications/Firefox.app/Contents/MacOS/firefox"))
 
 ;; Custom packages
