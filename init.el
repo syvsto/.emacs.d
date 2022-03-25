@@ -270,14 +270,14 @@
                                                    vertico-quick
                                                    vertico-unobtrusive))
   :init
+  (setq vertico-count-format nil)
   (vertico-mode)
   (vertico-mouse-mode)
   (vertico-multiform-mode)
   (setq vertico-multiform-commands
 	'((consult-flymake buffer)))
   (setq vertico-multiform-categories
-	'((file grid)
-          (consult-grep buffer)
+	'((consult-grep buffer)
           (imenu buffer))))
 
 (use-package vertico-directory
@@ -296,6 +296,18 @@
   :ensure nil
   :bind (:map vertico-map
 	      ("M-j" . vertico-quick-exit)))
+
+(use-package mini-frame :straight t
+  :config
+  (setq mini-frame-resize t)
+  (setq mini-frame-resize-min-height 3)
+  
+  
+  (setq mini-frame-show-parameters '((left . 0.5)
+				     (width . 0.8)
+				     (height . 1)
+				     (top . 0.1)))
+  (mini-frame-mode t))
 
 (use-package orderless :straight t
  :init
@@ -338,7 +350,7 @@
 
 (use-package company-tabnine :straight t
   :config
-  (setq company-idle-delay 0)
+  (setq company-idle-delay 0.5)
   (add-to-list 'company-backends #'company-tabnine))
 
 (use-package consult-company :straight t)
