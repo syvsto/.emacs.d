@@ -23,10 +23,32 @@
 
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
-(use-package objed :straight t
+(use-package boon :straight t
+  :bind (("C-x f" . find-file)
+         ("C-x s" . save-buffer)
+         ("C-x ;" . comment-line)
+         ("C-x C-s" . save-some-buffers)
+         ("C-x e" . pp-eval-last-sexp)
+         ("C-x C-e" . kmacro-end-and-call-macro)
+         ("M-g s h p" . highlight-phrase)
+         ("M-g s h r" . highlight-regexp)
+         ("M-g s h l" . highlight-lines-mathcing-regexp)
+         ("M-g s h u" . unhighlight-regexp)
+         ("M-g M-s" . speedbar)
+         ("M-g M-s" . speedbar)
+         (:map boon-command-map
+               ("^" . delete-indentation)
+               ("p" . consult-line)
+               ("=" . er/expand-region)
+               ("&" . async-shell-command)
+               ("%" . query-replace)))
+  :init
+  (require 'boon-colemak)
+  (boon-mode 1)
   :config
-  (setq objed-modeline-hint nil)
-  (objed-mode 1))
+  (let ((modes '(speedbar-mode sly-db-mode sly-inspector-mode)))
+    (mapc #'(lambda (mode) (add-to-list 'boon-special-mode-list mode)) modes)))
+
 (use-package multiple-cursors :straight t)
 
 ;; Swap to a bunch of more useful keybindings than the defaults
@@ -207,7 +229,6 @@
          ("M-s L" . consult-locate)
          ("M-s G" . consult-git-grep)
          ("M-s r" . consult-ripgrep)
-         ("M-s l" . consult-line)
          ("M-s m" . consult-multi-occur)
          ("M-s k" . consult-keep-lines)
          ("M-s U" . consult-focus-lines)
@@ -275,9 +296,11 @@
   (vertico-mouse-mode)
   (vertico-multiform-mode)
   (setq vertico-multiform-commands
-	'((consult-flymake buffer)))
+	'((consult-flymake buffer)
+          (consult-line unobtrusive)))
   (setq vertico-multiform-categories
-	'((consult-grep buffer)
+	'((find-file grid)
+          (consult-grep buffer)
           (imenu buffer))))
 
 (use-package vertico-directory
@@ -296,18 +319,6 @@
   :ensure nil
   :bind (:map vertico-map
 	      ("M-j" . vertico-quick-exit)))
-
-(use-package mini-frame :straight t
-  :config
-  (setq mini-frame-resize t)
-  (setq mini-frame-resize-min-height 3)
-  
-  
-  (setq mini-frame-show-parameters '((left . 0.5)
-				     (width . 0.8)
-				     (height . 1)
-				     (top . 0.1)))
-  (mini-frame-mode t))
 
 (use-package orderless :straight t
  :init
@@ -330,27 +341,14 @@
   (company-minimum-prefix-length 4)
   :bind ((:map company-active-map
 	       ("M-n" . consult-company)
-	       ("C-n" . my/objed-next-line)
-	       ("C-p" . my/objed-previous-line)
 	       ("<return>" . nil)
 	       ("RET" . nil)
 	       ("<tab>" . company-complete-selection)))
-  :hook (prog-mode . company-mode)
-  :config
-  (defun my/objed-previous-line ()
-    (interactive)
-    (company-abort)
-    (objed-activate)
-    (objed-previous-line))
-  (defun my/objed-next-line ()
-    (interactive)
-    (company-abort)
-    (objed-activate)
-    (objed-next-line)))
+  :hook (prog-mode . company-mode))
 
 (use-package company-tabnine :straight t
   :config
-  (setq company-idle-delay 0.5)
+  (setq company-idle-delay 0)
   (add-to-list 'company-backends #'company-tabnine))
 
 (use-package consult-company :straight t)
@@ -670,7 +668,7 @@ if one already exists."
   (set-face-attribute 'fixed-pitch nil :font "Berkeley Mono" :height val)
   (set-face-attribute 'variable-pitch nil :font "Berkeley Mono Variable" :height val))
 
-(my/set-font-size 130)
+(my/set-font-size 100)
 
 ;; Jupyter
 (use-package jupyter :straight t
@@ -774,11 +772,11 @@ if one already exists."
 (use-package osm :straight t)
 
 (use-package async :straight t)
-(use-package code-compass
-  :load-path "site-lisp/code-compass"
-  :custom
-  (c/display-icon nil)
-  (c/preferred-browser "/Applications/Firefox.app/Contents/MacOS/firefox"))
+;; (use-package code-compass
+;;   :load-path "site-lisp/code-compass"
+;;   :custom
+;;   (c/display-icon nil)
+;;   (c/preferred-browser "/Applications/Firefox.app/Contents/MacOS/firefox"))
 
 ;; Custom packages
 (use-package tracer
