@@ -70,7 +70,7 @@
    `(lazy-highlight ((,class :bold nil :background ,warning2 :foreground ,fg)))
    `(match ((,class :bold nil :background ,warning :foreground ,fg)))
    `(header-line ((,class :foreground ,bg :background ,fg)))
-   `(mode-line ((,class (:overline ,fg :underline ,fg :bold t :foreground ,bg :background ,fg))))
+   `(mode-line ((,class (:overline ,fg :foreground ,fg :background ,bg :weight normal))))
    `(mode-line-inactive ((,class (:overline ,fg :foreground ,fg :background ,bg :weight normal))))
    `(vertical-border ((,class (:foreground ,fg))))
    `(minibuffer-prompt ((,class (:bold t :foreground ,fg))))

@@ -13,7 +13,6 @@
   (load bootstrap-file nil 'nomessage))
 
 ;; Setup use-package
-
 (straight-use-package 'use-package)
 
 ;; Performance tweaks
@@ -22,6 +21,13 @@
 (global-so-long-mode 1)
 
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
+
+(defun my/backward-kill-word ()
+  "If region is active, kill region, else kill previous word"
+  (interactive)
+  (if (region-active-p)
+      (kill-region)
+    (backward-kill-word)))
 
 (use-package boon :straight t
   :bind (("C-x f" . find-file)
@@ -36,10 +42,10 @@
          ("M-g s h u" . unhighlight-regexp)
          ("M-g M-s" . speedbar)
          ("M-g M-s" . speedbar)
+         ("C-w" . my/backward-kill-word)
          (:map boon-command-map
                ("^" . delete-indentation)
                ("p" . consult-line)
-               ("=" . er/expand-region)
                ("&" . async-shell-command)
                ("%" . query-replace)))
   :init
@@ -131,6 +137,21 @@
 
 (winner-mode +1)
 
+(use-package avy
+  :bind (("M-g M-g" . avy-goto-line)
+         ("M-g g" . avy-goto-line)
+         (:map isearch-mode-map
+               ("M-j" . avy-isearch)))
+  :config
+  (defun my/avy-action-embark (pt)
+   (unwind-protect
+    (save-excursion
+     (goto-char pt)
+     (embark-act))
+    (select-window
+     (cdr (ring-ref avy-ring 0))))
+   t)
+  (setf (alist-get ?. avy-dispatch-alist) 'my/avy-action-embark))
 
 ;; Pulse current line when jumping somewhere
 (defun my/pulse-line (&rest _)
@@ -191,6 +212,13 @@
           compilation-mode))
   (popper-mode +1)
   (popper-echo-mode +1))
+
+;; Searching
+(use-package anzu :straight t
+  :diminish anzu-mode
+  :bind ([remap query-replace] . anzu-query-replace)
+  :config
+  (global-anzu-mode +1))
 
 ;; Completion/selection
 
@@ -269,7 +297,7 @@
     (interactive "DevDocs: ")
     (devdocs-lookup nil ident))
   (setq prefix-help-command #'embark-prefix-help-command)
-  :bind (("M-i" . embark-act)
+  :bind (("C-." . embark-act)
          (:map embark-identifier-map
                ("D" . embark-devdocs-lookup))
          (:map embark-variable-map
@@ -288,13 +316,12 @@
 (use-package vertico :straight (vertico :files (:defaults "extensions/*")
 					:includes (vertico-buffer
 						   vertico-directory
-                                                   vertico-quick
-                                                   vertico-unobtrusive))
+                                                   vertico-quick))
   :init
-  (setq vertico-count-format nil)
   (vertico-mode)
   (vertico-mouse-mode)
   (vertico-multiform-mode)
+  
   (setq vertico-multiform-commands
 	'((consult-flymake buffer)
           (consult-line unobtrusive)))
@@ -302,6 +329,33 @@
 	'((find-file grid)
           (consult-grep buffer)
           (imenu buffer))))
+
+;; We define our own minor mode for vertico-unobtrusive so we can control the settings better
+(define-minor-mode vertico-unobtrusive-mode
+  "Unobtrusive display for Vertico."
+  :global t :group 'vertico
+  (cond
+   (vertico-unobtrusive-mode
+    (unless vertico-unobtrusive--orig-count
+      (push '(vertico-current . default) (default-value 'face-remapping-alist))
+      (setq vertico-unobtrusive--orig-count vertico-count
+            vertico-unobtrusive--orig-count-format vertico-count-format
+            vertico-count 1
+            vertico-flat-format `(:separator nil :ellipsis nil ,@vertico-flat-format)))
+    (advice-add #'vertico--setup :before #'redisplay)
+    (vertico-flat-mode 1))
+   (t
+    (when vertico-unobtrusive--orig-count
+      (setq-default face-remapping-alist
+                    (remove '(vertico-current . default)
+                            (default-value 'face-remapping-alist)))
+      (setq vertico-count vertico-unobtrusive--orig-count
+            vertico-count-format vertico-unobtrusive--orig-count-format
+            vertico-flat-format (nthcdr 4 vertico-flat-format)
+            vertico-unobtrusive--orig-count nil))
+    (advice-remove #'vertico--setup #'redisplay)
+    (vertico-flat-mode -1)))
+  (setq vertico-flat-mode nil))
 
 (use-package vertico-directory
   :after vertico
@@ -566,16 +620,6 @@ if one already exists."
   :custom
   (forge-owned-accounts '(("syvsto"))))
 
-(use-package gh-notify :straight t)
-
-(use-package code-review :straight t
-  :after forge
-  :bind ((:map forge-topic-mode-map
-	       ("C-c r" . code-review-forge-pr-at-point))
-	 (:map code-review-mode-map
-	       ("C-c C-n" . code-review-comment-jump-next)
-	       ("C-c C-p" . code-review-comment-jump-previous))))
-
 (use-package diff-hl :straight t
   :config
   (global-diff-hl-mode))
@@ -587,37 +631,9 @@ if one already exists."
 				     (unless (eq ibuffer-sorting-mode 'alphabetic)
 				       (ibuffer-do-sort-by-alphabetic)))))
 
-;; Searching
-(use-package anzu :straight t
-  :diminish anzu-mode
-  :bind ([remap query-replace] . anzu-query-replace)
-  :config
-  (global-anzu-mode +1)
-  ;; Mood-line displays anzu output, so no need for anzu to display it as well
-  (setq anzu-cons-mode-line-p nil))
-
-(use-package expand-region :straight t
-  :bind ("C-=" . er/expand-region))
-
 (use-package undo-tree :straight t
   :config
   (global-undo-tree-mode +1))
-
-(use-package avy
-  :bind (("M-g M-g" . avy-goto-line)
-         ("M-g g" . avy-goto-line)
-         (:map isearch-mode-map
-               ("M-j" . avy-isearch)))
-  :config
-  (defun my/avy-action-embark (pt)
-   (unwind-protect
-    (save-excursion
-     (goto-char pt)
-     (embark-act))
-    (select-window
-     (cdr (ring-ref avy-ring 0))))
-   t)
-  (setf (alist-get ?. avy-dispatch-alist) 'my/avy-action-embark))
 
 ;; Looks
 (use-package nano-modeline :straight t
@@ -631,15 +647,8 @@ if one already exists."
   :config
   (tab-bar-echo-area-mode 1))
 
-;; (load "~/.emacs.d/themes/ceres-theme.el")
-;; (load-theme 'ceres t)
-
-(use-package modus-themes :straight t
-  :init
-  (setq modus-themes-mode-line '(borderless))
-  (setq modus-themes-mode-line '(borderless accented))
-  :config
-  (modus-themes-load-operandi))
+(load "~/.emacs.d/themes/ceres-theme.el")
+(load-theme 'ceres t)
 
 (use-package solaire-mode :straight t
  :config
