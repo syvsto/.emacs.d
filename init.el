@@ -316,8 +316,11 @@
 (use-package vertico :straight (vertico :files (:defaults "extensions/*")
 					:includes (vertico-buffer
 						   vertico-directory
-                                                   vertico-quick))
+                                                   vertico-quick
+                                                   vertico-flat))
+  :commands (vertico-mode vertico-mouse-mode vertico-multiform-mode)
   :init
+  (require 'vertico-flat)
   (vertico-mode)
   (vertico-mouse-mode)
   (vertico-multiform-mode)
@@ -331,6 +334,8 @@
           (imenu buffer))))
 
 ;; We define our own minor mode for vertico-unobtrusive so we can control the settings better
+(defvar vertico-unobtrusive--orig-count nil)
+
 (define-minor-mode vertico-unobtrusive-mode
   "Unobtrusive display for Vertico."
   :global t :group 'vertico
@@ -677,7 +682,7 @@ if one already exists."
   (set-face-attribute 'fixed-pitch nil :font "Berkeley Mono" :height val)
   (set-face-attribute 'variable-pitch nil :font "Berkeley Mono Variable" :height val))
 
-(my/set-font-size 100)
+(my/set-font-size 130)
 
 ;; Jupyter
 (use-package jupyter :straight t
