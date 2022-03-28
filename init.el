@@ -345,6 +345,7 @@
       (push '(vertico-current . default) (default-value 'face-remapping-alist))
       (setq vertico-unobtrusive--orig-count vertico-count
             vertico-unobtrusive--orig-count-format vertico-count-format
+            vertico-cycle t
             vertico-count 1
             vertico-flat-format `(:separator nil :ellipsis nil ,@vertico-flat-format)))
     (advice-add #'vertico--setup :before #'redisplay)
@@ -357,6 +358,7 @@
       (setq vertico-count vertico-unobtrusive--orig-count
             vertico-count-format vertico-unobtrusive--orig-count-format
             vertico-flat-format (nthcdr 4 vertico-flat-format)
+            vertico-cycle nil
             vertico-unobtrusive--orig-count nil))
     (advice-remove #'vertico--setup #'redisplay)
     (vertico-flat-mode -1)))
@@ -444,12 +446,34 @@
 
 ;; LSP support
 (use-package lsp-mode :straight t
-  :hook (((python-mode zig-mode typescript-mode typescript-tsx-mode javascript-mode javascript-jsx-mode csharp-tree-sitter-mode c-mode) . lsp)
-	 (lsp-mode . lsp-enable-which-key-integration))
+  :hook (((python-mode zig-mode typescript-mode typescript-tsx-mode javascript-mode javascript-jsx-mode csharp-tree-sitter-mode c-mode) . lsp))
   :custom
   (lsp-keymap-prefix "M-p")
   (lsp-enable-symbol-highlighting nil)
-  (lsp-headerline-breadcrumb-enable nil))
+  (lsp-headerline-breadcrumb-enable nil)
+  :config
+  (defun my/lsp-enable-which-key-integration (&optional all-modes)
+  "Adds descriptions for `lsp-mode-map' to `which-key-mode' for the current
+active `major-mode', or for all major modes when ALL-MODES is t."
+  (cl-flet ((which-key-fn 'which-key-add-keymap-based-replacements))
+    (apply
+     #'which-key-fn
+     `(,boon-command-map
+      ,@(cl-list*
+       "b"    "lsp"
+       "b w"   "workspaces"
+       "b F"   "folders"
+       "b ="   "formatting"
+       "b T"   "toggle"
+       "b g"   "goto"
+       "b h"   "help"
+       "b r"   "refactor"
+       "b a"   "code actions"
+       "b G"   "peek"
+       lsp--binding-descriptions)))))
+  (my/lsp-enable-which-key-integration)
+  (define-key boon-command-map (kbd "b") lsp-command-map))
+  
 (use-package lsp-ui :straight t
   :bind ((:map lsp-mode-map
 	       ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
