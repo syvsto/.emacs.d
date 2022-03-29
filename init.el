@@ -402,7 +402,6 @@
   :custom
   (company-minimum-prefix-length 4)
   :bind ((:map company-active-map
-	       ("M-n" . consult-company)
 	       ("<return>" . nil)
 	       ("RET" . nil)
 	       ("<tab>" . company-complete-selection)))
@@ -450,7 +449,6 @@
 (use-package lsp-mode :straight t
   :hook (((python-mode zig-mode typescript-mode typescript-tsx-mode javascript-mode javascript-jsx-mode csharp-tree-sitter-mode c-mode) . lsp))
   :custom
-  (lsp-keymap-prefix "M-p")
   (lsp-enable-symbol-highlighting nil)
   (lsp-headerline-breadcrumb-enable nil)
   :config
@@ -577,6 +575,8 @@ if one already exists."
 
 (use-package rustic :straight t)
 
+(use-package d-mode :straight t)
+
 (use-package wgrep :straight t)
 
 (use-package haskell-mode :straight t
@@ -654,6 +654,9 @@ if one already exists."
 (use-package diff-hl :straight t
   :config
   (global-diff-hl-mode))
+
+(use-package magit-delta :straight t
+  :hook (magit-mode . magit-delta-mode))
 
 (use-package ibuffer-vc :straight t
 	     :bind ("C-x C-b" . ibuffer)
@@ -780,10 +783,6 @@ if one already exists."
     (setq-local header-line-format nil)
     (hl-line-mode 0)
     (message nil)))
-
-(bind-keys :prefix "C-z" :prefix-map my/writing-map
-		  ("o" . olivetti-mode)
-		  ("e" . my/epresent-run))
 
 (setq org-directory "~/Documents/org")
 (setq org-timestamp-12-hours t)
