@@ -27,7 +27,7 @@
   (interactive)
   (if (region-active-p)
       (kill-region)
-    (backward-kill-word)))
+    (backward-kill-word 1)))
 
 (use-package boon :straight t
   :bind (("C-x f" . find-file)
@@ -43,6 +43,7 @@
          ("M-g M-s" . speedbar)
          ("M-g M-s" . speedbar)
          ("C-w" . my/backward-kill-word)
+         ("C-z" . zap-up-to-char)
          (:map boon-command-map
                ("^" . delete-indentation)
                ("p" . consult-line)
@@ -218,6 +219,7 @@
   :diminish anzu-mode
   :bind ([remap query-replace] . anzu-query-replace)
   :config
+  (setq anzu-cons-mode-line-p nil)
   (global-anzu-mode +1))
 
 ;; Completion/selection
@@ -398,7 +400,6 @@
 
 (use-package company :straight t
   :custom
-  (company-frontends '(company-preview-frontend))
   (company-minimum-prefix-length 4)
   :bind ((:map company-active-map
 	       ("M-n" . consult-company)
@@ -410,6 +411,7 @@
 (use-package company-tabnine :straight t
   :config
   (setq company-idle-delay 0)
+  (setq company-show-numbers t)
   (add-to-list 'company-backends #'company-tabnine))
 
 (use-package consult-company :straight t)
@@ -725,15 +727,11 @@ if one already exists."
   (bind-key "C-x C-s" #'my/format-mdx-on-save markdown-mdx-mode-map))
 
 ;; Org mode
-(define-key global-map (kbd "C-z") nil)
 
 (straight-use-package '(org-contrib :includes org))
 (setq org-use-speed-commands t)
 (setq org-babel-python-command "/usr/local/bin/python3")
-(setq org-load-done t)
 (setq org-hide-emphasis-markers t)
-(setq org-agenda-files (list "~/notes.org" "~/jobb/calendar.org" "~/jobb/time.org"))
-(setq org-default-notes-file "~/notes.org")
 (org-babel-do-load-languages
    'org-babel-load-languages
    '((sqlite . t)
@@ -783,28 +781,17 @@ if one already exists."
     (hl-line-mode 0)
     (message nil)))
 
-(use-package org-roam :straight t
-  ;; FIXME: Bind all org map bindings here, so I don't override previous binding. This can probably be split up, just need to read bind-keys docs.
-  :bind ((:prefix "C-z" :prefix-map my/writing-map
+(bind-keys :prefix "C-z" :prefix-map my/writing-map
 		  ("o" . olivetti-mode)
-		  ("e" . my/epresent-run)
-		  ("a c" . org-capture)
-		  ("a a" . org-agenda)
-		  ("a l" . org-store-link)
-		  ("r i" . org-roam-node-insert)
-		  ("r f" . org-roam-node-find)
-		  ("r c" . org-roam-capture)))
-  :custom
-  (org-roam-directory "~/org-roam")
-  :config
-  (org-roam-db-autosync-mode))
+		  ("e" . my/epresent-run))
 
-(use-package org-alert :straight t
-  :init
-  (setq alert-default-style 'fringe)
-  (setq alert-fade-time 30)
-  :config
-  (org-alert-enable))
+(setq org-directory "~/Documents/org")
+(setq org-timestamp-12-hours t)
+(setq org-hide-all-non-scheduled-items t)
+(setq org-disable-context-file t)
+(setq practical-org-el
+      (expand-file-name "~/.emacs.d/site-lisp/practical.org.el/practical.org.el"))
+(load-file practical-org-el)
 
 ;;Fun stuff
 (use-package osm :straight t)
@@ -827,10 +814,6 @@ if one already exists."
 (use-package web-search
   :load-path "site-lisp/"
   :bind ("M-s M-s" . my/search-webkit))
-
-;; Open time tracking sheet by default if it exists
-(when (file-exists-p "~/jobb/time.org")
-  (find-file "~/jobb/time.org"))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

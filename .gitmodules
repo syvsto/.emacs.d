@@ -1,3 +1,6 @@
 [submodule "site-lisp/code-compass"]
 	path = site-lisp/code-compass
 	url = https://github.com/ag91/code-compass
+[submodule "site-lisp/practical.org.el"]
+	path = site-lisp/practical.org.el
+	url = https://github.com/jjuliano/practical.org.el
