@@ -446,59 +446,28 @@
   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; LSP support
-(use-package lsp-mode :straight t
-  :hook (((python-mode zig-mode typescript-mode typescript-tsx-mode javascript-mode javascript-jsx-mode csharp-tree-sitter-mode c-mode) . lsp))
-  :custom
-  (lsp-enable-symbol-highlighting nil)
-  (lsp-headerline-breadcrumb-enable nil)
+(use-package eglot :straight t
+  :hook ((typescript-tsx-mode typescript-mode javascript-mode javascript-jsx-mode d-mode zig-mode python-mode) . eglot)
   :config
-  (defun my/lsp-enable-which-key-integration (&optional all-modes)
-  "Adds descriptions for `lsp-mode-map' to `which-key-mode' for the current
-active `major-mode', or for all major modes when ALL-MODES is t."
-  (cl-flet ((which-key-fn 'which-key-add-keymap-based-replacements))
-    (apply
-     #'which-key-fn
-     `(,boon-command-map
-      ,@(cl-list*
-       "b"    "lsp"
-       "b w"   "workspaces"
-       "b F"   "folders"
-       "b ="   "formatting"
-       "b T"   "toggle"
-       "b g"   "goto"
-       "b h"   "help"
-       "b r"   "refactor"
-       "b a"   "code actions"
-       "b G"   "peek"
-       lsp--binding-descriptions)))))
-  (my/lsp-enable-which-key-integration)
-  (define-key boon-command-map (kbd "b") lsp-command-map))
+  (bind-keys :map boon-command-map
+             :prefix "b"
+             :prefix-map my/other-map
+             ("r" . eglot-rename)
+             ("a" . eglot-code-actions)
+             ("o" . eglot-code-actions-organize-imports)
+             ("s r" . eglot-reconnect)
+             ("y" . mc/mark-next-lines)
+             ("i n" . mc/insert-numbers)
+             ("i l" . mc/insert-letters)
+             ("=" . mc/vertical-align)
+             ("u" . mc/mark-previous-lines)
+             ("b" . mc/mark-all-dwim)
+             ("j r" . xref-find-references)
+             ("j t" . eglot-find-typeDefinition)
+             ("j i" . elgot-find-implementation)))
   
-(use-package lsp-ui :straight t
-  :bind ((:map lsp-mode-map
-	       ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
-	       ([remap xref-find-references] . lsp-ui-peek-find-references))))
-
-(use-package consult-lsp :straight t
-  :after lsp
-  :bind ((:map lsp-mode-map
-	       ("C-c e" . consult-lsp-diagnostics)
-	       ([remap xref-find-apropos] . consult-lsp-symbols)))
-  :config
-  (consult-lsp-marginalia-mode 1))
-
-(use-package flymake
-  :ensure nil
-  :bind  ((:map flymake-mode-map
-		("M-g s" . flymake-goto-next-error)
-		("M-g r" . flymake-goto-prev-error)))
-  :config
-  (defvar flymake-repeat-map (make-sparse-keymap) "A map for repeating `flymake' keys.")
-  (define-key flymake-repeat-map "s" #'flymake-goto-next-error)
-  (define-key flymake-repeat-map "r" #'flymake-goto-prev-error)
-  (put 'flymake-goto-next-error 'repeat-map 'flymake-repeat-map)
-  (put 'flymake-goto-prev-error 'repeat-map 'flymake-repeat-map))
-
+(use-package multiple-cursors :straight t)
+  
 (use-package devdocs :straight t
   :hook (typescript-mode . (lambda ()
                              (setq-local devdocs-current-docs '("typescript"))))
@@ -711,7 +680,7 @@ if one already exists."
   (set-face-attribute 'fixed-pitch nil :font "Berkeley Mono" :height val)
   (set-face-attribute 'variable-pitch nil :font "Berkeley Mono Variable" :height val))
 
-(my/set-font-size 130)
+(my/set-font-size 100)
 
 ;; Jupyter
 (use-package jupyter :straight t
