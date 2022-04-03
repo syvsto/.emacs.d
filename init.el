@@ -54,7 +54,24 @@
   (boon-mode 1)
   :config
   (let ((modes '(speedbar-mode sly-db-mode sly-inspector-mode)))
-    (mapc #'(lambda (mode) (add-to-list 'boon-special-mode-list mode)) modes)))
+    (mapc #'(lambda (mode) (add-to-list 'boon-special-mode-list mode)) modes))
+  :config
+  (bind-keys :map boon-command-map
+             :prefix "b"
+             :prefix-map my/other-map
+             ("r" . eglot-rename)
+             ("a" . eglot-code-actions)
+             ("o" . eglot-code-actions-organize-imports)
+             ("s r" . eglot-reconnect)
+             ("y" . mc/mark-next-lines)
+             ("i n" . mc/insert-numbers)
+             ("i l" . mc/insert-letters)
+             ("=" . mc/vertical-align)
+             ("u" . mc/mark-previous-lines)
+             ("b" . mc/mark-all-dwim)
+             ("j r" . xref-find-references)""
+             ("j t" . eglot-find-typeDefinition)
+             ("j i" . elgot-find-implementation)))
 
 (use-package multiple-cursors :straight t)
 
@@ -447,24 +464,7 @@
 
 ;; LSP support
 (use-package eglot :straight t
-  :hook ((typescript-tsx-mode typescript-mode javascript-mode javascript-jsx-mode d-mode zig-mode python-mode) . eglot)
-  :config
-  (bind-keys :map boon-command-map
-             :prefix "b"
-             :prefix-map my/other-map
-             ("r" . eglot-rename)
-             ("a" . eglot-code-actions)
-             ("o" . eglot-code-actions-organize-imports)
-             ("s r" . eglot-reconnect)
-             ("y" . mc/mark-next-lines)
-             ("i n" . mc/insert-numbers)
-             ("i l" . mc/insert-letters)
-             ("=" . mc/vertical-align)
-             ("u" . mc/mark-previous-lines)
-             ("b" . mc/mark-all-dwim)
-             ("j r" . xref-find-references)
-             ("j t" . eglot-find-typeDefinition)
-             ("j i" . elgot-find-implementation)))
+  :hook ((typescript-tsx-mode typescript-mode javascript-mode javascript-jsx-mode d-mode zig-mode python-mode) . eglot))
   
 (use-package multiple-cursors :straight t)
   
