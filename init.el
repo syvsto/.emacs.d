@@ -69,7 +69,7 @@
              ("=" . mc/vertical-align)
              ("u" . mc/mark-previous-lines)
              ("b" . mc/mark-all-dwim)
-             ("j r" . xref-find-references)""
+             ("j r" . xref-find-references)
              ("j t" . eglot-find-typeDefinition)
              ("j i" . elgot-find-implementation)))
 
@@ -464,7 +464,7 @@
 
 ;; LSP support
 (use-package eglot :straight t
-  :hook ((typescript-tsx-mode typescript-mode javascript-mode javascript-jsx-mode d-mode zig-mode python-mode) . eglot))
+  :hook ((typescript-tsx-mode typescript-mode javascript-mode javascript-jsx-mode d-mode zig-mode python-mode) . eglot-ensure))
   
 (use-package multiple-cursors :straight t)
   
@@ -696,7 +696,7 @@ if one already exists."
     (interactive)
     (save-buffer)
     (shell-command (concat "prettier --write --parser mdx " buffer-file-name)))
-  (bind-key "C-x C-s" #'my/format-mdx-on-save markdown-mdx-mode-map))
+  (bind-key [remap save-buffer] #'my/format-mdx-on-save markdown-mdx-mode-map))
 
 ;; Org mode
 
