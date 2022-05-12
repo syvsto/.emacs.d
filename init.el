@@ -14,6 +14,8 @@
 
 ;; Setup use-package
 (straight-use-package 'use-package)
+(use-package diminish :straight t)
+(diminish 'auto-revert-mode)
 
 ;; Performance tweaks
 (setq gc-cons-threshold 100000000)
@@ -59,10 +61,9 @@
   (bind-keys :map boon-command-map
              :prefix "b"
              :prefix-map my/other-map
-             ("r" . eglot-rename)
-             ("a" . eglot-code-actions)
-             ("o" . eglot-code-actions-organize-imports)
-             ("s r" . eglot-reconnect)
+             ("r" . lsp-rename)
+             ("a" . lsp-execute-code-action)
+             ("o" . lsp-organize-imports)
              ("y" . mc/mark-next-lines)
              ("i n" . mc/insert-numbers)
              ("i l" . mc/insert-letters)
@@ -70,8 +71,8 @@
              ("u" . mc/mark-previous-lines)
              ("b" . mc/mark-all-dwim)
              ("j r" . xref-find-references)
-             ("j t" . eglot-find-typeDefinition)
-             ("j i" . elgot-find-implementation)))
+             ("j t" . lsp-find-type-definition)
+             ("j i" . lsp-find-implementation)))
 
 (use-package multiple-cursors :straight t)
 
@@ -82,6 +83,8 @@
         ("M-l" . downcase-dwim)
         ("M-c" . capitalize-dwim))
  :config
+ (setq completion-cycle-threshold 3)
+ (setq tab-always-indent 'complete)
  (unless (version<= emacs-version "28.0")
    (repeat-mode 1)
    (defvar winner-repeat-map (make-sparse-keymap) "A map for repeating `winner-mode' keys.")
@@ -119,7 +122,6 @@
 (setq ring-bell-function 'ignore)
 (defalias 'yes-or-no-p 'y-or-n-p)
 (recentf-mode +1)
-(setq view-read-only t)
 
 ;; Documentation enhancements
 (use-package which-key :straight t
@@ -180,31 +182,30 @@
  (advice-add command :after #'my/pulse-line))
 
 ;; File management
-(use-package diredfl
-  :straight t
-  :config
-  (diredfl-global-mode 1))
+(setq dired-dwim-target t)
 
-(use-package all-the-icons-dired :straight t
-  :config
-  (all-the-icons-dired-mode 1))
+(use-package dired :ensure nil
+  :hook (dired-mode . dired-hide-details-mode))
 
-(use-package dirvish :straight t
-  :bind (("C-x C-d" . dirvish)
-	 (:map dired-mode-map
-	       ("M-s" . dirvish-setup-menu)
-	       ("SPC" . dirvish-show-history)
-	       ("r" . dirvish-roam)
-	       ("M-a" . dirvish-mark-actions-menu)
-	       ("M-s" . dirvish-setup-menu)
-	       ("M-f" . dirvish-toggle-fullscreen)))
-  :custom
-  (dirvish-attributes '(file-size all-the-icons))
-  :init
-  (dirvish-override-dired-mode))
+(use-package dired-hacks-utils :straight t
+  :bind ((:map dired-mode-map
+	       ([remap dired-next-line] . dired-hacks-next-file)
+               ([remap dired-pervious-line] . dired-hacks-previous-file)))
+  :hook (dired-mode . dired-utils-format-information-line-mode))
 
+(use-package dired-filter :straight t)
+(use-package dired-open :straight t)
+(use-package dired-subtree :straight t
+  :custom (dired-subtree-use-backgrounds nil)
+  :bind (:map dired-mode-map
+	      ("TAB" . dired-subtree-toggle)))
+(use-package dired-collapse :straight t
+  :hook (dired-mode . dired-collapse-mode))
+              
 (use-package rgrep
   :bind ("M-s g" . rgrep))
+
+(use-package wgrep :straight t)
 
 (use-package view
  :ensure nil
@@ -236,7 +237,6 @@
   :diminish anzu-mode
   :bind ([remap query-replace] . anzu-query-replace)
   :config
-  (setq anzu-cons-mode-line-p nil)
   (global-anzu-mode +1))
 
 ;; Completion/selection
@@ -293,34 +293,16 @@
   (setq consult-project-root-function
         (lambda ()
           (when-let (project (project-current))
-            (car (project-roots project)))))
-  (setq completion-in-region-function
-      (lambda (&rest args)
-        (apply (if vertico-mode
-                   #'consult-completion-in-region
-                 #'completion--in-region)
-               args))))
+            (car (project-roots project))))))
 
 (use-package marginalia :straight t
   :init (marginalia-mode))
 
-(use-package all-the-icons-completion :straight t
-  :init (all-the-icons-completion-mode)
-  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup))
-
 (use-package embark :straight t
   :demand t
+  :bind ("C-." . embark-act)
   :init
-  (defun embark-devdocs-lookup (ident)
-    "Lookup identifier using devdocs."
-    (interactive "DevDocs: ")
-    (devdocs-lookup nil ident))
-  (setq prefix-help-command #'embark-prefix-help-command)
-  :bind (("C-." . embark-act)
-         (:map embark-identifier-map
-               ("D" . embark-devdocs-lookup))
-         (:map embark-variable-map
-               ("D" . embark-devdocs-lookup))))
+  (setq prefix-help-command #'embark-prefix-help-command))
 
 (use-package embark-consult :straight t
  :after (embark consult)
@@ -332,79 +314,19 @@
   :init
   (savehist-mode))
 
-(use-package vertico :straight (vertico :files (:defaults "extensions/*")
-					:includes (vertico-buffer
-						   vertico-directory
-                                                   vertico-quick
-                                                   vertico-flat))
-  :commands (vertico-mode vertico-mouse-mode vertico-multiform-mode)
-  :init
-  (require 'vertico-flat)
-  (vertico-mode)
-  (vertico-mouse-mode)
-  (vertico-multiform-mode)
-  
-  (setq vertico-multiform-commands
-	'((consult-flymake buffer)
-          (consult-line unobtrusive)))
-  (setq vertico-multiform-categories
-	'((find-file grid)
-          (consult-grep buffer)
-          (imenu buffer))))
-
-;; We define our own minor mode for vertico-unobtrusive so we can control the settings better
-(defvar vertico-unobtrusive--orig-count nil)
-
-(define-minor-mode vertico-unobtrusive-mode
-  "Unobtrusive display for Vertico."
-  :global t :group 'vertico
-  (cond
-   (vertico-unobtrusive-mode
-    (unless vertico-unobtrusive--orig-count
-      (push '(vertico-current . default) (default-value 'face-remapping-alist))
-      (setq vertico-unobtrusive--orig-count vertico-count
-            vertico-unobtrusive--orig-count-format vertico-count-format
-            vertico-cycle t
-            vertico-count 1
-            vertico-flat-format `(:separator nil :ellipsis nil ,@vertico-flat-format)))
-    (advice-add #'vertico--setup :before #'redisplay)
-    (vertico-flat-mode 1))
-   (t
-    (when vertico-unobtrusive--orig-count
-      (setq-default face-remapping-alist
-                    (remove '(vertico-current . default)
-                            (default-value 'face-remapping-alist)))
-      (setq vertico-count vertico-unobtrusive--orig-count
-            vertico-count-format vertico-unobtrusive--orig-count-format
-            vertico-flat-format (nthcdr 4 vertico-flat-format)
-            vertico-cycle nil
-            vertico-unobtrusive--orig-count nil))
-    (advice-remove #'vertico--setup #'redisplay)
-    (vertico-flat-mode -1)))
-  (setq vertico-flat-mode nil))
-
-(use-package vertico-directory
-  :after vertico
-  :straight nil
-  :ensure nil
-  :bind (:map vertico-map
-	      ("RET" . vertico-directory-enter)
-              ("DEL" . vertico-directory-delete-char)
-              ("M-DEL" . vertico-directory-delete-word))
-  :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
-
-(use-package vertico-quick
-  :after vertico
-  :straight nil
-  :ensure nil
-  :bind (:map vertico-map
-	      ("M-j" . vertico-quick-exit)))
-
 (use-package orderless :straight t
  :init
   (setq completion-styles '(orderless)
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
+
+(bind-key "C-n" 'minibuffer-next-completion 'minibuffer-mode-map)
+(bind-key "C-p" 'minibuffer-previous-completion 'minibuffer-mode-map)
+(setq completion-auto-select 'second-tab)
+(add-hook 'completion-list-mode-hook (lambda () (setq truncate-lines t)))
+(setq completion-wrap-movement t)
+(setq completions-max-height 20)
+(setq completions-format 'one-column)
 
 (use-package emacs
  :init
@@ -414,23 +336,6 @@
 
  ;; Enable recursive minibuffers
  (setq enable-recursive-minibuffers t ))
-
-(use-package company :straight t
-  :custom
-  (company-minimum-prefix-length 4)
-  :bind ((:map company-active-map
-	       ("<return>" . nil)
-	       ("RET" . nil)
-	       ("<tab>" . company-complete-selection)))
-  :hook (prog-mode . company-mode))
-
-(use-package company-tabnine :straight t
-  :config
-  (setq company-idle-delay 0)
-  (setq company-show-numbers t)
-  (add-to-list 'company-backends #'company-tabnine))
-
-(use-package consult-company :straight t)
 
 (use-package cape :straight t
   :bind (("C-c p p" . completion-at-point)
@@ -454,27 +359,16 @@
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-keyword))
 
-;; Delimiter editing/structured editing
-
-(use-package electric-pair
-  :hook (prog-mode . electric-pair-local-mode))
+;; Delimiters
 (show-paren-mode 1)
 (use-package rainbow-delimiters :straight t
   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; LSP support
-(use-package eglot :straight t
-  :hook ((typescript-tsx-mode typescript-mode javascript-mode javascript-jsx-mode d-mode zig-mode python-mode) . eglot-ensure))
+(use-package lsp-mode :straight t
+  :hook ((typescript-tsx-mode typescript-mode javascript-mode javascript-jsx-mode d-mode zig-mode python-mode) . lsp)
+  :custom (lsp-headerline-breadcrumb-enable nil))
   
-(use-package multiple-cursors :straight t)
-  
-(use-package devdocs :straight t
-  :hook (typescript-mode . (lambda ()
-                             (setq-local devdocs-current-docs '("typescript"))))
-        (js-mode . (lambda ()
-                    (setq-local devdocs-current-docs '("javascript")))))
-
-
 (use-package yasnippet :straight t
   :config
   (yas-global-mode 1))
@@ -510,17 +404,10 @@ if one already exists."
 ;; Language specifics
 (bind-key "C-c C-c" 'eval-defun)
 
-(use-package rjsx-mode :straight t)
 (use-package json-mode :straight t)
-
-(use-package javascript-mode :ensure nil
-  :bind ((:map js-mode-map
-                  ("C-c d" . devdocs-lookup))))
 
 (use-package typescript-mode :straight t
  :mode (rx ".ts" string-end)
- :bind ((:map typescript-mode-map
-                 ("C-c d" . devdocs-lookup)))
  :custom
  (typescript-indent-level 4)
  :init (define-derived-mode typescript-tsx-mode typescript-mode "typescript-tsx")
@@ -533,6 +420,7 @@ if one already exists."
 (use-package tree-sitter-langs :straight t)
 (use-package tree-sitter-indent :straight t)
 (use-package tree-sitter :straight t
+ :diminish tree-sitter-mode
  :hook (typescript-mode . tree-sitter-hl-mode)
  :config
  (setf (alist-get 'typescript-tsx-mode tree-sitter-major-mode-language-alist) 'tsx))
@@ -540,13 +428,9 @@ if one already exists."
 (use-package prettier :straight t
   :hook (after-init . global-prettier-mode))
 
-(use-package pyvenv :straight t)
-
 (use-package rustic :straight t)
 
 (use-package d-mode :straight t)
-
-(use-package wgrep :straight t)
 
 (use-package haskell-mode :straight t
   :bind ((:map haskell-mode-map
@@ -604,9 +488,6 @@ if one already exists."
 
 (use-package restclient :straight t)
 (use-package ob-restclient :straight t)
-(use-package company-restclient :straight t
-  :config
-  (add-to-list 'company-backends #'company-restclient))
 
 ;; Terminal
 (use-package vterm :straight t)
@@ -625,6 +506,7 @@ if one already exists."
   (global-diff-hl-mode))
 
 (use-package magit-delta :straight t
+  :diminish magit-delta-mode
   :hook (magit-mode . magit-delta-mode))
 
 (use-package ibuffer-vc :straight t
@@ -634,28 +516,9 @@ if one already exists."
 				     (unless (eq ibuffer-sorting-mode 'alphabetic)
 				       (ibuffer-do-sort-by-alphabetic)))))
 
-(use-package undo-tree :straight t
-  :config
-  (global-undo-tree-mode +1))
-
-;; Looks
-(use-package nano-modeline :straight t
-  :config
-  (nano-modeline-mode)
-  )
-
-(use-package tab-bar-echo-area :straight t
-  :custom
-  (tab-bar-show nil)
-  :config
-  (tab-bar-echo-area-mode 1))
-
-(load "~/.emacs.d/themes/ceres-theme.el")
-(load-theme 'ceres t)
-
-(use-package solaire-mode :straight t
- :config
- (solaire-global-mode +1))
+(use-package vundo :straight t
+  :bind ("C-x u" . vundo)
+  :custom (vundo-glyph-alist vundo-unicode-symbols))
 
 (global-hl-line-mode +1)
 
@@ -664,13 +527,7 @@ if one already exists."
 (when (display-graphic-p)
   (scroll-bar-mode -1))
 (setq inhibit-startup-message t)
-
-(use-package all-the-icons-ibuffer :straight t
-  :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
-
-(use-package olivetti :straight t
-  :custom
-  (olivetti-body-width 140))
+(display-time-mode 1)
 
 ;; Font setup
 (defun my/set-font-size (val)
@@ -680,11 +537,7 @@ if one already exists."
   (set-face-attribute 'fixed-pitch nil :font "Berkeley Mono" :height val)
   (set-face-attribute 'variable-pitch nil :font "Berkeley Mono Variable" :height val))
 
-(my/set-font-size 100)
-
-;; Jupyter
-(use-package jupyter :straight t
-  :demand t)
+(my/set-font-size 120)
 
 ;; Markdown
 (use-package markdown-mode :straight t
@@ -710,7 +563,6 @@ if one already exists."
      (python . t)
      (emacs-lisp . t)
      (restclient . t)
-     (jupyter . t)
      (shell . t)))
 (setq org-babel-default-header-args:jupyter-python '((:async . "yes")
                                                      (:session . "ipy")
@@ -744,50 +596,31 @@ if one already exists."
    " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
  org-agenda-current-time-string "⭠ now ─────────────────────────────────────────────────"))
 
-(use-package epresent :straight t
-  :config
-  (defun my/epresent-run ()
-    (interactive)
-    (epresent-run)
-    (setq-local header-line-format nil)
-    (hl-line-mode 0)
-    (message nil)))
-
 (setq org-directory "~/Documents/org")
 (setq org-timestamp-12-hours t)
 (setq org-hide-all-non-scheduled-items t)
 (setq org-disable-context-file t)
-(setq practical-org-el
-      (expand-file-name "~/.emacs.d/site-lisp/practical.org.el/practical.org.el"))
-(load-file practical-org-el)
-
-;;Fun stuff
-(use-package osm :straight t)
 
 (use-package async :straight t)
-;; (use-package code-compass
-;;   :load-path "site-lisp/code-compass"
-;;   :custom
-;;   (c/display-icon nil)
-;;   (c/preferred-browser "/Applications/Firefox.app/Contents/MacOS/firefox"))
 
 ;; Custom packages
 (use-package tracer
+  :diminish tracer-mode
   :load-path "site-lisp/"
   :hook (prog-mode . tracer-mode))
 
 (use-package observable-dataflow-mode
   :straight (:host github :repo "syvsto/observable-dataflow-mode"))
 
-(use-package web-search
-  :load-path "site-lisp/"
-  :bind ("M-s M-s" . my/search-webkit))
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("118b4d40a523a61b4991c520fc078b9ca70eca6774fc1a8dc87e6a4fa778b637" "b45e8c816fec55f8aa03621b730a238e7610a7bf580ed9a6e4e120882e9bff2a" "72eefdab51d2b0c22327504a7c819aa19a6ed10b18889758249881b2954cdbe8" "d2457dde677c0049fbacfc7deb56c7ff5fdb1405dec78b7f14b3fedf3f53a37b" "a25c368c59f1e6d66fdf061dcc8c557763913f6b4d49576cc72173ac67298bf8" "10a57e03b8203adb7f66392e5179a52977f22cf618bb9ec823f2d9268eaa417b" "12317f37c057efed7f222ec0dfa2dceaa862707ddde769d8130e50c36103d9b6" "6842b68bbeb33c1912ddcb5cd0734d441b56d7d0e9882c49adc44899a3fa9976" "fdbf380d3b067f33fc023df2cbc7e591d92f6b33eddc26aaa59235f0ad2f54e9" "2371ba6224eaba0a6828f31f95393155bb865f6afde5a34b0172ce6a4c2ad07c" "a2d68805b09fc9678fb7132927aff5742c7e1dc55291e87eef98471b587e7014" "b14adf7023a50b56de758d1577662f736df77611515b62cb7af7b70e6a7dac40" "b5d7d25c3b79b28dbcb2596b57a537def847cc18221ed90030aa96d3a0d205a9" "38a5bc13e376a0bd3758eee380d094ffe6ba567f17ff980c6a9835f05ab24a1b" default))
  '(warning-suppress-log-types '((comp))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

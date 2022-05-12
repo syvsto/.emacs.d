@@ -61,7 +61,7 @@
    `(solaire-hl-line-face ((,class (:background ,bg))))
    `(fringe ((,class (:background ,bg))))
    `(cursor ((,class (:background ,fg :foreground ,bg))))
-   `(show-paren-match ((,class (:inherit underline))))
+   `(show-paren-match ((,class (:inherit underline :foreground ,fg :bold t))))
    `(sp-pair-overlay-face ((,class :inherit underline)))
    `(isearch ((,class (:bold t :foreground ,fg :background ,blue-light :bold t))))
    `(isearch-group-1 ((,class (:bold t :foreground ,fg :background ,warning :bold t))))
@@ -177,6 +177,12 @@
    `(diredfl-file-suffix ((,class :foreground ,fg2)))
    `(diredfl-dir-name ((,class :foreground ,fg :italic t)))
    `(diredfl-dir-heading ((,class :foreground ,fg :bold t :underline t)))
+   `(dired-subtree-depth-1-face ((,class :background ,bg-lighter)))
+   `(dired-subtree-depth-2-face ((,class :background ,bg)))
+   `(dired-subtree-depth-3-face ((,class :background ,bg-lighter)))
+   `(dired-subtree-depth-4-face ((,class :background ,bg)))
+   `(dired-subtree-depth-5-face ((,class :background ,bg-lighter)))
+   `(dired-subtree-depth-6-face ((,class :background ,bg)))
 
    ;; speedbar
    `(speedbar-selected-face ((,class :bold t :foreground ,fg)))
