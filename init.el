@@ -142,6 +142,7 @@
 
 (setq sentence-end-double-space nil)
 
+(add-hook 'doc-view-mode-hook #'(lambda () (internal-show-cursor nil nil)))
 
 ;; Navigation
 (use-package rotate :straight t
