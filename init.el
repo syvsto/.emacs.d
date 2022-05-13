@@ -45,10 +45,10 @@
          ("M-g M-s" . speedbar)
          ("M-g M-s" . speedbar)
          ("C-w" . my/backward-kill-word)
-         ("C-z" . zap-up-to-char)
          (:map boon-command-map
                ("^" . delete-indentation)
                ("p" . consult-line)
+               ("=" . er/expand-region)
                ("&" . async-shell-command)
                ("%" . query-replace)))
   :init
@@ -58,23 +58,25 @@
   (let ((modes '(speedbar-mode sly-db-mode sly-inspector-mode)))
     (mapc #'(lambda (mode) (add-to-list 'boon-special-mode-list mode)) modes))
   :config
-  (bind-keys :map boon-command-map
-             :prefix "b"
-             :prefix-map my/other-map
-             ("r" . lsp-rename)
-             ("a" . lsp-execute-code-action)
-             ("o" . lsp-organize-imports)
-             ("y" . mc/mark-next-lines)
-             ("i n" . mc/insert-numbers)
-             ("i l" . mc/insert-letters)
-             ("=" . mc/vertical-align)
-             ("u" . mc/mark-previous-lines)
-             ("b" . mc/mark-all-dwim)
-             ("j r" . xref-find-references)
-             ("j t" . lsp-find-type-definition)
-             ("j i" . lsp-find-implementation)))
+  (bind-keys
+   :map boon-command-map
+   :prefix "b"
+   :prefix-map my/other-map
+   ("r" . lsp-rename)
+   ("a" . lsp-execute-code-action)
+   ("o" . lsp-organize-imports)
+   ("y" . mc/mark-next-lines)
+   ("i n" . mc/insert-numbers)
+   ("i l" . mc/insert-letters)
+   ("=" . mc/vertical-align)
+   ("u" . mc/mark-previous-lines)
+   ("b" . mc/mark-all-dwim)
+   ("j r" . xref-find-references)
+   ("j t" . lsp-find-type-definition)
+   ("j i" . lsp-find-implementation)))
 
 (use-package multiple-cursors :straight t)
+(use-package expand-region :straight t)
 
 ;; Swap to a bunch of more useful keybindings than the defaults
 (use-package emacs
@@ -430,8 +432,6 @@ if one already exists."
 
 (use-package rustic :straight t)
 
-(use-package d-mode :straight t)
-
 (use-package haskell-mode :straight t
   :bind ((:map haskell-mode-map
                ("<f8>" . haskell-navigate-imports)
@@ -483,8 +483,6 @@ if one already exists."
  
 (use-package sly-quicklisp :straight t)
 (use-package sly-asdf :straight t)
-
-(use-package cider :straight t)
 
 (use-package restclient :straight t)
 (use-package ob-restclient :straight t)
@@ -551,8 +549,12 @@ if one already exists."
     (shell-command (concat "prettier --write --parser mdx " buffer-file-name)))
   (bind-key [remap save-buffer] #'my/format-mdx-on-save markdown-mdx-mode-map))
 
-;; Org mode
+;; Centering content
+(use-package olivetti :straight t
+  :custom (olivetti-body-width 160)
+  :bind ("C-z" . olivetti-mode))
 
+;; Org mode
 (straight-use-package '(org-contrib :includes org))
 (setq org-use-speed-commands t)
 (setq org-babel-python-command "/usr/local/bin/python3")
