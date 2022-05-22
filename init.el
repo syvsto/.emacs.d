@@ -15,6 +15,7 @@
 ;; Setup use-package
 (straight-use-package 'use-package)
 (use-package diminish :straight t)
+(global-auto-revert-mode 1)
 (diminish 'auto-revert-mode)
 
 ;; Performance tweaks
@@ -31,49 +32,47 @@
       (kill-region)
     (backward-kill-word 1)))
 
-(use-package boon :straight t
-  :bind (("C-x f" . find-file)
-         ("C-x s" . save-buffer)
-         ("C-x ;" . comment-line)
-         ("C-x C-s" . save-some-buffers)
-         ("C-x e" . pp-eval-last-sexp)
-         ("C-x C-e" . kmacro-end-and-call-macro)
-         ("M-g s h p" . highlight-phrase)
-         ("M-g s h r" . highlight-regexp)
-         ("M-g s h l" . highlight-lines-mathcing-regexp)
-         ("M-g s h u" . unhighlight-regexp)
-         ("M-g M-s" . speedbar)
-         ("M-g M-s" . speedbar)
-         ("C-w" . my/backward-kill-word)
-         (:map boon-command-map
-               ("^" . delete-indentation)
-               ("p" . consult-line)
-               ("=" . er/expand-region)
-               ("&" . async-shell-command)
-               ("%" . query-replace)))
-  :init
-  (require 'boon-colemak)
-  (boon-mode 1)
+(use-package god-mode :straight t
   :config
-  (let ((modes '(speedbar-mode sly-db-mode sly-inspector-mode)))
-    (mapc #'(lambda (mode) (add-to-list 'boon-special-mode-list mode)) modes))
-  :config
-  (bind-keys
-   :map boon-command-map
-   :prefix "b"
-   :prefix-map my/other-map
-   ("r" . lsp-rename)
-   ("a" . lsp-execute-code-action)
-   ("o" . lsp-organize-imports)
-   ("y" . mc/mark-next-lines)
-   ("i n" . mc/insert-numbers)
-   ("i l" . mc/insert-letters)
-   ("=" . mc/vertical-align)
-   ("u" . mc/mark-previous-lines)
-   ("b" . mc/mark-all-dwim)
-   ("j r" . xref-find-references)
-   ("j t" . lsp-find-type-definition)
-   ("j i" . lsp-find-implementation)))
+  (god-mode)
+  (global-set-key (kbd "<escape>") #'god-local-mode)
+  (defun my/god-mode-update-cursor-type ()
+    (setq cursor-type (if (or god-local-mode buffer-read-only) 'box 'bar)))
+  (add-hook 'post-command-hook #'my/god-mode-update-cursor-type)
+  (defun my-god-mode-update-mode-line ()
+    (cond
+     (god-local-mode
+      (set-face-attribute 'mode-line nil
+			  :foreground "#0a0a0a"
+			  :background "#d7d7d7")
+      (set-face-attribute 'mode-line-inactive nil
+			  :foreground "#404148"
+			  :background "#efefef"))
+     (t
+      (set-face-attribute 'mode-line nil
+                          :foreground "#604000"
+                          :background "#fff29a")
+      (set-face-attribute 'mode-line-inactive nil
+                          :foreground "#3f3000"
+                          :background "#fff3da"))))
+  (add-hook 'post-command-hook 'my-god-mode-update-mode-line)
+
+  (require 'god-mode-isearch)
+  (define-key isearch-mode-map (kbd "<escape>") #'god-mode-isearch-activate)
+  (define-key god-mode-isearch-map (kbd "<escape>") #'god-mode-isearch-disable)
+
+  (define-key god-local-mode-map (kbd "z") #'repeat)
+  (define-key god-local-mode-map (kbd "i") #'god-local-mode)
+
+  (global-set-key (kbd "C-x C-1") #'delete-other-windows)
+  (global-set-key (kbd "C-x C-2") #'split-window-below)
+  (global-set-key (kbd "C-x C-3") #'split-window-right)
+  (global-set-key (kbd "C-x C-0") #'delete-window)
+
+  (define-key god-local-mode-map (kbd "[") #'backward-paragraph)
+  (define-key god-local-mode-map (kbd "]") #'forward-paragraph))
+
+(use-package iy-go-to-char :straight t)
 
 (use-package multiple-cursors :straight t)
 (use-package expand-region :straight t)
@@ -86,6 +85,7 @@
         ("M-c" . capitalize-dwim))
  :config
  (setq completion-cycle-threshold 3)
+
  (setq tab-always-indent 'complete)
  (unless (version<= emacs-version "28.0")
    (repeat-mode 1)
@@ -266,22 +266,22 @@
          ("M-y" . consult-yank-pop)     ;; orig. yank-pop
          ("<help> a" . consult-apropos) ;; orig. apropos-command
          ;; M-g bindings (goto-map)
-         ("M-g E" . consult-compile-error)
-         ("M-g o" . consult-outline)
-         ("M-g m" . consult-mark)
-         ("M-g k" . consult-global-mark)
-         ("M-g i" . consult-imenu)
-	 ("M-g e" . consult-flymake)
+         ("M-g C-E" . consult-compile-error)
+         ("M-g C-o" . consult-outline)
+         ("M-g C-m" . consult-mark)
+         ("M-g C-k" . consult-global-mark)
+         ("M-g C-i" . consult-imenu)
+	 ("M-g C-e" . consult-flymake)
          ([remap imenu] . consult-imenu)
-         ("M-g I" . consult-project-imenu)
+         ("M-g	I" . consult-project-imenu)
+	 ("M-i" . consult-imenu)
          ;; M-s bindings (search-map)
-         ("M-s f" . consult-find)
-         ("M-s L" . consult-locate)
-         ("M-s G" . consult-git-grep)
-         ("M-s r" . consult-ripgrep)
-         ("M-s m" . consult-multi-occur)
-         ("M-s k" . consult-keep-lines)
-         ("M-s U" . consult-focus-lines)
+         ("M-s C-f" . consult-find)
+         ("M-s C-L" . consult-locate)
+         ("M-s C-g" . consult-git-grep)
+         ("M-s C-m" . consult-multi-occur)
+         ("M-s C-k" . consult-keep-lines)
+         ("M-s C-U" . consult-focus-lines)
          ;; Isearch integration
          ("M-s e" . consult-isearch)
          (:map isearch-mode-map
@@ -297,6 +297,9 @@
         (lambda ()
           (when-let (project (project-current))
             (car (project-roots project))))))
+
+(use-package deadgrep :straight t
+  :bind ("M-s C-r" . deadgrep))
 
 (use-package marginalia :straight t
   :init (marginalia-mode))
@@ -337,30 +340,10 @@
    '(read-only t cursor-intangible t face minibuffer-prompt))
  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
 
- ;; Enable recursive minibuffers
- (setq enable-recursive-minibuffers t ))
+;; Enable recursive minibuffers
+(setq enable-recursive-minibuffers t ))
 
-(use-package cape :straight t
-  :bind (("C-c p p" . completion-at-point)
-	 ("C-c p t" . complete-tag)
-	 ("C-c p d" . cape-dabbrev)
-         ("C-c p f" . cape-file)
-         ("C-c p k" . cape-keyword)
-         ("C-c p s" . cape-symbol)
-         ("C-c p a" . cape-abbrev)
-         ("C-c p i" . cape-ispell)
-         ("C-c p l" . cape-line)
-         ("C-c p w" . cape-dict)
-         ("C-c p \\" . cape-tex)
-         ("C-c p _" . cape-tex)
-         ("C-c p ^" . cape-tex)
-         ("C-c p &" . cape-sgml)
-         ("C-c p r" . cape-rfc1345))
-  :init
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-tex)
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-keyword))
+(bind-key [remap dabbrev-expand] 'hippie-expand)
 
 ;; Delimiters
 (show-paren-mode 1)
@@ -518,6 +501,7 @@ if one already exists."
 (use-package vundo :straight t
   :bind ("C-x u" . vundo)
   :custom (vundo-glyph-alist vundo-unicode-symbols))
+(bind-key "C-?" 'undo-redo)
 
 (global-hl-line-mode +1)
 
@@ -547,7 +531,7 @@ if one already exists."
   (defun my/format-mdx-on-save ()
     (interactive)
     (save-buffer)
-    (shell-command (concat "prettier --write --parser mdx " buffer-file-name)))
+    (shell-command (concat "prettier --write --parser mdx \"" buffer-file-name "\"")))
   (bind-key [remap save-buffer] #'my/format-mdx-on-save markdown-mdx-mode-map))
 
 ;; Centering content
@@ -580,8 +564,6 @@ if one already exists."
   :config
   (setq
  ;; Edit settings
- org-auto-align-tags nil
- org-tags-column 0
  org-catch-invisible-edits 'show-and-error
  org-special-ctrl-a/e t
  org-insert-heading-respect-content t
@@ -599,12 +581,30 @@ if one already exists."
    " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
  org-agenda-current-time-string "⭠ now ─────────────────────────────────────────────────"))
 
-(setq org-directory "~/Documents/org")
 (setq org-timestamp-12-hours t)
 (setq org-hide-all-non-scheduled-items t)
 (setq org-disable-context-file t)
 
 (use-package async :straight t)
+
+;; Looks
+
+(use-package modus-themes :straight t
+  :config
+  (setq modus-themes-italic-constructs t
+	modus-themes-bold-contstructs nil
+        modus-themes-org-blocks 'tinted-background ; {nil,'gray-background,'tinted-background}
+	modus-themes-org-agenda ; this is an alist: read the manual or its doc string
+	'((header-block . (variable-pitch 1.3))
+          (header-date . (grayscale workaholic bold-today 1.1))
+          (event . (accented varied))
+          (scheduled . uniform)
+          (habit . traffic-light))
+	modus-themes-headings ; this is an alist: read the manual or its doc string
+	'((1 . (overline background variable-pitch 1.3))
+	  (2 . (overline 1.1))
+	  (t . (semibold))))
+  (modus-themes-load-operandi))
 
 ;; Custom packages
 (use-package tracer
