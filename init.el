@@ -630,10 +630,11 @@ if one already exists."
           (scheduled . uniform)
           (habit . traffic-light))
 	modus-themes-headings ; this is an alist: read the manual or its doc string
-	'((1 . (overline background variable-pitch 1.3))
-	  (2 . (overline background 1.2))
-	  (3 . (1.2))
-	  (4 . (overline 1.1))
+	'((1 . (overline background variable-pitch 1.8))
+	  (2 . (overline background variable-pitch 1.5))
+	  (3 . (overline background 1.3))
+	  (4 . (background 1.2))
+	  (4 . (1.1))
 	  (t . (semibold))))
   (setq modus-themes-fringes nil
         modus-themes-subtle-line-numbers t
