@@ -68,6 +68,8 @@
   (global-set-key (kbd "C-x C-2") #'split-window-below)
   (global-set-key (kbd "C-x C-3") #'split-window-right)
   (global-set-key (kbd "C-x C-0") #'delete-window)
+  (global-set-key (kbd "C-x C-b") #'switch-to-buffer)
+  (global-set-key (kbd "C-x b") #'ibuffer)
 
   (define-key god-local-mode-map (kbd "[") #'backward-paragraph)
   (define-key god-local-mode-map (kbd "]") #'forward-paragraph))
@@ -472,7 +474,9 @@ if one already exists."
 (use-package ob-restclient :straight t)
 
 ;; Terminal
-(use-package vterm :straight t)
+(use-package vterm :straight t
+  :config
+  (setq vterm-max-scrollback 100000))
 
 ;; Git
 (use-package magit :straight t
