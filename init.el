@@ -23,15 +23,6 @@
 (setq read-process-output-max (* 1024 1024))
 (global-so-long-mode 1)
 
-(add-hook 'prog-mode-hook #'display-line-numbers-mode)
-
-(defun my/backward-kill-word ()
-  "If region is active, kill region, else kill previous word"
-  (interactive)
-  (if (region-active-p)
-      (kill-region)
-    (backward-kill-word 1)))
-
 (use-package god-mode :straight t
   :config
   (god-mode)
@@ -63,20 +54,16 @@
 
   (define-key god-local-mode-map (kbd "z") #'repeat)
   (define-key god-local-mode-map (kbd "i") #'god-local-mode)
+  (global-set-key (kbd "C-x b") #'ibuffer)
 
   (global-set-key (kbd "C-x C-1") #'delete-other-windows)
   (global-set-key (kbd "C-x C-2") #'split-window-below)
   (global-set-key (kbd "C-x C-3") #'split-window-right)
   (global-set-key (kbd "C-x C-0") #'delete-window)
-  (global-set-key (kbd "C-x C-b") #'switch-to-buffer)
-  (global-set-key (kbd "C-x b") #'ibuffer)
 
   (define-key god-local-mode-map (kbd "[") #'backward-paragraph)
   (define-key god-local-mode-map (kbd "]") #'forward-paragraph))
 
-(use-package iy-go-to-char :straight t)
-
-(use-package multiple-cursors :straight t)
 (use-package expand-region :straight t)
 
 ;; Swap to a bunch of more useful keybindings than the defaults
@@ -192,6 +179,11 @@
 (use-package dired :ensure nil
   :hook (dired-mode . dired-hide-details-mode))
 
+(use-package all-the-icons :straight t)
+
+(use-package all-the-icons-dired :straight t
+  :hook (dired-mode . all-the-icons-dired-mode))
+
 (use-package dired-hacks-utils :straight t
   :bind ((:map dired-mode-map
 	       ([remap dired-next-line] . dired-hacks-next-file)
@@ -257,7 +249,7 @@
          ("C-c k" . consult-kmacro)
          ;; C-x bindings (ctl-x-map)
          ("C-x M-:" . consult-complex-command) ;; orig. repeat-complex-command
-         ("C-x b" . consult-buffer) ;; orig. switch-to-buffer
+         ("C-x C-b" . consult-buffer) ;; orig. switch-to-buffer
          ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
          ("C-x 5 b" . consult-buffer-other-frame) ;; orig. switch-to-buffer-other-frame
          ;; Custom M-#' bindings for fast register access
@@ -348,14 +340,15 @@
 (bind-key [remap dabbrev-expand] 'hippie-expand)
 
 ;; Delimiters
-(show-paren-mode 1)
 (use-package rainbow-delimiters :straight t
   :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; LSP support
 (use-package lsp-mode :straight t
   :hook ((typescript-tsx-mode typescript-mode javascript-mode javascript-jsx-mode d-mode zig-mode python-mode) . lsp)
-  :custom (lsp-headerline-breadcrumb-enable nil))
+  :custom
+  (lsp-headerline-breadcrumb-enable nil)
+  (lsp-keymap-prefix "C-c l"))
   
 (use-package yasnippet :straight t
   :config
@@ -496,11 +489,13 @@ if one already exists."
   :hook (magit-mode . magit-delta-mode))
 
 (use-package ibuffer-vc :straight t
-	     :bind ("C-x C-b" . ibuffer)
-	     :hook (ibuffer-mode . (lambda ()
-				     (ibuffer-vc-set-filter-groups-by-vc-root)
-				     (unless (eq ibuffer-sorting-mode 'alphabetic)
-				       (ibuffer-do-sort-by-alphabetic)))))
+  :hook (ibuffer-mode . (lambda ()
+			  (ibuffer-vc-set-filter-groups-by-vc-root)
+			  (unless (eq ibuffer-sorting-mode 'alphabetic)
+			    (ibuffer-do-sort-by-alphabetic)))))
+
+(use-package all-the-icons-ibuffer :straight t
+  :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
 
 (use-package vundo :straight t
   :bind ("C-x u" . vundo)
@@ -514,7 +509,6 @@ if one already exists."
 (when (display-graphic-p)
   (scroll-bar-mode -1))
 (setq inhibit-startup-message t)
-(display-time-mode 1)
 
 ;; Font setup
 (defun my/set-font-size (val)
@@ -536,7 +530,7 @@ if one already exists."
     (interactive)
     (save-buffer)
     (shell-command (concat "prettier --write --parser mdx \"" buffer-file-name "\"")))
-  (bind-key [remap save-buffer] #'my/format-mdx-on-save markdown-mdx-mode-map))
+  (bind-key "C-c f" #'my/format-mdx-on-save markdown-mdx-mode-map))
 
 ;; Centering content
 (use-package olivetti :straight t
@@ -593,11 +587,42 @@ if one already exists."
 
 ;; Looks
 
+(setq-default line-spacing .2)
+
+(setq my/fixed-font "Berkeley Mono")
+(setq my/font-height 12)
+
+(setq default-frame-alist
+      (append (list
+	       `(font . ,my/fixed-font)
+	       '(min-height . 1)  '(height     . 45)
+	       '(min-width  . 1)  '(width      . 101)
+               '(vertical-scroll-bars . nil)
+               '(internal-border-width . 24) ;; frame padding around the text
+               '(ns-transparent-titlebar . t)
+               '(menu-bar-lines . 0)
+               '(tool-bar-lines . 0))))
+(set-face-attribute 'default nil
+                    :font my/fixed-font
+                    :height (* my/font-height 10))
+(set-face-attribute 'variable-pitch nil
+                    :font "SF UI Display"
+                    :height (* my/font-height 10))
+(set-face-attribute 'fixed-pitch nil
+                    :font my/fixed-font
+                    :height (* my/font-height 10))
+
 (use-package modus-themes :straight t
   :config
   (setq modus-themes-italic-constructs t
 	modus-themes-bold-contstructs nil
         modus-themes-org-blocks 'tinted-background ; {nil,'gray-background,'tinted-background}
+	modus-themes-variable-pitch-ui t
+	modus-themes-mixed-fonts t
+	modus-themes-paren-match nil
+	modus-themes-syntax '(faint)
+	modus-themes-prompts '(background bold)
+	modus-themes-org-blocks 'rainbow
 	modus-themes-org-agenda ; this is an alist: read the manual or its doc string
 	'((header-block . (variable-pitch 1.3))
           (header-date . (grayscale workaholic bold-today 1.1))
@@ -606,9 +631,27 @@ if one already exists."
           (habit . traffic-light))
 	modus-themes-headings ; this is an alist: read the manual or its doc string
 	'((1 . (overline background variable-pitch 1.3))
-	  (2 . (overline 1.1))
+	  (2 . (overline background 1.2))
+	  (3 . (1.2))
+	  (4 . (overline 1.1))
 	  (t . (semibold))))
+  (setq modus-themes-fringes nil
+        modus-themes-subtle-line-numbers t
+        modus-themes-mode-line '(borderless 2)
+        modus-themes-tabs-accented nil)
   (modus-themes-load-operandi))
+(setq-default mode-line-format
+      '("%e"
+        mode-line-front-space ;; XFK inserts mode info here
+        mode-line-frame-identification
+        mode-line-buffer-identification
+        " " ;; Sometimes this touches in magit buffers
+        mode-line-position
+        " "
+        mode-line-modes ;; to just show the major mode, use `mode-name'
+        "%n"  ;; narrowing
+        mode-line-misc-info
+        mode-line-end-spaces))
 
 ;; Custom packages
 (use-package tracer
