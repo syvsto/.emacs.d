@@ -23,49 +23,6 @@
 (setq read-process-output-max (* 1024 1024))
 (global-so-long-mode 1)
 
-(use-package god-mode :straight t
-  :config
-  (god-mode)
-  (global-set-key (kbd "<escape>") #'god-local-mode)
-  (defun my/god-mode-update-cursor-type ()
-    (setq cursor-type (if (or god-local-mode buffer-read-only) 'box 'bar)))
-  (add-hook 'post-command-hook #'my/god-mode-update-cursor-type)
-  (defun my-god-mode-update-mode-line ()
-    (cond
-     (god-local-mode
-      (set-face-attribute 'mode-line nil
-			  :foreground "#0a0a0a"
-			  :background "#d7d7d7")
-      (set-face-attribute 'mode-line-inactive nil
-			  :foreground "#404148"
-			  :background "#efefef"))
-     (t
-      (set-face-attribute 'mode-line nil
-                          :foreground "#604000"
-                          :background "#fff29a")
-      (set-face-attribute 'mode-line-inactive nil
-                          :foreground "#3f3000"
-                          :background "#fff3da"))))
-  (add-hook 'post-command-hook 'my-god-mode-update-mode-line)
-
-  (require 'god-mode-isearch)
-  (define-key isearch-mode-map (kbd "<escape>") #'god-mode-isearch-activate)
-  (define-key god-mode-isearch-map (kbd "<escape>") #'god-mode-isearch-disable)
-
-  (define-key god-local-mode-map (kbd "z") #'repeat)
-  (define-key god-local-mode-map (kbd "i") #'god-local-mode)
-  (global-set-key (kbd "C-x b") #'ibuffer)
-
-  (global-set-key (kbd "C-x C-1") #'delete-other-windows)
-  (global-set-key (kbd "C-x C-2") #'split-window-below)
-  (global-set-key (kbd "C-x C-3") #'split-window-right)
-  (global-set-key (kbd "C-x C-0") #'delete-window)
-
-  (define-key god-local-mode-map (kbd "[") #'backward-paragraph)
-  (define-key god-local-mode-map (kbd "]") #'forward-paragraph))
-
-(use-package expand-region :straight t)
-
 ;; Swap to a bunch of more useful keybindings than the defaults
 (use-package emacs
  :bind (("M-\\" . cycle-spacing)
@@ -128,6 +85,8 @@
   :bind (("C-h f" . helpful-callable))
    ("C-h v" . helpful-variable)
    ("C-h k" . helpful-key))
+
+(use-package expand-region :straight t)
 
 (setq sentence-end-double-space nil)
 
@@ -238,6 +197,11 @@
 
 ;; Completion/selection
 
+(use-package all-the-icons-completion :straight t
+  :config
+  (all-the-icons-completion-mode)
+  (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup))
+
 (use-package consult
   :straight t
   ;; Replace bindings. Lazily loaded due by `use-package'.
@@ -295,6 +259,9 @@
 (use-package deadgrep :straight t
   :bind ("M-s C-r" . deadgrep))
 
+(bind-key "C-c d" 'flymake-show-buffer-diagnostics prog-mode-map)
+(bind-key "C-c D" 'flymake-show-project-diagnostics prog-mode-map)
+
 (use-package marginalia :straight t
   :init (marginalia-mode))
 
@@ -340,6 +307,7 @@
 (bind-key [remap dabbrev-expand] 'hippie-expand)
 
 ;; Delimiters
+(electric-pair-mode 1)
 (use-package rainbow-delimiters :straight t
   :hook (prog-mode . rainbow-delimiters-mode))
 
@@ -502,23 +470,13 @@ if one already exists."
   :custom (vundo-glyph-alist vundo-unicode-symbols))
 (bind-key "C-?" 'undo-redo)
 
-(global-hl-line-mode +1)
+(global-hl-line-mode 1)
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (when (display-graphic-p)
   (scroll-bar-mode -1))
 (setq inhibit-startup-message t)
-
-;; Font setup
-(defun my/set-font-size (val)
-  "Set font size to val."
-  (interactive)
-  (set-face-attribute 'default nil :font "Berkeley Mono" :height val)
-  (set-face-attribute 'fixed-pitch nil :font "Berkeley Mono" :height val)
-  (set-face-attribute 'variable-pitch nil :font "Berkeley Mono Variable" :height val))
-
-(my/set-font-size 120)
 
 ;; Markdown
 (use-package markdown-mode :straight t
@@ -590,7 +548,7 @@ if one already exists."
 (setq-default line-spacing .2)
 
 (setq my/fixed-font "Berkeley Mono")
-(setq my/font-height 12)
+(setq my/font-height 13)
 
 (setq default-frame-alist
       (append (list
@@ -615,7 +573,7 @@ if one already exists."
 (use-package modus-themes :straight t
   :config
   (setq modus-themes-italic-constructs t
-	modus-themes-bold-contstructs nil
+	modus-themes-bold-contstructs t
         modus-themes-org-blocks 'tinted-background ; {nil,'gray-background,'tinted-background}
 	modus-themes-variable-pitch-ui t
 	modus-themes-mixed-fonts t
@@ -637,6 +595,7 @@ if one already exists."
 	  (4 . (1.1))
 	  (t . (semibold))))
   (setq modus-themes-fringes nil
+	modus-themes-hl-line '(accented underline)
         modus-themes-subtle-line-numbers t
         modus-themes-mode-line '(borderless 2)
         modus-themes-tabs-accented nil)
