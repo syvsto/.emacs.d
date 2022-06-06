@@ -22,6 +22,7 @@
 (setq gc-cons-threshold 100000000)
 (setq read-process-output-max (* 1024 1024))
 (global-so-long-mode 1)
+(global-subword-mode 1)
 
 ;; Swap to a bunch of more useful keybindings than the defaults
 (use-package emacs
@@ -213,7 +214,7 @@
          ("C-c k" . consult-kmacro)
          ;; C-x bindings (ctl-x-map)
          ("C-x M-:" . consult-complex-command) ;; orig. repeat-complex-command
-         ("C-x C-b" . consult-buffer) ;; orig. switch-to-buffer
+         ("C-x b" . consult-buffer) ;; orig. switch-to-buffer
          ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
          ("C-x 5 b" . consult-buffer-other-frame) ;; orig. switch-to-buffer-other-frame
          ;; Custom M-#' bindings for fast register access
@@ -257,7 +258,7 @@
             (car (project-roots project))))))
 
 (use-package deadgrep :straight t
-  :bind ("M-s C-r" . deadgrep))
+  :bind ("M-s r" . deadgrep))
 
 (bind-key "C-c d" 'flymake-show-buffer-diagnostics prog-mode-map)
 (bind-key "C-c D" 'flymake-show-project-diagnostics prog-mode-map)
@@ -282,10 +283,19 @@
   (savehist-mode))
 
 (use-package orderless :straight t
- :init
-  (setq completion-styles '(orderless)
-        completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))))
+  :commands (orderless-filter))
+
+(use-package fussy
+  :straight t
+  :config
+  (push 'fussy completion-styles)
+  (setq
+   ;; For example, project-find-file uses 'project-files which uses
+   ;; substring completion by default. Set to nil to make sure it's using
+   ;; flx.
+   completion-category-defaults nil
+   completion-category-overrides nil
+   fussy-filter-fn 'fussy-filter-orderless))
 
 (bind-key "C-n" 'minibuffer-next-completion 'minibuffer-mode-map)
 (bind-key "C-p" 'minibuffer-previous-completion 'minibuffer-mode-map)
@@ -294,6 +304,42 @@
 (setq completion-wrap-movement t)
 (setq completions-max-height 20)
 (setq completions-format 'one-column)
+
+(use-package icomplete
+  :ensure nil
+  :bind (:map icomplete-minibuffer-map
+	      ("C-." . embark-act))
+  :init
+  (defun fussy-fido-setup ()
+    "Use `fussy' with `fido-mode'."
+    (setq-local completion-styles '(fussy basic)))
+  (advice-add 'icomplete--fido-mode-setup :after 'fussy-fido-setup)
+  (setq icomplete-tidy-shadowed-file-names t
+	icomplete-show-matches-on-no-input t
+	icomplete-compute-delay 0
+	icomplete-delay-completions-threshold 50)
+  (fido-mode 1))
+
+(use-package company :straight t
+  :diminish t
+  :config
+  (defun bb-company-capf (f &rest args)
+  "Manage `completion-styles'."
+  (if (length< company-prefix 2)
+      (let ((completion-styles (remq 'fussy completion-styles)))
+        (apply f args))
+    (apply f args)))
+
+(defun bb-company-transformers (f &rest args)
+  "Manage `company-transformers'."
+  (if (length< company-prefix 2)
+      (apply f args)
+    (let ((company-transformers '(fussy-company-sort-by-completion-score)))
+      (apply f args))))
+
+(advice-add 'company--transform-candidates :around 'bb-company-transformers)
+(advice-add 'company-capf :around 'bb-company-capf)
+(global-company-mode))
 
 (use-package emacs
  :init
@@ -457,6 +503,7 @@ if one already exists."
   :hook (magit-mode . magit-delta-mode))
 
 (use-package ibuffer-vc :straight t
+  :bind ("C-x C-b" . ibuffer)
   :hook (ibuffer-mode . (lambda ()
 			  (ibuffer-vc-set-filter-groups-by-vc-root)
 			  (unless (eq ibuffer-sorting-mode 'alphabetic)
@@ -548,7 +595,7 @@ if one already exists."
 (setq-default line-spacing .2)
 
 (setq my/fixed-font "Berkeley Mono")
-(setq my/font-height 13)
+(setq my/font-height 15)
 
 (setq default-frame-alist
       (append (list
