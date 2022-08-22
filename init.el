@@ -33,6 +33,22 @@
  :config
  (setq completion-cycle-threshold 3)
 
+(use-package boon
+  :straight t
+  :init
+  (require 'boon-colemak)
+  (boon-mode 1)
+  :bind (("C-x f" . find-file)
+	 ("C-x s" . save-buffer)
+	 ("C-x C-s" . save-some-buffers)
+         ("C-x e" . eval-last-sexp)
+	 (:map boon-command-map
+	       ("p" . consult-line)
+               (";" . boon-toggle-mark)
+               ("'" . boon-end-of-line)
+               ("v" . boon-replace-by-character)
+               ("d" . boon-set-insert-like-state))))
+
  (setq tab-always-indent 'complete)
  (unless (version<= emacs-version "28.0")
    (repeat-mode 1)
@@ -104,7 +120,8 @@
 (use-package ace-window :straight t
   :custom
   (aw-scope 'frame)
-  :bind (("C-x o" . ace-window)
+  :bind (("C-x C-o" . ace-window)
+	 ("C-x o" . delete-blank-lines)
 	 ("M-o" . ace-window)))
 
 (winner-mode +1)
@@ -214,7 +231,7 @@
          ("C-c k" . consult-kmacro)
          ;; C-x bindings (ctl-x-map)
          ("C-x M-:" . consult-complex-command) ;; orig. repeat-complex-command
-         ("C-x b" . consult-buffer) ;; orig. switch-to-buffer
+         ("C-x C-b" . consult-buffer) ;; orig. switch-to-buffer
          ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
          ("C-x 5 b" . consult-buffer-other-frame) ;; orig. switch-to-buffer-other-frame
          ;; Custom M-#' bindings for fast register access
@@ -225,22 +242,22 @@
          ("M-y" . consult-yank-pop)     ;; orig. yank-pop
          ("<help> a" . consult-apropos) ;; orig. apropos-command
          ;; M-g bindings (goto-map)
-         ("M-g C-E" . consult-compile-error)
-         ("M-g C-o" . consult-outline)
-         ("M-g C-m" . consult-mark)
-         ("M-g C-k" . consult-global-mark)
-         ("M-g C-i" . consult-imenu)
-	 ("M-g C-e" . consult-flymake)
+         ("M-g E" . consult-compile-error)
+         ("M-g o" . consult-outline)
+         ("M-g m" . consult-mark)
+         ("M-g k" . consult-global-mark)
+         ("M-g i" . consult-imenu)
+	 ("M-g e" . consult-flymake)
          ([remap imenu] . consult-imenu)
          ("M-g	I" . consult-project-imenu)
 	 ("M-i" . consult-imenu)
          ;; M-s bindings (search-map)
-         ("M-s C-f" . consult-find)
-         ("M-s C-L" . consult-locate)
-         ("M-s C-g" . consult-git-grep)
-         ("M-s C-m" . consult-multi-occur)
-         ("M-s C-k" . consult-keep-lines)
-         ("M-s C-U" . consult-focus-lines)
+         ("M-s f" . consult-find)
+         ("M-s L" . consult-locate)
+         ("M-s g" . consult-git-grep)
+         ("M-s m" . consult-multi-occur)
+         ("M-s k" . consult-keep-lines)
+         ("M-s U" . consult-focus-lines)
          ;; Isearch integration
          ("M-s e" . consult-isearch)
          (:map isearch-mode-map
@@ -339,7 +356,12 @@
 
 (advice-add 'company--transform-candidates :around 'bb-company-transformers)
 (advice-add 'company-capf :around 'bb-company-capf)
-(global-company-mode))
+(global-company-mode 1))
+
+(use-package company-posframe :straight t
+  :config
+  (setq company-tooltip-minimum-width 40)
+  (company-posframe-mode 1))
 
 (use-package emacs
  :init
@@ -498,12 +520,8 @@ if one already exists."
   :config
   (global-diff-hl-mode))
 
-(use-package magit-delta :straight t
-  :diminish magit-delta-mode
-  :hook (magit-mode . magit-delta-mode))
-
 (use-package ibuffer-vc :straight t
-  :bind ("C-x C-b" . ibuffer)
+  :bind ("C-x b" . ibuffer)
   :hook (ibuffer-mode . (lambda ()
 			  (ibuffer-vc-set-filter-groups-by-vc-root)
 			  (unless (eq ibuffer-sorting-mode 'alphabetic)
@@ -595,7 +613,16 @@ if one already exists."
 (setq-default line-spacing .2)
 
 (setq my/fixed-font "Berkeley Mono")
-(setq my/font-height 15)
+(setq my/font-height 12)
+(set-face-attribute 'variable-pitch nil
+                    :font "SF UI Display"
+                    :height (* my/font-height 10))
+(set-face-attribute 'fixed-pitch nil
+                    :font my/fixed-font
+                    :height (* my/font-height 10))
+(set-face-attribute 'default nil
+                    :font my/fixed-font
+                    :height (* my/font-height 10))
 
 (setq default-frame-alist
       (append (list
@@ -607,15 +634,7 @@ if one already exists."
                '(ns-transparent-titlebar . t)
                '(menu-bar-lines . 0)
                '(tool-bar-lines . 0))))
-(set-face-attribute 'default nil
-                    :font my/fixed-font
-                    :height (* my/font-height 10))
-(set-face-attribute 'variable-pitch nil
-                    :font "SF UI Display"
-                    :height (* my/font-height 10))
-(set-face-attribute 'fixed-pitch nil
-                    :font my/fixed-font
-                    :height (* my/font-height 10))
+
 
 (use-package modus-themes :straight t
   :config
@@ -644,9 +663,9 @@ if one already exists."
   (setq modus-themes-fringes nil
 	modus-themes-hl-line '(accented underline)
         modus-themes-subtle-line-numbers t
-        modus-themes-mode-line '(borderless 2)
         modus-themes-tabs-accented nil)
   (modus-themes-load-operandi))
+
 (setq-default mode-line-format
       '("%e"
         mode-line-front-space ;; XFK inserts mode info here
@@ -674,6 +693,8 @@ if one already exists."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("02f30097c5840767499ed2f76d978545f6fb3a1c3ba59274576f7e23fc39d30b" "8f85f336a6d3ed5907435ea196addbbbdb172a8d67c6f7dbcdfa71cd2e8d811a" "b69d8a1a142cde4bbde2f940ac59d2148e987cd235d13d6c4f412934978da8ab" default))
  '(warning-suppress-log-types '((comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
