@@ -29,26 +29,7 @@
         ("M-l" . downcase-dwim)
         ("M-c" . capitalize-dwim))
  :config
- (setq completion-cycle-threshold 3)
-
-(use-package boon
-  :straight t
-  :init
-  (require 'boon-colemak)
-  (boon-mode 1)
-  :bind (("C-x f" . find-file)
-	 ("C-x s" . save-buffer)
-	 ("C-x C-s" . save-some-buffers)
-         ("C-x e" . eval-last-sexp)
- (:map boon-command-map
-	        ("p" . consult-line))
-                ;;(";" . boon-toggle-mark)
-                ;;("'" . boon-end-of-line)
-                ;;("h" . boon-qsearch-previous-at-point)
-                ;;("m" . avy-goto-word-1)
-                ;;("v" . boon-replace-by-character)
-                ;;("d" . boon-set-insert-like-state))
-               ))
+ (setq completion-cycle-threshold 3))
 
  (setq tab-always-indent 'complete)
  (unless (version<= emacs-version "28.0")
@@ -86,6 +67,20 @@
    ("C-h v" . helpful-variable)
    ("C-h k" . helpful-key))
 
+(use-package boon
+  :straight t
+  :init
+  (require 'boon-colemak)
+  (boon-mode 1)
+  :bind (("C-x f" . find-file)
+	     ("C-x s" . save-buffer)
+	     ("C-x C-s" . save-some-buffers)
+         ("C-x e" . eval-last-sexp)
+ (:map boon-command-map
+	   ("p" . consult-line)
+       ("%" . anzu-query-replace-regexp)
+       ("&" . async-shell-command))
+       ("^" . delete-indentation)))
 (use-package expand-region :straight t)
 
 (setq sentence-end-double-space nil)
