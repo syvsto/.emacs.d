@@ -14,9 +14,7 @@
 
 ;; Setup use-package
 (straight-use-package 'use-package)
-(use-package diminish :straight t)
 (global-auto-revert-mode 1)
-(diminish 'auto-revert-mode)
 
 ;; Performance tweaks
 (setq gc-cons-threshold 100000000)
@@ -42,12 +40,15 @@
 	 ("C-x s" . save-buffer)
 	 ("C-x C-s" . save-some-buffers)
          ("C-x e" . eval-last-sexp)
-	 (:map boon-command-map
-	       ("p" . consult-line)
-               (";" . boon-toggle-mark)
-               ("'" . boon-end-of-line)
-               ("v" . boon-replace-by-character)
-               ("d" . boon-set-insert-like-state))))
+ (:map boon-command-map
+	        ("p" . consult-line))
+                ;;(";" . boon-toggle-mark)
+                ;;("'" . boon-end-of-line)
+                ;;("h" . boon-qsearch-previous-at-point)
+                ;;("m" . avy-goto-word-1)
+                ;;("v" . boon-replace-by-character)
+                ;;("d" . boon-set-insert-like-state))
+               ))
 
  (setq tab-always-indent 'complete)
  (unless (version<= emacs-version "28.0")
@@ -57,22 +58,6 @@
    (define-key winner-repeat-map (kbd "<right>") #'winner-redo)
    (put 'winner-undo 'repeat-map 'winner-repeat-map)))
  
-;; Platform specifics
-(when (memq window-system '(mac ns x))
-  (progn
-    (use-package exec-path-from-shell :straight t
-      :config
-      (exec-path-from-shell-initialize))
-    (use-package ns-auto-titlebar :straight t
-      :config
-      (ns-auto-titlebar-mode))
-    (setq-default mac-option-modifier 'meta)
-    (setq delete-by-moving-to-trash 'system-move-file-to-trash)
-    (setq ns-right-option-modifier nil
-	  mac-right-option-modifier nil
-          mac-command-modifier 'super)))
-
-
 ;; some options that make Emacs a less intrusive OS citizen
 (setq frame-resize-pixelwise t)
 (use-package no-littering :straight t)
@@ -90,11 +75,9 @@
 
 ;; Documentation enhancements
 (use-package which-key :straight t
-  :diminish which-key-mode
   :config (which-key-mode +1))
 
 (use-package eldoc :ensure nil
-  :diminish eldoc-mode
   :config
   (eldoc-mode +1))
 
@@ -208,7 +191,6 @@
 
 ;; Searching
 (use-package anzu :straight t
-  :diminish anzu-mode
   :bind ([remap query-replace] . anzu-query-replace)
   :config
   (global-anzu-mode +1))
@@ -231,7 +213,7 @@
          ("C-c k" . consult-kmacro)
          ;; C-x bindings (ctl-x-map)
          ("C-x M-:" . consult-complex-command) ;; orig. repeat-complex-command
-         ("C-x C-b" . consult-buffer) ;; orig. switch-to-buffer
+         ("C-x b" . consult-buffer) ;; orig. switch-to-buffer
          ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
          ("C-x 5 b" . consult-buffer-other-frame) ;; orig. switch-to-buffer-other-frame
          ;; Custom M-#' bindings for fast register access
@@ -314,32 +296,14 @@
    completion-category-overrides nil
    fussy-filter-fn 'fussy-filter-orderless))
 
-(bind-key "C-n" 'minibuffer-next-completion 'minibuffer-mode-map)
-(bind-key "C-p" 'minibuffer-previous-completion 'minibuffer-mode-map)
-(setq completion-auto-select 'second-tab)
-(add-hook 'completion-list-mode-hook (lambda () (setq truncate-lines t)))
-(setq completion-wrap-movement t)
-(setq completions-max-height 20)
-(setq completions-format 'one-column)
-
-(use-package icomplete
-  :ensure nil
-  :bind (:map icomplete-minibuffer-map
-	      ("C-." . embark-act))
-  :init
-  (defun fussy-fido-setup ()
-    "Use `fussy' with `fido-mode'."
-    (setq-local completion-styles '(fussy basic)))
-  (advice-add 'icomplete--fido-mode-setup :after 'fussy-fido-setup)
-  (setq icomplete-tidy-shadowed-file-names t
-	icomplete-show-matches-on-no-input t
-	icomplete-compute-delay 0
-	icomplete-delay-completions-threshold 50)
-  (fido-mode 1))
+(use-package vertico :straight t
+  :config
+  (vertico-mode 1))
 
 (use-package company :straight t
-  :diminish t
   :config
+  (setq company-minimum-prefix-length 1)
+  (setq company-idle-delay 0)
   (defun bb-company-capf (f &rest args)
   "Manage `completion-styles'."
   (if (length< company-prefix 2)
@@ -368,6 +332,7 @@
  (setq minibuffer-prompt-properties
    '(read-only t cursor-intangible t face minibuffer-prompt))
  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+ (add-hook 'minibuffer-setup-hook #'(lambda () (setq-local truncate-lines t)))
 
 ;; Enable recursive minibuffers
 (setq enable-recursive-minibuffers t ))
@@ -437,7 +402,6 @@ if one already exists."
 (use-package tree-sitter-langs :straight t)
 (use-package tree-sitter-indent :straight t)
 (use-package tree-sitter :straight t
- :diminish tree-sitter-mode
  :hook (typescript-mode . tree-sitter-hl-mode)
  :config
  (setf (alist-get 'typescript-tsx-mode tree-sitter-major-mode-language-alist) 'tsx))
@@ -521,7 +485,7 @@ if one already exists."
   (global-diff-hl-mode))
 
 (use-package ibuffer-vc :straight t
-  :bind ("C-x b" . ibuffer)
+  :bind ("C-x C-b" . ibuffer)
   :hook (ibuffer-mode . (lambda ()
 			  (ibuffer-vc-set-filter-groups-by-vc-root)
 			  (unless (eq ibuffer-sorting-mode 'alphabetic)
@@ -579,115 +543,51 @@ if one already exists."
       org-fontify-quote-and-verse-blocks t)
 (put 'narrow-to-region 'disabled nil)
 
-(use-package org-modern :straight t
-  :hook ((org-mode . org-modern-mode)
-	 (org-agenda-finalize . org-modern-agenda))
-  :config
-  (setq
- ;; Edit settings
- org-catch-invisible-edits 'show-and-error
- org-special-ctrl-a/e t
- org-insert-heading-respect-content t
-
- ;; Org styling, hide markup etc.
- org-hide-emphasis-markers t
- org-pretty-entities t
- org-ellipsis "…"
-
- ;; Agenda styling
- org-agenda-block-separator ?─
- org-agenda-time-grid
- '((daily today require-timed)
-   (800 1000 1200 1400 1600 1800 2000)
-   " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄")
- org-agenda-current-time-string "⭠ now ─────────────────────────────────────────────────"))
-
-(setq org-timestamp-12-hours t)
-(setq org-hide-all-non-scheduled-items t)
-(setq org-disable-context-file t)
+(add-hook 'org-mode-hook #'writer-mode)
+(add-hook 'writer-mode-hook #'org-num-mode)
 
 (use-package async :straight t)
 
 ;; Looks
-
-(setq-default line-spacing .2)
-
-(setq my/fixed-font "Berkeley Mono")
-(setq my/font-height 12)
-(set-face-attribute 'variable-pitch nil
-                    :font "SF UI Display"
-                    :height (* my/font-height 10))
-(set-face-attribute 'fixed-pitch nil
-                    :font my/fixed-font
-                    :height (* my/font-height 10))
-(set-face-attribute 'default nil
-                    :font my/fixed-font
-                    :height (* my/font-height 10))
-
-(setq default-frame-alist
-      (append (list
-	       `(font . ,my/fixed-font)
-	       '(min-height . 1)  '(height     . 45)
-	       '(min-width  . 1)  '(width      . 101)
-               '(vertical-scroll-bars . nil)
-               '(internal-border-width . 24) ;; frame padding around the text
-               '(ns-transparent-titlebar . t)
-               '(menu-bar-lines . 0)
-               '(tool-bar-lines . 0))))
-
-
-(use-package modus-themes :straight t
+(use-package nano :straight (:type git :host github :repo "rougier/nano-emacs"))
+(use-package mini-frame :straight t)
+(use-package nano-faces :after nano)
+(use-package nano-theme :after nano)
+(use-package nano-base-colors :after nano)
+(use-package nano-colors :after nano)
+(use-package nano-modeline :after nano)
+(use-package svg-tag-mode :straight t
   :config
-  (setq modus-themes-italic-constructs t
-	modus-themes-bold-contstructs t
-        modus-themes-org-blocks 'tinted-background ; {nil,'gray-background,'tinted-background}
-	modus-themes-variable-pitch-ui t
-	modus-themes-mixed-fonts t
-	modus-themes-paren-match nil
-	modus-themes-syntax '(faint)
-	modus-themes-prompts '(background bold)
-	modus-themes-org-blocks 'rainbow
-	modus-themes-org-agenda ; this is an alist: read the manual or its doc string
-	'((header-block . (variable-pitch 1.3))
-          (header-date . (grayscale workaholic bold-today 1.1))
-          (event . (accented varied))
-          (scheduled . uniform)
-          (habit . traffic-light))
-	modus-themes-headings ; this is an alist: read the manual or its doc string
-	'((1 . (overline background variable-pitch 1.8))
-	  (2 . (overline background variable-pitch 1.5))
-	  (3 . (overline background 1.3))
-	  (4 . (background 1.2))
-	  (4 . (1.1))
-	  (t . (semibold))))
-  (setq modus-themes-fringes nil
-	modus-themes-hl-line '(accented underline)
-        modus-themes-subtle-line-numbers t
-        modus-themes-tabs-accented nil)
-  (modus-themes-load-operandi))
-
-(setq-default mode-line-format
-      '("%e"
-        mode-line-front-space ;; XFK inserts mode info here
-        mode-line-frame-identification
-        mode-line-buffer-identification
-        " " ;; Sometimes this touches in magit buffers
-        mode-line-position
-        " "
-        mode-line-modes ;; to just show the major mode, use `mode-name'
-        "%n"  ;; narrowing
-        mode-line-misc-info
-        mode-line-end-spaces))
+  (setq svg-tag-tags
+      '(("\\(:#[A-Za-z0-9]+\\)" . ((lambda (tag)
+                                     (svg-tag-make tag :beg 2))))
+        ("\\(:#[A-Za-z0-9]+:\\)$" . ((lambda (tag)
+                                       (svg-tag-make tag :beg 2 :end -1))))))
+  (global-svg-tag-mode 1))
 
 ;; Custom packages
 (use-package tracer
-  :diminish tracer-mode
   :load-path "site-lisp/"
   :hook (prog-mode . tracer-mode))
 
 (use-package observable-dataflow-mode
   :straight (:host github :repo "syvsto/observable-dataflow-mode"))
 
+
+;; Platform specifics
+(when (memq window-system '(mac ns x))
+  (progn
+    (use-package exec-path-from-shell :straight t
+      :config
+      (exec-path-from-shell-initialize))
+    (use-package ns-auto-titlebar :straight t
+      :config
+      (ns-auto-titlebar-mode))
+    (setq-default mac-option-modifier 'meta)
+    (setq delete-by-moving-to-trash 'system-move-file-to-trash)
+    (setq ns-right-option-modifier nil
+	      mac-right-option-modifier nil
+          mac-command-modifier 'super)))
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
