@@ -92,6 +92,8 @@
    `(org-footnote  ((,class (:underline t))))
    `(org-link ((,class (:underline t))))
    `(org-special-keyword ((,class (:foreground ,fg))))
+   `(org-todo ((,class (:foreground ,blue))))
+   `(org-done ((,class (:foreground ,fg2))))
 
    `(org-agenda-structure ((,class (:foreground ,fg2))))
 
@@ -256,7 +258,6 @@
    `(lsp-ui-peek-filename ((,class (:foreground ,fg :italic t))))
    `(lsp-ui-peek-highlight ((,class (:foreground ,fg :background ,blue-light))))
    `(lsp-ui-peek-selection ((,class (:foreground ,bg-lighter :background ,fg))))))
-
 
 ;;;###autoload
 (when load-file-name

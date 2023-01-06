@@ -30,14 +30,13 @@
         ("M-c" . capitalize-dwim))
  :config
  (setq completion-cycle-threshold 3))
-
  (setq tab-always-indent 'complete)
  (unless (version<= emacs-version "28.0")
    (repeat-mode 1)
    (defvar winner-repeat-map (make-sparse-keymap) "A map for repeating `winner-mode' keys.")
    (define-key winner-repeat-map (kbd "<left>") #'winner-undo)
    (define-key winner-repeat-map (kbd "<right>") #'winner-redo)
-   (put 'winner-undo 'repeat-map 'winner-repeat-map)))
+   (put 'winner-undo 'repeat-map 'winner-repeat-map))
  
 ;; some options that make Emacs a less intrusive OS citizen
 (setq frame-resize-pixelwise t)
@@ -59,6 +58,7 @@
   :config (which-key-mode +1))
 
 (use-package eldoc :ensure nil
+  :bind ("C-h ." . eldoc)
   :config
   (eldoc-mode +1))
 
@@ -73,11 +73,17 @@
   (require 'boon-colemak)
   (boon-mode 1)
   :bind (("C-x f" . find-file)
-	     ("C-x s" . save-buffer)
-	     ("C-x C-s" . save-some-buffers)
+	 ("C-x s" . save-buffer)
+	 ("C-x C-s" . save-some-buffers)
          ("C-x e" . eval-last-sexp)
  (:map boon-command-map
-	   ("p" . consult-line)
+               ;; (";" . boon-toggle-mark)
+               ;; ("'" . boon-end-of-line)
+               ;; ("v" . boon-replace-by-character)
+               ;; ("d" . boon-set-insert-like-state)
+               ;; ("h" . boon-qsearch-previous-at-point)
+               ;; ("m" . avy-goto-word-1)
+       ("p" . consult-line) ;
        ("%" . anzu-query-replace-regexp)
        ("&" . async-shell-command))
        ("^" . delete-indentation)))
@@ -129,35 +135,25 @@
  (advice-add command :after #'my/pulse-line))
 
 ;; File management
-(setq dired-dwim-target t)
-
-(use-package dired :ensure nil
-  :hook (dired-mode . dired-hide-details-mode))
-
 (use-package all-the-icons :straight t)
 
-(use-package all-the-icons-dired :straight t
-  :hook (dired-mode . all-the-icons-dired-mode))
+(use-package dirvish :straight (dirvish :files (:defaults "extensions/") :includes (dirvish-icons))
+  :config
+  (dirvish-override-dired-mode 1))
 
-(use-package dired-hacks-utils :straight t
-  :bind ((:map dired-mode-map
-	       ([remap dired-next-line] . dired-hacks-next-file)
-               ([remap dired-pervious-line] . dired-hacks-previous-file)))
-  :hook (dired-mode . dired-utils-format-information-line-mode))
-
-(use-package dired-filter :straight t)
-(use-package dired-open :straight t)
-(use-package dired-subtree :straight t
-  :custom (dired-subtree-use-backgrounds nil)
-  :bind (:map dired-mode-map
-	      ("TAB" . dired-subtree-toggle)))
-(use-package dired-collapse :straight t
-  :hook (dired-mode . dired-collapse-mode))
-              
 (use-package rgrep
   :bind ("M-s g" . rgrep))
 
-(use-package wgrep :straight t)
+(use-package grep
+  :hook ((grep-mode . toggle-truncate-lines)))
+
+(use-package wgrep :straight t
+  :config
+  (setq wgrep-auto-save-buffer t)
+  (setq wgrep-change-readonly-file t)
+  :bind (:map grep-mode-map
+	      ("e" . wgrep-change-to-wgrep-mode)
+              ("C-x C-q" . wgrep-change-to-wgrep-mode)))
 
 (use-package view
  :ensure nil
@@ -231,6 +227,7 @@
          ;; M-s bindings (search-map)
          ("M-s f" . consult-find)
          ("M-s L" . consult-locate)
+         ("M-s r" . consult-ripgrep)
          ("M-s g" . consult-git-grep)
          ("M-s m" . consult-multi-occur)
          ("M-s k" . consult-keep-lines)
@@ -251,11 +248,6 @@
           (when-let (project (project-current))
             (car (project-roots project))))))
 
-(use-package deadgrep :straight t
-  :bind ("M-s r" . deadgrep))
-
-(bind-key "C-c d" 'flymake-show-buffer-diagnostics prog-mode-map)
-(bind-key "C-c D" 'flymake-show-project-diagnostics prog-mode-map)
 
 (use-package marginalia :straight t
   :init (marginalia-mode))
@@ -277,50 +269,53 @@
   (savehist-mode))
 
 (use-package orderless :straight t
-  :commands (orderless-filter))
-
-(use-package fussy
-  :straight t
-  :config
-  (push 'fussy completion-styles)
-  (setq
-   ;; For example, project-find-file uses 'project-files which uses
-   ;; substring completion by default. Set to nil to make sure it's using
-   ;; flx.
-   completion-category-defaults nil
-   completion-category-overrides nil
-   fussy-filter-fn 'fussy-filter-orderless))
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles . (partial-completion))))))
 
 (use-package vertico :straight t
   :config
   (vertico-mode 1))
 
-(use-package company :straight t
+;; (use-package company :straight t
+;;   :config
+;;   (setq company-minimum-prefix-length 1)
+;;   (setq company-idle-delay 0)
+;;   (global-company-mode 1))
+
+;; (use-package company-posframe :straight t
+;;   :config
+;;   (setq company-tooltip-minimum-width 40)
+;;   (company-posframe-mode 1))
+
+(use-package corfu :straight t
+  :init (global-corfu-mode))
+
+(use-package corfu-popupinfo
+  :after corfu
+  :config (corfu-popupinfo-mode 1)
+  :straight (:host github :repo "emacs-straight/corfu"
+             :files ("extensions/corfu-popupinfo.el"))
+  :bind (:map corfu-map
+         ([remap corfu-info-documentation] . corfu-popupinfo-toggle)))
+
+(use-package corfu-quick
+  :after corfu
+  :straight (:host github :repo "emacs-straight/corfu"
+             :files ("extensions/corfu-quick.el"))
+  :bind (:map corfu-map
+         ("C-'" . corfu-quick-complete)))
+
+(use-package kind-icon
+  :straight t
+  :after corfu
+  :custom
+  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
   :config
-  (setq company-minimum-prefix-length 1)
-  (setq company-idle-delay 0)
-  (defun bb-company-capf (f &rest args)
-  "Manage `completion-styles'."
-  (if (length< company-prefix 2)
-      (let ((completion-styles (remq 'fussy completion-styles)))
-        (apply f args))
-    (apply f args)))
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
-(defun bb-company-transformers (f &rest args)
-  "Manage `company-transformers'."
-  (if (length< company-prefix 2)
-      (apply f args)
-    (let ((company-transformers '(fussy-company-sort-by-completion-score)))
-      (apply f args))))
-
-(advice-add 'company--transform-candidates :around 'bb-company-transformers)
-(advice-add 'company-capf :around 'bb-company-capf)
-(global-company-mode 1))
-
-(use-package company-posframe :straight t
-  :config
-  (setq company-tooltip-minimum-width 40)
-  (company-posframe-mode 1))
+(use-package cape :straight t)
 
 (use-package emacs
  :init
@@ -341,10 +336,39 @@
 
 ;; LSP support
 (use-package lsp-mode :straight t
+  :disabled
   :hook ((typescript-tsx-mode typescript-mode javascript-mode javascript-jsx-mode d-mode zig-mode python-mode) . lsp)
   :custom
   (lsp-headerline-breadcrumb-enable nil)
   (lsp-keymap-prefix "C-c l"))
+
+(use-package flymake
+  :straight t
+  :bind (:map prog-mode-map
+	      ("C-c d" . flymake-show-buffer-diagnostics)
+	      ("C-c D" . flymake-show-project-diagnostics)))
+
+(use-package flymake-diagnostic-at-point
+  :straight t
+  :after flymake
+  :hook (flymake-mode . flymake-diagnostic-at-point-mode)
+  :config (setq flymake-diagnostic-at-point-display-diagnostic-function
+                'flymake-diagnostic-at-point-display-popup))
+
+(use-package eglot
+  :straight t
+  :config
+  (setq eglot-events-buffer-size 0)
+  (setq eglot-extend-to-xref t)
+  (setq eglot-put-doc-in-help-buffer nil)
+   (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
+   (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
+
+   (bind-key "C-c C-o C-i" #'eglot-code-action-organize-imports 'eglot-mode-map (not (or (eql major-mode 'typescript-mode) (eql major-mode 'typescript-tsx-mode))))
+   (bind-key "C-c C-o C-i" #'eglot-code-action-organize-imports-ts 'eglot-mode-map (or (eql major-mode 'typescript-mode) (eql major-mode 'typescript-tsx-mode)))
+   :bind (:map eglot-mode-map
+	       ("C-c C-a" . eglot-code-actions)
+               ("C-c C-r" . eglot-rename)))
   
 (use-package yasnippet :straight t
   :config
@@ -378,6 +402,7 @@ if one already exists."
    (nconc project-switch-commands '((magit-status "Magit") (project-vterm "Vterm")))))
 
 
+
 ;; Language specifics
 (bind-key "C-c C-c" 'eval-defun)
 
@@ -387,7 +412,10 @@ if one already exists."
  :mode (rx ".ts" string-end)
  :custom
  (typescript-indent-level 4)
- :init (define-derived-mode typescript-tsx-mode typescript-mode "typescript-tsx")
+ :bind (:map typescript-mode-map
+             ("C-c C-o C-m" . eglot-code-action-add-missing-imports-ts))
+ :init
+ (define-derived-mode typescript-tsx-mode typescript-mode "typescript-tsx")
  (add-to-list 'auto-mode-alist (cons (rx ".tsx" string-end) #'typescript-tsx-mode)))
 
 (use-package csharp-mode :straight t
@@ -543,22 +571,104 @@ if one already exists."
 
 (use-package async :straight t)
 
+
+;; Other filetypes
+(add-hook 'doc-view-mode #'(lambda () (setq-local visible-cursor nil)))
+
 ;; Looks
-(use-package nano :straight (:type git :host github :repo "rougier/nano-emacs"))
-(use-package mini-frame :straight t)
-(use-package nano-faces :after nano)
-(use-package nano-theme :after nano)
-(use-package nano-base-colors :after nano)
-(use-package nano-colors :after nano)
-(use-package nano-modeline :after nano)
-(use-package svg-tag-mode :straight t
+(use-package mini-frame :straight t
   :config
+  (setq mini-frame-internal-border-color (face-foreground 'default))
+  (setq mini-frame-show-parameters '((height . 1) (width . 0.7) (left . 0.5) (top . 0.1)))
+  (setq mini-frame-color-shift-step -10)
+  (mini-frame-mode 1))
+
+(use-package nano-modeline :straight t
+  :config
+  (nano-modeline-mode 1))
+
+(use-package ceres-theme
+  :load-path "themes/"
+  :config
+  (load-theme 'ceres t))
+
+(set-face-attribute 'default nil :font "Berkeley Mono" :height 130)
+(set-face-attribute 'variable-pitch nil :font "Baskerville" :height 160)
+(set-face-attribute 'fixed-pitch nil :font "Berkeley Mono" :height 130)
+(setq line-spacing 0.1)
+
+(setq default-frame-alist
+      (append (list
+	       '(min-height . 1)  '(height     . 45)
+	       '(min-width  . 1)  '(width      . 101)
+               '(vertical-scroll-bars . nil)
+               '(internal-border-width . 24) ;; frame padding around the text
+               '(ns-transparent-titlebar . t)
+               '(menu-bar-lines . 0)
+               '(tool-bar-lines . 0))))
+
+
+(use-package svg-tag-mode :straight t
+  :hook ((prog-mode text-mode) . svg-tag-mode)
+  :config
+  (defun svg-progress-percent (value)
+    (svg-image (svg-lib-concat
+		(svg-lib-progress-bar (/ (string-to-number value) 100.0)
+                                      nil :margin 0 :stroke 2 :radius 3 :padding 2 :width 11)
+		(svg-lib-tag (concat value "%")
+                             nil :stroke 0 :margin 0)) :ascent 'center))
+
+  (defun svg-progress-count (value)
+    (let* ((seq (mapcar #'string-to-number (split-string value "/")))
+           (count (float (car seq)))
+           (total (float (cadr seq))))
+      (svg-image (svg-lib-concat
+                  (svg-lib-progress-bar (/ count total) nil
+					:margin 0 :stroke 2 :radius 3 :padding 2 :width 11)
+                  (svg-lib-tag value nil
+                               :stroke 0 :margin 0)) :ascent 'center)))
+
+  (defconst date-re "[0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}")
+  (defconst time-re "[0-9]\\{2\\}:[0-9]\\{2\\}")
+  (defconst day-re "[A-Za-z]\\{3\\}")
+  (defconst day-time-re (format "\\(%s\\)? ?\\(%s\\)?" day-re time-re))
+
   (setq svg-tag-tags
-      '(("\\(:#[A-Za-z0-9]+\\)" . ((lambda (tag)
-                                     (svg-tag-make tag :beg 2))))
-        ("\\(:#[A-Za-z0-9]+:\\)$" . ((lambda (tag)
-                                       (svg-tag-make tag :beg 2 :end -1))))))
-  (global-svg-tag-mode 1))
+	`(("\\(:#[A-Za-z0-9]+\\)" . ((lambda (tag)
+                                       (svg-tag-make tag :beg 2))))
+          ("TODO" . ((lambda (tag)
+                       (svg-tag-make tag :face 'org-todo :inverse t :margin 0))))
+          ("DONE" . ((lambda (tag)
+                       (svg-tag-make tag :face 'org-done :margin 0))))
+          ("\\(\\[[0-9]\\{1,3\\}%\\]\\)" . ((lambda (tag)
+                                              (svg-progress-percent (substring tag 1 -2)))))
+          ("\\(\\[[0-9]+/[0-9]+\\]\\)" . ((lambda (tag)
+                                            (svg-progress-count (substring tag 1 -1)))))
+          ("\\(:#[A-Za-z0-9]+:\\)$" . ((lambda (tag)
+					 (svg-tag-make tag :beg 2 :end -1))))
+          ("\\[#[A-Z]\\]" . ( (lambda (tag)
+				(svg-tag-make tag :face 'org-priority 
+                                              :beg 2 :end -1 :margin 0))))
+          (,(format "\\(<%s>\\)" date-re) .
+           ((lambda (tag)
+              (svg-tag-make tag :beg 1 :end -1 :margin 0))))
+          (,(format "\\(<%s \\)%s>" date-re day-time-re) .
+           ((lambda (tag)
+              (svg-tag-make tag :beg 1 :inverse nil :crop-right t :margin 0))))
+          (,(format "<%s \\(%s>\\)" date-re day-time-re) .
+           ((lambda (tag)
+              (svg-tag-make tag :end -1 :inverse t :crop-left t :margin 0))))
+
+          ;; Inactive date  (with or without day name, with or without time)
+          (,(format "\\(\\[%s\\]\\)" date-re) .
+           ((lambda (tag)
+              (svg-tag-make tag :beg 1 :end -1 :margin 0 :face 'org-date))))
+          (,(format "\\(\\[%s \\)%s\\]" date-re day-time-re) .
+           ((lambda (tag)
+              (svg-tag-make tag :beg 1 :inverse nil :crop-right t :margin 0 :face 'org-date))))
+          (,(format "\\[%s \\(%s\\]\\)" date-re day-time-re) .
+           ((lambda (tag)
+              (svg-tag-make tag :end -1 :inverse t :crop-left t :margin 0 :face 'org-date)))))))
 
 ;; Custom packages
 (use-package tracer
@@ -589,7 +699,7 @@ if one already exists."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("02f30097c5840767499ed2f76d978545f6fb3a1c3ba59274576f7e23fc39d30b" "8f85f336a6d3ed5907435ea196addbbbdb172a8d67c6f7dbcdfa71cd2e8d811a" "b69d8a1a142cde4bbde2f940ac59d2148e987cd235d13d6c4f412934978da8ab" default))
+   '("7ea23ea0b792f1d5a4cd96f5698a70e5fdc4102ba81516327c0db00869b0b38f" "5a43eb67e709aef6279775b7256064b3a31699f1a6567abdf73b15379e2d6559" "198ba2f96082c9e770e4ae7bc9d89b5d2b58b8585171efdd6a90e86bdaea55da" "11f0d723bff6eb2fb450f99435848088675f50787dfb181cdca8e1c6dc07d974" "f581eca21b9fbd2898a171077a99a26cd70bef65f5aa9b4ba17fd293ae947086" "02f30097c5840767499ed2f76d978545f6fb3a1c3ba59274576f7e23fc39d30b" "8f85f336a6d3ed5907435ea196addbbbdb172a8d67c6f7dbcdfa71cd2e8d811a" "b69d8a1a142cde4bbde2f940ac59d2148e987cd235d13d6c4f412934978da8ab" default))
  '(warning-suppress-log-types '((comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
