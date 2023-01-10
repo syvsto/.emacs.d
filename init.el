@@ -137,10 +137,22 @@
 ;; File management
 (use-package all-the-icons :straight t)
 
-(use-package dirvish :straight (dirvish :files (:defaults "extensions/") :includes (dirvish-icons))
+(use-package dirvish :straight t
+  :init
+  (dirvish-override-dired-mode 1)
   :config
-  (dirvish-override-dired-mode 1))
+  (setq dirvish-use-header-line nil)
+  (setq dirvish-use-mode-line 'global)
+  (setq dirvish-attributes '(all-the-icons file-time file-size collapse subtree-state vc-state)))
+  
+(use-package dirvish-extras
+  :straight (:host github :repo "alexluigit/dirvish"
+             :files ("extensions/dirvish-extras.el")))
 
+(use-package dirvish-vc
+  :straight (:host github :repo "alexluigit/dirvish"
+             :files ("extensions/dirvish-vc.el")))
+             
 (use-package rgrep
   :bind ("M-s g" . rgrep))
 
@@ -334,14 +346,14 @@
 (use-package rainbow-delimiters :straight t
   :hook (prog-mode . rainbow-delimiters-mode))
 
-;; LSP support
-(use-package lsp-mode :straight t
-  :disabled
-  :hook ((typescript-tsx-mode typescript-mode javascript-mode javascript-jsx-mode d-mode zig-mode python-mode) . lsp)
-  :custom
-  (lsp-headerline-breadcrumb-enable nil)
-  (lsp-keymap-prefix "C-c l"))
+;; (use-package lsp-mode :straight t
+;;   :disabled
+;;   :hook ((typescript-tsx-mode typescript-mode javascript-mode javascript-jsx-mode d-mode zig-mode python-mode) . lsp)
+;;   :custom
+;;   (lsp-headerline-breadcrumb-enable nil)
+;;   (lsp-keymap-prefix "C-c l"))
 
+;; LSP support
 (use-package flymake
   :straight t
   :bind (:map prog-mode-map
@@ -576,13 +588,6 @@ if one already exists."
 (add-hook 'doc-view-mode #'(lambda () (setq-local visible-cursor nil)))
 
 ;; Looks
-(use-package mini-frame :straight t
-  :config
-  (setq mini-frame-internal-border-color (face-foreground 'default))
-  (setq mini-frame-show-parameters '((height . 1) (width . 0.7) (left . 0.5) (top . 0.1)))
-  (setq mini-frame-color-shift-step -10)
-  (mini-frame-mode 1))
-
 (use-package nano-modeline :straight t
   :config
   (nano-modeline-mode 1))

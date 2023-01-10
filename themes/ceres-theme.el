@@ -251,6 +251,8 @@
    ;; sh-mode
    `(sh-quoted-exec ((,class (:italic t :foreground ,fg))))
 
+   ;; dirvish mode
+
    ;; lsp mode
    `(lsp-face-highlight-textual ((,class (:background ,blue-light))))
 
@@ -258,6 +260,7 @@
    `(lsp-ui-peek-filename ((,class (:foreground ,fg :italic t))))
    `(lsp-ui-peek-highlight ((,class (:foreground ,fg :background ,blue-light))))
    `(lsp-ui-peek-selection ((,class (:foreground ,bg-lighter :background ,fg))))))
+
 
 ;;;###autoload
 (when load-file-name
