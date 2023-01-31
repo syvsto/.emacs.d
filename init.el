@@ -141,6 +141,7 @@
   :init
   (dirvish-override-dired-mode 1)
   :config
+  (setq dired-dwim-target t)
   (setq dirvish-use-header-line nil)
   (setq dirvish-use-mode-line 'global)
   (setq dirvish-attributes '(all-the-icons file-time file-size collapse subtree-state vc-state)))
@@ -430,9 +431,12 @@ if one already exists."
  (define-derived-mode typescript-tsx-mode typescript-mode "typescript-tsx")
  (add-to-list 'auto-mode-alist (cons (rx ".tsx" string-end) #'typescript-tsx-mode)))
 
-(use-package csharp-mode :straight t
+(use-package csharp-mode
+  :ensure nil
   :config
   (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-tree-sitter-mode)))
+
+(use-package cider :straight t)
 
 (use-package tree-sitter-langs :straight t)
 (use-package tree-sitter-indent :straight t)
@@ -514,6 +518,8 @@ if one already exists."
   :after magit
   :custom
   (forge-owned-accounts '(("syvsto"))))
+
+(use-package git-timemachine :straight t)
 
 (use-package diff-hl :straight t
   :config
