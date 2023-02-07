@@ -14,6 +14,7 @@
 
 ;; Setup use-package
 (straight-use-package 'use-package)
+(use-package diminish :straight t)
 (global-auto-revert-mode 1)
 
 ;; Performance tweaks
@@ -21,6 +22,7 @@
 (setq read-process-output-max (* 1024 1024))
 (global-so-long-mode 1)
 (global-subword-mode 1)
+(diminish 'subword-mode)
 
 ;; Swap to a bunch of more useful keybindings than the defaults
 (use-package emacs
@@ -29,14 +31,16 @@
         ("M-l" . downcase-dwim)
         ("M-c" . capitalize-dwim))
  :config
- (setq completion-cycle-threshold 3))
+ (setq completion-cycle-threshold 3)
  (setq tab-always-indent 'complete)
+
+ (setq split-height-threshold nil)
  (unless (version<= emacs-version "28.0")
    (repeat-mode 1)
    (defvar winner-repeat-map (make-sparse-keymap) "A map for repeating `winner-mode' keys.")
    (define-key winner-repeat-map (kbd "<left>") #'winner-undo)
    (define-key winner-repeat-map (kbd "<right>") #'winner-redo)
-   (put 'winner-undo 'repeat-map 'winner-repeat-map))
+   (put 'winner-undo 'repeat-map 'winner-repeat-map)))
  
 ;; some options that make Emacs a less intrusive OS citizen
 (setq frame-resize-pixelwise t)
@@ -53,12 +57,102 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 (recentf-mode +1)
 
+
+;; Modal bindings
+
+(defvar my/structured-navigation-map
+    (let ((map (make-sparse-keymap)))
+      (pcase-dolist (`(,k . ,f)
+                     '(("u" . backward-up-list)
+                       ("f" . forward-sexp)
+                       ("b" . backward-sexp)
+                       ("d" . down-list)
+                       ("n" . forward-list)
+		       ("p" . backward-list)
+		       ("a" . beginning-of-defun)
+		       ("e" . end-of-defun)
+                       ("k" . kill-sexp)
+                       ("\\" . indent-region)
+                       ("x" . eval-defun)
+                       ("t" . transpose-sexps)))
+        (define-key map (kbd k) f))
+      map))
+
+(map-keymap
+ (lambda (_ cmd)
+   (put cmd 'repeat-map 'my/structured-navigation-map))
+ my/structured-navigation-map)
+
+(defvar my/line-navigation-map
+  (let ((map (make-sparse-keymap)))
+    (pcase-dolist (`(,k . ,f)
+		   '(("n" . next-line)
+		     ("p" . previous-line)
+		     ("f" . forward-char)
+		     ("d" . delete-char)
+		     ("k" . kill-line)
+		     ("e" . move-end-of-line)
+		     ("a" . move-beginning-of-line)
+		     ("b" . backward-char)
+		     ("{" . backward-paragraph)
+		     ("}" . forward-paragraph)))
+      (define-key map (kbd k) f))
+    map))
+
+(map-keymap
+   (lambda (_ cmd)
+   (put cmd 'repeat-map 'my/line-navigation-map))
+ my/line-navigation-map)
+
+(defvar my/mark-pop-map
+  (let ((map (make-sparse-keymap)))
+    (pcase-dolist (`(,k . ,f)
+		   '(("SPC" . pop-to-mark-command)))
+      (define-key map (kbd k) f))
+    map))
+
+(map-keymap
+ (lambda (_ cmd)
+   (put cmd 'repeat-map 'my/mark-pop-map))
+ my/mark-pop-map)
+
+(define-key input-decode-map [?\C-m] [C-m])
+
+(use-package multiple-cursors :straight t
+  :config
+  (defhydra my/mc-hydra ()
+    "Multiple cursors"
+      ("n" mc/mark-next-like-this)
+      ("N" mc/skip-to-next-like-this)
+      ("p" mc/mark-previous-like-this)
+      ("P" mc/skip-to-previous-like-this)
+      ("e" mc/edit-lines)
+      ("*" mc/mark-all-like-this))
+  (bind-key "<C-m>" 'my/mc-hydra/body))
+
+(use-package expand-region :straight t)
+
+(bind-key "C-x f" #'find-file)
+(bind-key "C-x s" #'save-buffer)
+(bind-key "C-x C-s" #'save-some-buffers)
+(bind-key "C-x e" #'eval-last-sexp)
+(bind-key "C-x ;" #'comment-line)
+
+;; Saving improvements
+(use-package super-save :straight t
+  :diminish (super-save-mode)
+  :config
+  (add-to-list 'super-save-triggers 'ace-window)
+  (super-save-mode +1))
+
 ;; Documentation enhancements
 (use-package which-key :straight t
+  :diminish (which-key-mode)
   :config (which-key-mode +1))
 
 (use-package eldoc :ensure nil
   :bind ("C-h ." . eldoc)
+  :diminish (eldoc-mode)
   :config
   (eldoc-mode +1))
 
@@ -67,28 +161,45 @@
    ("C-h v" . helpful-variable)
    ("C-h k" . helpful-key))
 
-(use-package boon
-  :straight t
-  :init
-  (require 'boon-colemak)
-  (boon-mode 1)
-  :bind (("C-x f" . find-file)
-	 ("C-x s" . save-buffer)
-	 ("C-x C-s" . save-some-buffers)
-         ("C-x e" . eval-last-sexp)
- (:map boon-command-map
-               ;; (";" . boon-toggle-mark)
-               ;; ("'" . boon-end-of-line)
-               ;; ("v" . boon-replace-by-character)
-               ;; ("d" . boon-set-insert-like-state)
-               ;; ("h" . boon-qsearch-previous-at-point)
-               ;; ("m" . avy-goto-word-1)
-       ("p" . consult-line) ;
-       ("%" . anzu-query-replace-regexp)
-       ("&" . async-shell-command))
-       ("^" . delete-indentation)))
-(use-package expand-region :straight t)
+(use-package treesit
+  :preface
+  (dolist (mapping '((python-mode . python-ts-mode)
+                     (css-mode . css-ts-mode)
+                     (typescript-mode . tsx-ts-mode)
+                     (js-mode . js-ts-mode)
+                     (css-mode . css-ts-mode)
+                     (yaml-mode . yaml-ts-mode)))
+    (add-to-list 'major-mode-remap-alist mapping))
 
+  :config
+  (setq treesit-extra-load-path '("~/.emacs.d/tree-sitter-modules")))
+
+  ;; Do not forget to customize Combobulate to your liking:
+  ;;
+  ;;  M-x customize-group RET combobulate RET
+  ;;
+(use-package combobulate
+  :straight (:host github :repo "mickeynp/combobulate")
+  :bind ((:map combobulate-key-map
+	       ([remap backward-up-list] . combobulate-navigate-up-list-maybe)
+	       ([remap down-list] . combobulate-navigate-down-list-maybe)
+	       ([remap beginning-of-defun] . combobulate-navigate-beginning-of-defun)
+	       ([remap end-of-defun] . combobulate-navigate-end-of-defun)
+	       ([remap mark-defun] . combobulate-mark-defun)
+	       ([remap forward-list] . combobulate-navigate-next)
+	       ([remap backward-list] . combobulate-navigate-previous)
+	       ([remap transpose-sexps] . combobulate-transpose-sexps)))
+  ;; Optional, but recommended.
+  ;;
+  ;; You can manually enable Combobulate with `M-x
+  ;; combobulate-mode'.
+  :hook ((python-ts-mode . combobulate-mode)
+         (js-ts-mode . combobulate-mode)
+         (css-ts-mode . combobulate-mode)
+         (yaml-ts-mode . combobulate-mode)
+         (typescript-ts-mode . combobulate-mode)
+         (tsx-ts-mode . combobulate-mode)))
+  
 (setq sentence-end-double-space nil)
 
 (add-hook 'doc-view-mode-hook #'(lambda () (internal-show-cursor nil nil)))
@@ -104,8 +215,7 @@
 (use-package ace-window :straight t
   :custom
   (aw-scope 'frame)
-  :bind (("C-x C-o" . ace-window)
-	 ("C-x o" . delete-blank-lines)
+  :bind (("C-x o" . ace-window)
 	 ("M-o" . ace-window)))
 
 (winner-mode +1)
@@ -142,7 +252,7 @@
   (dirvish-override-dired-mode 1)
   :config
   (setq dired-dwim-target t)
-  (setq dirvish-use-header-line nil)
+  (setq dirvish-use-header-line t)
   (setq dirvish-use-mode-line 'global)
   (setq dirvish-attributes '(all-the-icons file-time file-size collapse subtree-state vc-state)))
   
@@ -195,7 +305,8 @@
 
 ;; Searching
 (use-package anzu :straight t
-  :bind ([remap query-replace] . anzu-query-replace)
+  :bind (([remap query-replace] . anzu-query-replace)
+	 ([remap query-replace-regexp] . anzu-query-replace-regexp))
   :config
   (global-anzu-mode +1))
 
@@ -291,17 +402,6 @@
   :config
   (vertico-mode 1))
 
-;; (use-package company :straight t
-;;   :config
-;;   (setq company-minimum-prefix-length 1)
-;;   (setq company-idle-delay 0)
-;;   (global-company-mode 1))
-
-;; (use-package company-posframe :straight t
-;;   :config
-;;   (setq company-tooltip-minimum-width 40)
-;;   (company-posframe-mode 1))
-
 (use-package corfu :straight t
   :init (global-corfu-mode))
 
@@ -347,13 +447,6 @@
 (use-package rainbow-delimiters :straight t
   :hook (prog-mode . rainbow-delimiters-mode))
 
-;; (use-package lsp-mode :straight t
-;;   :disabled
-;;   :hook ((typescript-tsx-mode typescript-mode javascript-mode javascript-jsx-mode d-mode zig-mode python-mode) . lsp)
-;;   :custom
-;;   (lsp-headerline-breadcrumb-enable nil)
-;;   (lsp-keymap-prefix "C-c l"))
-
 ;; LSP support
 (use-package flymake
   :straight t
@@ -371,21 +464,19 @@
 (use-package eglot
   :straight t
   :config
+  (add-to-list 'eglot-server-programs
+	       '(tsx-ts-mode . ("typescript-language-server" "--stdio")))
   (setq eglot-events-buffer-size 0)
   (setq eglot-extend-to-xref t)
   (setq eglot-put-doc-in-help-buffer nil)
-   (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
-   (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
-
-   (bind-key "C-c C-o C-i" #'eglot-code-action-organize-imports 'eglot-mode-map (not (or (eql major-mode 'typescript-mode) (eql major-mode 'typescript-tsx-mode))))
-   (bind-key "C-c C-o C-i" #'eglot-code-action-organize-imports-ts 'eglot-mode-map (or (eql major-mode 'typescript-mode) (eql major-mode 'typescript-tsx-mode)))
-   :bind (:map eglot-mode-map
-	       ("C-c C-a" . eglot-code-actions)
-               ("C-c C-r" . eglot-rename)))
+  (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
+  (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
+  (bind-key "C-c l i" #'eglot-code-action-organize-imports 'eglot-mode-map (not (or (eql major-mode 'typescript-mode) (eql major-mode 'tsx-ts-mode))))
+  :bind (:map eglot-mode-map
+	      ("C-c a" . eglot-code-actions)
+              ("C-c r" . eglot-rename)))
   
-(use-package yasnippet :straight t
-  :config
-  (yas-global-mode 1))
+(use-package tempel :straight t)
 
 (use-package yasnippet-snippets :straight t
   :init
@@ -422,31 +513,31 @@ if one already exists."
 (use-package json-mode :straight t)
 
 (use-package typescript-mode :straight t
- :mode (rx ".ts" string-end)
- :custom
- (typescript-indent-level 4)
- :bind (:map typescript-mode-map
-             ("C-c C-o C-m" . eglot-code-action-add-missing-imports-ts))
+  :mode (rx ".ts" string-end)
+  :custom
+  (typescript-indent-level 4)
+  :bind ((:map typescript-mode-map
+               ("C-c l m" . eglot-code-action-add-missing-imports-ts)
+	       ("C-c l i" . eglot-code-action-organize-imports-ts))
+	 (:map tsx-ts-mode-map
+               ("C-c l m" . eglot-code-action-add-missing-imports-ts)
+	       ("C-c l i" . eglot-code-action-organize-imports-ts)))
  :init
- (define-derived-mode typescript-tsx-mode typescript-mode "typescript-tsx")
- (add-to-list 'auto-mode-alist (cons (rx ".tsx" string-end) #'typescript-tsx-mode)))
+ (add-to-list 'auto-mode-alist (cons (rx ".tsx" string-end) #'tsx-ts-mode)))
 
 (use-package csharp-mode
   :ensure nil
   :config
-  (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-tree-sitter-mode)))
+  (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-ts-mode)))
 
 (use-package cider :straight t)
 
-(use-package tree-sitter-langs :straight t)
-(use-package tree-sitter-indent :straight t)
-(use-package tree-sitter :straight t
- :hook (typescript-mode . tree-sitter-hl-mode)
- :config
- (setf (alist-get 'typescript-tsx-mode tree-sitter-major-mode-language-alist) 'tsx))
-
 (use-package prettier :straight t
-  :hook (after-init . global-prettier-mode))
+  :hook (after-init . global-prettier-mode)
+  :config
+    (defun my/prettier-on-save ()
+    (add-hook 'before-save-hook #'prettier-prettify))
+  (add-hook 'tsx-ts-mode-hook #'my/prettier-on-save))
 
 (use-package rustic :straight t)
 
@@ -514,11 +605,6 @@ if one already exists."
 (use-package magit :straight t
   :bind ("C-x g" . magit-status))
 
-(use-package forge :straight t
-  :after magit
-  :custom
-  (forge-owned-accounts '(("syvsto"))))
-
 (use-package git-timemachine :straight t)
 
 (use-package diff-hl :straight t
@@ -562,8 +648,7 @@ if one already exists."
 
 ;; Centering content
 (use-package olivetti :straight t
-  :custom (olivetti-body-width 160)
-  :bind ("C-z" . olivetti-mode))
+  :custom (olivetti-body-width 160))
 
 ;; Org mode
 (straight-use-package '(org-contrib :includes org))
@@ -594,14 +679,18 @@ if one already exists."
 (add-hook 'doc-view-mode #'(lambda () (setq-local visible-cursor nil)))
 
 ;; Looks
-(use-package nano-modeline :straight t
-  :config
-  (nano-modeline-mode 1))
+;; (use-package nano-modeline :straight t
+;;   :config
+;;   (nano-modeline-mode 1))
 
 (use-package ceres-theme
   :load-path "themes/"
+  :config)
+  ; (load-theme 'ceres t))
+
+(use-package modus-themes :straight t
   :config
-  (load-theme 'ceres t))
+  (modus-themes-load-vivendi))
 
 (set-face-attribute 'default nil :font "Berkeley Mono" :height 130)
 (set-face-attribute 'variable-pitch nil :font "Baskerville" :height 160)
@@ -684,10 +773,12 @@ if one already exists."
 ;; Custom packages
 (use-package tracer
   :load-path "site-lisp/"
+  :diminish (tracer-mode)
   :hook (prog-mode . tracer-mode))
 
 (use-package observable-dataflow-mode
   :straight (:host github :repo "syvsto/observable-dataflow-mode"))
+
 
 
 ;; Platform specifics
@@ -710,7 +801,7 @@ if one already exists."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("7ea23ea0b792f1d5a4cd96f5698a70e5fdc4102ba81516327c0db00869b0b38f" "5a43eb67e709aef6279775b7256064b3a31699f1a6567abdf73b15379e2d6559" "198ba2f96082c9e770e4ae7bc9d89b5d2b58b8585171efdd6a90e86bdaea55da" "11f0d723bff6eb2fb450f99435848088675f50787dfb181cdca8e1c6dc07d974" "f581eca21b9fbd2898a171077a99a26cd70bef65f5aa9b4ba17fd293ae947086" "02f30097c5840767499ed2f76d978545f6fb3a1c3ba59274576f7e23fc39d30b" "8f85f336a6d3ed5907435ea196addbbbdb172a8d67c6f7dbcdfa71cd2e8d811a" "b69d8a1a142cde4bbde2f940ac59d2148e987cd235d13d6c4f412934978da8ab" default))
+   '("e87f48ec4aebdca07bb865b90088eb28ae4b286ee8473aadb39213d361d0c45f" "7ea23ea0b792f1d5a4cd96f5698a70e5fdc4102ba81516327c0db00869b0b38f" "5a43eb67e709aef6279775b7256064b3a31699f1a6567abdf73b15379e2d6559" "198ba2f96082c9e770e4ae7bc9d89b5d2b58b8585171efdd6a90e86bdaea55da" "11f0d723bff6eb2fb450f99435848088675f50787dfb181cdca8e1c6dc07d974" "f581eca21b9fbd2898a171077a99a26cd70bef65f5aa9b4ba17fd293ae947086" "02f30097c5840767499ed2f76d978545f6fb3a1c3ba59274576f7e23fc39d30b" "8f85f336a6d3ed5907435ea196addbbbdb172a8d67c6f7dbcdfa71cd2e8d811a" "b69d8a1a142cde4bbde2f940ac59d2148e987cd235d13d6c4f412934978da8ab" default))
  '(warning-suppress-log-types '((comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

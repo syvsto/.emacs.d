@@ -17,6 +17,7 @@
   (interactive)
   (let ((thing (thing-at-point 'symbol 'no-properties)))
     (cond ((derived-mode-p 'typescript-mode) (trace-js thing))
+	  ((derived-mode-p 'tsx-ts-mode) (trace-js thing))
           ((derived-mode-p 'js-mode) (trace-js thing))
           ((derived-mode-p 'haskell-mode) (trace-haskell thing))
 	  ((derived-mode-p 'emacs-lisp-mode) (trace-emacs-lisp thing))
