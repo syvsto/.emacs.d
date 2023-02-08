@@ -138,7 +138,7 @@
 (bind-key "C-x e" #'eval-last-sexp)
 (bind-key "C-x ;" #'comment-line)
 
-;; Saving improvements
+;; Autosave on buffer/window change
 (use-package super-save :straight t
   :diminish (super-save-mode)
   :config
@@ -466,17 +466,31 @@
   :config
   (add-to-list 'eglot-server-programs
 	       '(tsx-ts-mode . ("typescript-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs
+	       '(typescript-ts-mode . ("typescript-language-server" "--stdio")))
   (setq eglot-events-buffer-size 0)
   (setq eglot-extend-to-xref t)
   (setq eglot-put-doc-in-help-buffer nil)
   (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
   (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
-  (bind-key "C-c l i" #'eglot-code-action-organize-imports 'eglot-mode-map (not (or (eql major-mode 'typescript-mode) (eql major-mode 'tsx-ts-mode))))
-  :bind (:map eglot-mode-map
+  :bind ((:map eglot-mode-map
 	      ("C-c a" . eglot-code-actions)
-              ("C-c r" . eglot-rename)))
+              ("C-c r" . eglot-rename))
+	 (:map typescript-mode-map
+               ("C-c l m" . eglot-code-action-add-missing-imports-ts)
+	       ("C-c l i" . eglot-code-action-organize-imports-ts))
+	 (:map tsx-ts-mode-map
+               ("C-c l m" . eglot-code-action-add-missing-imports-ts)
+	       ("C-c l i" . eglot-code-action-organize-imports-ts))
+	 (:map typescript-ts-mode-map
+               ("C-c l m" . eglot-code-action-add-missing-imports-ts)
+	       ("C-c l i" . eglot-code-action-organize-imports-ts))))
   
-(use-package tempel :straight t)
+(use-package tempel :straight t
+  :bind (("M-+" . tempel-complete)
+	 ("M-*" . tempel-insert)))
+
+(use-package tempel-collection :straight t)
 
 (use-package yasnippet-snippets :straight t
   :init
@@ -521,6 +535,9 @@ if one already exists."
 	       ("C-c l i" . eglot-code-action-organize-imports-ts))
 	 (:map tsx-ts-mode-map
                ("C-c l m" . eglot-code-action-add-missing-imports-ts)
+	       ("C-c l i" . eglot-code-action-organize-imports-ts))
+	 (:map typescript-ts-mode-map
+               ("C-c l m" . eglot-code-action-add-missing-imports-ts)
 	       ("C-c l i" . eglot-code-action-organize-imports-ts)))
  :init
  (add-to-list 'auto-mode-alist (cons (rx ".tsx" string-end) #'tsx-ts-mode)))
@@ -535,9 +552,10 @@ if one already exists."
 (use-package prettier :straight t
   :hook (after-init . global-prettier-mode)
   :config
-    (defun my/prettier-on-save ()
+  (defun my/prettier-on-save ()
     (add-hook 'before-save-hook #'prettier-prettify))
-  (add-hook 'tsx-ts-mode-hook #'my/prettier-on-save))
+  (add-hook 'tsx-ts-mode-hook #'my/prettier-on-save)
+  (add-hook 'typescript-ts-mode-hook #'my/prettier-on-save))
 
 (use-package rustic :straight t)
 
@@ -646,10 +664,6 @@ if one already exists."
     (shell-command (concat "prettier --write --parser mdx \"" buffer-file-name "\"")))
   (bind-key "C-c f" #'my/format-mdx-on-save markdown-mdx-mode-map))
 
-;; Centering content
-(use-package olivetti :straight t
-  :custom (olivetti-body-width 160))
-
 ;; Org mode
 (straight-use-package '(org-contrib :includes org))
 (setq org-use-speed-commands t)
@@ -690,7 +704,7 @@ if one already exists."
 
 (use-package modus-themes :straight t
   :config
-  (modus-themes-load-vivendi))
+  (load-theme 'modus-vivendi-tinted :no-confirm))
 
 (set-face-attribute 'default nil :font "Berkeley Mono" :height 130)
 (set-face-attribute 'variable-pitch nil :font "Baskerville" :height 160)
@@ -801,7 +815,7 @@ if one already exists."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("e87f48ec4aebdca07bb865b90088eb28ae4b286ee8473aadb39213d361d0c45f" "7ea23ea0b792f1d5a4cd96f5698a70e5fdc4102ba81516327c0db00869b0b38f" "5a43eb67e709aef6279775b7256064b3a31699f1a6567abdf73b15379e2d6559" "198ba2f96082c9e770e4ae7bc9d89b5d2b58b8585171efdd6a90e86bdaea55da" "11f0d723bff6eb2fb450f99435848088675f50787dfb181cdca8e1c6dc07d974" "f581eca21b9fbd2898a171077a99a26cd70bef65f5aa9b4ba17fd293ae947086" "02f30097c5840767499ed2f76d978545f6fb3a1c3ba59274576f7e23fc39d30b" "8f85f336a6d3ed5907435ea196addbbbdb172a8d67c6f7dbcdfa71cd2e8d811a" "b69d8a1a142cde4bbde2f940ac59d2148e987cd235d13d6c4f412934978da8ab" default))
+   '("bfc0b9c3de0382e452a878a1fb4726e1302bf9da20e69d6ec1cd1d5d82f61e3d" "dde643b0efb339c0de5645a2bc2e8b4176976d5298065b8e6ca45bc4ddf188b7" "30dc9873c16a0efb187bb3f8687c16aae46b86ddc34881b7cae5273e56b97580" "896e4305e7c10f3217c5c0a0ef9d99240c3342414ec5bfca4ec4bff27abe2d2d" "e87f48ec4aebdca07bb865b90088eb28ae4b286ee8473aadb39213d361d0c45f" "7ea23ea0b792f1d5a4cd96f5698a70e5fdc4102ba81516327c0db00869b0b38f" "5a43eb67e709aef6279775b7256064b3a31699f1a6567abdf73b15379e2d6559" "198ba2f96082c9e770e4ae7bc9d89b5d2b58b8585171efdd6a90e86bdaea55da" "11f0d723bff6eb2fb450f99435848088675f50787dfb181cdca8e1c6dc07d974" "f581eca21b9fbd2898a171077a99a26cd70bef65f5aa9b4ba17fd293ae947086" "02f30097c5840767499ed2f76d978545f6fb3a1c3ba59274576f7e23fc39d30b" "8f85f336a6d3ed5907435ea196addbbbdb172a8d67c6f7dbcdfa71cd2e8d811a" "b69d8a1a142cde4bbde2f940ac59d2148e987cd235d13d6c4f412934978da8ab" default))
  '(warning-suppress-log-types '((comp))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
