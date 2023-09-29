@@ -45,18 +45,32 @@
   (require 'boon-colemak)
   (boon-mode))
 
-(use-package modus-themes
+(use-package ef-themes
   :ensure t
-  :bind ("<f5>" . modus-themes-toggle)
-  :custom ((modus-themes-bold-constructs t)
-	   (modus-themes-mixed-constructs t)
-	   (modus-themes-mixed-fonts t)
-	   (modus-themes-variable-pitch-ui t)
-	   (modus-themes-mode-line-accented t)
-	   (modus-themes-links '(neutral-underline))
-	   (modus-themes-prompts '(bold italic)))
+  :bind ("<f5>" . my/toggle-theme)
+  :custom ((ef-themes-bold-constructs t)
+	   (ef-themes-mixed-constructs t)
+	   (ef-themes-mixed-fonts t)
+	   (ef-themes-variable-pitch-ui t)
+	   (ef-themes-mode-line-accented t)
+	   (ef-themes-links '(neutral-underline))
+	   (ef-themes-prompts '(bold italic)))
   :init
-  (load-theme 'modus-operandi :no-confirm))
+  (defvar my/current-theme-mode 'light)
+  (defun my/toggle-theme ()
+    (interactive)
+    (let ((dark-theme 'ef-maris-dark)
+	  (light-theme 'ef-duo-light))
+      (if (eq my/current-theme-mode 'light)
+	  (progn
+	    (disable-theme light-theme)
+	    (load-theme dark-theme :no-confirm)
+	    (setq my/current-theme-mode 'dark))
+	(progn
+	  (disable-theme dark-theme)
+	  (load-theme light-theme :no-confirm)
+	  (setq my/current-theme-mode 'light)))))
+  (load-theme 'ef-duo-light :no-confirm))
 
 (global-hl-line-mode 1)
 
@@ -168,6 +182,7 @@
 	 (:map boon-command-map
 	       ("p" . consult-line)))
   :hook (completion-list-mode . consult-preview-at-point-mode))
+
 
 (use-package corfu
   :ensure t
@@ -311,13 +326,17 @@
 	mac-right-option-modifier nil
         mac-command-modifier 'super))
 
+(use-package eshell-mode
+  :bind (:map eshell-mode-map
+	       ("C-r" . consult-history)))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(sly slime embark-consult embark exec-path-from-shell git-timemachine apheleia flymake-diagnostic-at-point corfu orderless ace-window which-key boon no-littering wgrep vertico undo-tree modus-themes marginalia magit kind-icon diminish anzu)))
+   '(ef-themes sly slime embark-consult embark exec-path-from-shell git-timemachine apheleia flymake-diagnostic-at-point corfu orderless ace-window which-key boon no-littering wgrep vertico undo-tree modus-themes marginalia magit kind-icon diminish anzu)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
