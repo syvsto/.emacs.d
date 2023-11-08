@@ -1,5 +1,6 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 ;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
 ;; and `package-pinned-packages`. Most users will not need or want to do this.
 ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
@@ -90,6 +91,13 @@
 (bind-key "C-x C-s" #'save-some-buffers)
 (bind-key "C-x e" #'eval-last-sexp)
 (bind-key "C-x ;" #'comment-line)
+
+(use-package ibuffer-vc
+  :ensure t
+  :hook (ibuffer . (lambda ()
+		     (ibuffer-vc-set-filter-groups-by-vc-root)
+		     (unless (eq ibuffer-sorting-mode 'alphabetic)
+		       (ibuffer-do-sort-by-alphabetic)))))
 
 ;; Documentation enhancements
 (use-package which-key
@@ -183,7 +191,6 @@
 	       ("p" . consult-line)))
   :hook (completion-list-mode . consult-preview-at-point-mode))
 
-
 (use-package corfu
   :ensure t
   :init
@@ -250,21 +257,52 @@
 	(python "https://github.com/tree-sitter/tree-sitter-python")
 	(toml "https://github.com/tree-sitter/tree-sitter-toml")
 	(tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+	(vue "https://github.com/xiaoxin-sky/tree-sitter-vue" "master" "src")
 	(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
 	(yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+;; Use this to install tree sitter grammars
+;; (mapc #'treesit-install-language-grammar (mapcar #'car treesit-language-source-alist))
 
+(use-package web-mode
+  :ensure t)
+(define-derived-mode vue-mode web-mode "Vue")
+(add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
+
+(defun my/vue-eglot-init-options ()
+  (let ((tsdk-path (expand-file-name
+		    "lib"
+		    (string-trim-right (shell-command-to-string "npm list --global --parseable typescript | head -n1")))))
+    `(:typescript (:tsdk ,tsdk-path
+			 :languageFeatures (:completion
+					    (:defaultTagNameCase "both"
+					     :defaultAttrNameCase "kebabCase"
+					     :getDocumentNameCasesRequest nil
+					     :getDocumentSelectionRequest nil
+					     :diagnostics
+					     (:getDocumentVersionRequest nil))
+			 :documentFeatures (:documentFormatting
+				            (:defaultPrintWidth 100
+				             :getDocumentPrintWidthRequest nil)
+					    :documentSymbol t
+					    :documentColor t))))))
 (defun my/eglot-setup ()
   (add-to-list 'eglot-server-programs
 	       '(tsx-ts-mode . ("typescript-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs
 	       '(typescript-ts-mode . ("typescript-language-server" "--stdio")))
+(add-to-list 'eglot-server-programs
+	     `(vue-mode . ("vue-language-server" "--stdio" :initializationOptions ,(my/vue-eglot-init-options))))  
   (setq eglot-events-buffer-size 0)
+  (fset #'jsonrpc--log-event #'ignore)
   (setq eglot-extend-to-xref t)
   (setq eglot-put-doc-in-help-buffer nil)
+  (setq eglot-send-changes-idle-item 0.25)
+  (setq eglot-sync-connect nil)
   (eglot--code-action eglot-code-action-organize-imports-ts "source.organizeImports.ts")
   (eglot--code-action eglot-code-action-add-missing-imports-ts "source.addMissingImports.ts")
   (bind-key "C-c C-a" 'eglot-code-actions 'eglot-mode-map)
   (bind-key "C-c C-r" 'eglot-rename 'eglot-mode-map)
+  (bind-key "C-c C-f" 'eglot-format-buffer 'eglot-mode-map)
   (bind-key "C-c C-l C-m" 'eglot-code-action-add-missing-imports-ts 'tsx-ts-mode-map)
   (bind-key "C-c C-l C-i" 'eglot-code-action-organize-imports-ts 'tsx-ts-mode-map)
   (bind-key "C-c C-l C-m" 'eglot-code-action-add-missing-imports-ts 'typescript-ts-mode-map)
@@ -272,6 +310,13 @@
 (add-hook 'eglot-managed-mode-hook 'my/eglot-setup)
 
 (use-package sly
+  :ensure t)
+
+(use-package markdown-mode
+  :ensure t
+  :mode ("README\\.md\\'" . gfm-mode))
+
+(use-package vterm
   :ensure t)
 
 (use-package apheleia
@@ -288,6 +333,7 @@
     (setf (alist-get 'prettier-ruby apheleia-formatters)'(npx "prettier" "--stdin-filepath" filepath "--parser=ruby"))
     (setf (alist-get 'prettier-scss apheleia-formatters)'(npx "prettier" "--stdin-filepath" filepath "--parser=scss"))
     (setf (alist-get 'prettier-svelte apheleia-formatters)'(npx "prettier" "--stdin-filepath" filepath "--parser=svelte"))
+    (setf (alist-get 'prettier-vue apheleia-formatters)'(npx "prettier" "--stdin-filepath" filepath "--parser=vue"))
     (setf (alist-get 'prettier-typescript apheleia-formatters)'(npx "prettier" "--stdin-filepath" filepath "--parser=typescript"))
     (setf (alist-get 'prettier-yaml apheleia-formatters)'(npx "prettier" "--stdin-filepath" filepath "--parser="yaml)))
   (apheleia-global-mode +1))    
@@ -311,6 +357,7 @@
 
 ;; Org
 (use-package org-modern
+  :ensure t
   :hook (((org-mode . org-modern-mode)
 	  (org-agenda-finalize . org-modern-agenda))))
 
@@ -326,9 +373,19 @@
 	mac-right-option-modifier nil
         mac-command-modifier 'super))
 
+(use-package gcmh
+  :ensure t
+  :config
+  (gcmh-mode 1))
+
 (use-package eshell-mode
   :bind (:map eshell-mode-map
-	       ("C-r" . consult-history)))
+	      ("C-r" . consult-history)))
+
+(use-package eat
+  :ensure t
+  :config
+  (add-hook 'eshell-load-hook #'eat-eshell-mode))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -336,7 +393,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(ef-themes sly slime embark-consult embark exec-path-from-shell git-timemachine apheleia flymake-diagnostic-at-point corfu orderless ace-window which-key boon no-littering wgrep vertico undo-tree modus-themes marginalia magit kind-icon diminish anzu)))
+   '(org-modern eat gcmh vterm markdown markdown-mode web-mode ibuffer-vc ibuffer-vs ef-themes sly slime embark-consult embark exec-path-from-shell git-timemachine apheleia flymake-diagnostic-at-point corfu orderless ace-window which-key boon no-littering wgrep vertico undo-tree modus-themes marginalia magit kind-icon diminish anzu)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
