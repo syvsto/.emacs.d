@@ -385,13 +385,16 @@
 (use-package eat
   :ensure t
   :config
-  (add-hook 'eshell-load-hook #'eat-eshell-mode))
+  (add-hook 'eshell-load-hook #'eat-eshell-mode)
+  (add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("90eb3b47cd9bf5eec0f5820682fcb40b4a37fc128b12eceb39e09f64758a8ebe" "6c655326d9bb38d4be02d364d344bfa61b3c8fdabd1cf4b97dddc8c0b3047b47" "3ca84532551daa1b492545bbfa47fd1b726ca951d8be29c60a3214ced30b86f5" "86a9bfbda652a2dd887077a4ad91afbec2fde569e26147ceb8a605976c99d8d2" "8081bc8961e8428dc7897544d6deaa9099b0807e57fc4281187c1bda4ff0c386" default))
  '(package-selected-packages
    '(org-modern eat gcmh vterm markdown markdown-mode web-mode ibuffer-vc ibuffer-vs ef-themes sly slime embark-consult embark exec-path-from-shell git-timemachine apheleia flymake-diagnostic-at-point corfu orderless ace-window which-key boon no-littering wgrep vertico undo-tree modus-themes marginalia magit kind-icon diminish anzu)))
 (custom-set-faces
