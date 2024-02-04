@@ -1,14 +1,22 @@
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
-;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
-;; and `package-pinned-packages`. Most users will not need or want to do this.
-;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(package-initialize)
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir)
+            user-emacs-directory)))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
 ;; Setup use-package
-(use-package diminish :ensure t)
-(use-package bind-key :ensure t)
+(use-package diminish :straight t)
+(use-package bind-key :straight t)
 (global-auto-revert-mode 1)
 
 ;; Performance tweaks
@@ -16,6 +24,7 @@
 (setq read-process-output-max (* 1024 1024))
 (global-so-long-mode 1)
 (global-subword-mode 1)
+(diminish 'subword-mode)
 
 ;; Swap to a bunch of more useful keybindings than the defaults
 (bind-key "M-\\" 'cycle-spacing)
@@ -27,7 +36,7 @@
  
 ;; some options that make Emacs a less intrusive OS citizen
 (setq frame-resize-pixelwise t)
-(use-package no-littering :ensure t)
+(use-package no-littering :straight t)
 
 ;; store all backup and autosave files in the tmp dir
 (setq backup-directory-alist
@@ -41,13 +50,13 @@
 (recentf-mode +1)
 
 (use-package boon
-  :ensure t
+  :straight t
   :init
   (require 'boon-colemak)
   (boon-mode))
 
 (use-package ef-themes
-  :ensure t
+  :straight t
   :bind ("<f5>" . my/toggle-theme)
   :custom ((ef-themes-bold-constructs t)
 	   (ef-themes-mixed-constructs t)
@@ -93,7 +102,7 @@
 (bind-key "C-x ;" #'comment-line)
 
 (use-package ibuffer-vc
-  :ensure t
+  :straight t
   :hook (ibuffer . (lambda ()
 		     (ibuffer-vc-set-filter-groups-by-vc-root)
 		     (unless (eq ibuffer-sorting-mode 'alphabetic)
@@ -101,11 +110,13 @@
 
 ;; Documentation enhancements
 (use-package which-key
-  :ensure t
+  :straight t
+  :diminish which-key-mode
   :config
   (which-key-mode +1))
 
 (bind-key "C-h ." #'eldoc)
+(diminish 'eldoc-mode)
 (eldoc-mode +1)
 
 (setq sentence-end-double-space nil)
@@ -113,7 +124,7 @@
 (add-hook 'doc-view-mode-hook #'(lambda () (internal-show-cursor nil nil)))
 
 (use-package ace-window
-  :ensure t
+  :straight t
   :config
   (setq aw-scope 'frame)
   (bind-key "C-x o" 'ace-window)
@@ -131,7 +142,7 @@
 (add-hook 'grep-mode-hook #'toggle-truncate-lines)
 
 (use-package wgrep
-  :ensure t
+  :straight t
   :custom ((wgrep-auto-save-buffer t)
 	   (wgrep-change-readonly-file t)))
 
@@ -139,7 +150,7 @@
 
 ;; Searching
 (use-package anzu
-  :ensure t
+  :straight t
   :bind (
 	 ([remap query-repalace] . anzu-query-replace)
 	 ([remap query-replace-regaexp] . anzu-query-replace-regexp)
@@ -151,14 +162,14 @@
 ;; ;; Completion/selection
 
 (use-package marginalia
-  :ensure t
+  :straight t
   :config
   (marginalia-mode))
 
 (savehist-mode)
 
 (use-package orderless
-  :ensure t
+  :straight t
   :custom
   (completion-styles '(orderless basic))
   (completion-cycle-threshold 1)
@@ -167,13 +178,13 @@
   (completion-category-overrides '((file (styles . (partial-completion))))))
 
 (use-package vertico
-  :ensure t
+  :straight (:files (:defaults "extensions/*"))
   :config
   (vertico-mode 1))
 
 (use-package vertico-directory
   :after vertico
-  :ensure nil
+  :straight nil
   :bind (:map vertico-map
 	      ("RET" . vertico-directory-enter)
 	      ("DEL" . vertico-directory-delete-char)
@@ -181,7 +192,7 @@
   :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
 
 (use-package consult
-  :ensure t
+  :straight t
   :bind (([remap goto-line] . consult-goto-line)
 	 ("M-i" . consult-imenu)
 	 ([remap yank-pop] . consult-yank-pop)
@@ -192,7 +203,7 @@
   :hook (completion-list-mode . consult-preview-at-point-mode))
 
 (use-package corfu
-  :ensure t
+  :straight (:files (:defaults "extensions/*"))
   :init
   (global-corfu-mode))
 
@@ -207,18 +218,18 @@
 
 (use-package kind-icon
   :if (display-graphic-p)
-  :ensure t
+  :straight t
   :after corfu
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (use-package embark
-  :ensure t
+  :straight t
   :bind ("C-." . embark-act))
 
 (use-package embark-consult
   :after embark
-  :ensure t
+  :straight t
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 (setq minibuffer-prompt-properties
@@ -230,13 +241,14 @@
 
 ;; Dired
 (put 'dired-find-alternate-file 'disabled nil)
+(add-hook 'dired-mode-hook #'dired-hide-details-mode)
 
 ;; ;; Delimiters
 (electric-pair-mode 1)
 
 (use-package flymake-diagnostic-at-point
   :after flymake
-  :ensure t
+  :straight t
   :custom (flymake-diagnostic-at-point-display-diagnostic-function
 	   'flymake-diagnostic-at-point-display-popup)
   :config 
@@ -255,16 +267,17 @@
 	(make "https://github.com/alemuller/tree-sitter-make")
 	(markdown "https://github.com/ikatyang/tree-sitter-markdown")
 	(python "https://github.com/tree-sitter/tree-sitter-python")
+	(rust "https://github.com/tree-sitter/tree-sitter-rust")
 	(toml "https://github.com/tree-sitter/tree-sitter-toml")
 	(tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
 	(vue "https://github.com/xiaoxin-sky/tree-sitter-vue" "master" "src")
 	(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
 	(yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 ;; Use this to install tree sitter grammars
-;; (mapc #'treesit-install-language-grammar (mapcar #'car treesit-language-source-alist))
+(mapc #'treesit-install-language-grammar (mapcar #'car treesit-language-source-alist))
 
 (use-package web-mode
-  :ensure t)
+  :straight t)
 (define-derived-mode vue-mode web-mode "Vue")
 (add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
 
@@ -310,17 +323,18 @@
 (add-hook 'eglot-managed-mode-hook 'my/eglot-setup)
 
 (use-package sly
-  :ensure t)
+  :straight t)
 
 (use-package markdown-mode
-  :ensure t
+  :straight t
   :mode ("README\\.md\\'" . gfm-mode))
 
 (use-package vterm
-  :ensure t)
+  :straight t)
 
 (use-package apheleia
-  :ensure t
+  :straight t
+  :diminish apheleia-mode
   :config
   (with-eval-after-load 'apheleia
     (setf (alist-get 'prettier apheleia-formatters) '(npx "prettier" "--stdin-filepath" filepath))
@@ -341,15 +355,32 @@
 (add-to-list 'auto-mode-alist (cons (rx ".tsx" string-end) #'tsx-ts-mode))
 (add-to-list 'auto-mode-alist (cons (rx ".ts" string-end) #'typescript-ts-mode))
 
+(use-package copilot
+  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("dist" "*.el"))
+  :ensure t
+  :hook (prog-mode . copilot-mode)
+  :bind (("C-c M-f" . copilot-complete)
+	 (:map copilot-completion-map
+	       ("C-g" . copilot-clear-overlay)
+               ("<right>" . copilot-accept-completion)
+               ("C-f" . copilot-accept-completion)
+               ("M-<right>" . copilot-accept-completion-by-word)
+               ("M-f" . copilot-accept-completion-by-word)
+               ("C-e" . copilot-accept-completion-by-line)
+               ("<end>" . copilot-accept-completion-by-line)
+               ("M-n" . copilot-next-completion)
+               ("M-p" . copilot-previous-completion))))
+
 ;; Git
 (use-package magit
-  :ensure t
+  :straight t
   :bind ("C-x g" . magit-status))
 
-(use-package git-timemachine :ensure t)
+(use-package git-timemachine :straight t)
 
 (use-package undo-tree
-  :ensure t
+  :straight t
+  :diminish undo-tree-mode
   :bind ("C-x u" . undo-tree-visualize)
   :custom (undo-tree-auto-save-history nil)
   :init
@@ -357,14 +388,21 @@
 
 ;; Org
 (use-package org-modern
-  :ensure t
+  :straight t
   :hook (((org-mode . org-modern-mode)
 	  (org-agenda-finalize . org-modern-agenda))))
+
+
+(use-package olivetti
+  :straight t)
+
+(use-package mermaid-mode
+  :straight t)
 
 ;; Platform specifics
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns x))
-  :ensure t
+  :straight t
   :config
   (exec-path-from-shell-initialize)
   (setq-default mac-option-modifier 'meta)
@@ -373,17 +411,11 @@
 	mac-right-option-modifier nil
         mac-command-modifier 'super))
 
-(use-package gcmh
-  :ensure t
-  :config
-  (gcmh-mode 1))
-
-(use-package eshell-mode
-  :bind (:map eshell-mode-map
-	      ("C-r" . consult-history)))
+(with-eval-after-load 'eshell
+  (bind-key "C-r" #'consult-history 'eshell-mode-map))
 
 (use-package eat
-  :ensure t
+  :straight t
   :config
   (add-hook 'eshell-load-hook #'eat-eshell-mode)
   (add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode))
@@ -394,9 +426,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("90eb3b47cd9bf5eec0f5820682fcb40b4a37fc128b12eceb39e09f64758a8ebe" "6c655326d9bb38d4be02d364d344bfa61b3c8fdabd1cf4b97dddc8c0b3047b47" "3ca84532551daa1b492545bbfa47fd1b726ca951d8be29c60a3214ced30b86f5" "86a9bfbda652a2dd887077a4ad91afbec2fde569e26147ceb8a605976c99d8d2" "8081bc8961e8428dc7897544d6deaa9099b0807e57fc4281187c1bda4ff0c386" default))
+   '("bebec7cd48f56fbca1c878d7f43ece10d5390ab95790883d95ae4c0f6045600a" "14ba61945401e42d91bb8eef15ab6a03a96ff323dd150694ab8eb3bb86c0c580" "5014b68d3880d21a5539af6ef40c1e257e9045d224efb3b65bf0ae7ff2a5e17a" "4d4475c85408bbc9d71e692dd05d55c6b753d64847f5e364d1ebec78d43e2aef" "90eb3b47cd9bf5eec0f5820682fcb40b4a37fc128b12eceb39e09f64758a8ebe" "6c655326d9bb38d4be02d364d344bfa61b3c8fdabd1cf4b97dddc8c0b3047b47" "3ca84532551daa1b492545bbfa47fd1b726ca951d8be29c60a3214ced30b86f5" "86a9bfbda652a2dd887077a4ad91afbec2fde569e26147ceb8a605976c99d8d2" "8081bc8961e8428dc7897544d6deaa9099b0807e57fc4281187c1bda4ff0c386" default))
  '(package-selected-packages
-   '(org-modern eat gcmh vterm markdown markdown-mode web-mode ibuffer-vc ibuffer-vs ef-themes sly slime embark-consult embark exec-path-from-shell git-timemachine apheleia flymake-diagnostic-at-point corfu orderless ace-window which-key boon no-littering wgrep vertico undo-tree modus-themes marginalia magit kind-icon diminish anzu)))
+   '(mermaid-mode eglot olivetti org-modern eat gcmh vterm markdown markdown-mode web-mode ibuffer-vc ibuffer-vs ef-themes sly slime embark-consult embark exec-path-from-shell git-timemachine apheleia flymake-diagnostic-at-point corfu orderless ace-window which-key boon no-littering wgrep vertico undo-tree modus-themes marginalia magit kind-icon diminish anzu)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
